@@ -97,13 +97,13 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return '2'
     elif(not pixels[0][-1] and pixels[0][c] and not pixels[int(round(height/4))][0] and not pixels[-1][-1] and pixels[-1][c] and not pixels[m][0] and ((not pixels[m][1] or not pixels[m][-1]) or width == 3) and not pixels[int(round(height/4))][0] and not pixels[int(round(height/4))][1] and (pixels[int(round(height/4))][-1] or pixels[int(round(height/4))][-2]) and last_row_ratio >= 0.5):
         return '3'
-    elif(not pixels[0][0] and not pixels[0][c] and not pixels[-1][0] and (not pixels[-1][c] or not pixels[-1][c-1]) and first_row_ratio < 0.30 and first_row_ratio > 0 and last_row_ratio <= 0.40):
+    elif(not pixels[0][0] and not pixels[0][c] and not pixels[-1][0] and (pixels[3][-1] or pixels[3][-2]) and (not pixels[-1][c] or not pixels[-1][c-1]) and first_row_ratio < 0.30 and first_row_ratio > 0 and last_row_ratio <= 0.40):
         return '4'
     elif(first_row_ratio > 0.5 and pixels[0][c] and pixels[-1][c] and not pixels[-1][-1] and not pixels[m+1][0] and pixels[m][c] and last_row_ratio > 0.5 and pixels[0][0] == pixels[1][0] and pixels[0][0] == pixels[int(height/4)][0] and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
         return '5'
     elif(not pixels[0][0] and not pixels[0][-1] and pixels[m][1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
         return '6'
-    elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-1][0] and not pixels[-1][-1]):
+    elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-2][0] and not pixels[-1][-1]):
         return '7'
     elif(not pixels[0][0] and pixels[0][c] and pixels[0][c+1] and pixels[0][c-1] and not pixels[0][-1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and pixels[-1][c+1] and pixels[-1][c-1] and (not pixels[-1][-1]) and (first_row_ratio >= 0.4 and last_row_ratio >= 0.4)):
         return '8'
@@ -170,14 +170,17 @@ def imagetostring(im):
     
     # Get the maximum luminosity for the image, so we can normalize it
     m = int(height/2)
-    lum = 0
+    maxlum = 0
+    minlum = 255
     for j in range(0, width):
         v = int(sum(pixelData[j, m])/float(len(pixelData[j, m])))
-        if(v > lum):
-            lum = v
+        if(v > maxlum):
+            maxlum = v
+        if(v < minlum):
+            minlum = v
     
-    if(lum < 220):
-        lumFactor = lum/float(255)
+    if(maxlum < 220):
+        lumFactor = maxlum/float(255)
     else:
         lumFactor = 1
     
@@ -234,4 +237,5 @@ def imagetostring(im):
         pixels = bwtrim(pixels)
         glyphs = bwfindglyphs(pixels)
         result = bwglyphstostring(glyphs, 1, True)
+        im.save("test.jpg")
         return result['result']
