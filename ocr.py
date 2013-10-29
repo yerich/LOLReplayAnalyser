@@ -5,8 +5,11 @@ import time
 
 # Returns 0 (black) or 1 (white) for a pixel tuple, depending on threshold value (betwwen 0 and 100)
 # Used to convert a color image into a pure-toned black or white one
-def bwthreshold(pixel, threshold):
-    return int((sum(pixel)/float(len(pixel))) / 2 > threshold)
+def bwthreshold(pixel, threshold, length=None):
+    if(length==3):
+        return (pixel[0]+pixel[1]+pixel[2]+255)/8 > threshold
+    else:
+        return (sum(pixel)/float(len(pixel))) / 2 > threshold
 
 # Map over a pixel array
 def bwmap(func, pixels):
@@ -27,14 +30,33 @@ def bwtrimvertical(pixels, threshhold = 1):
     valid_rows_top = []
     valid_rows_bot = [];
     for i, row in enumerate(pixels):
-        if len(valid_rows_top) > 0 or bwrowhaspixel(row, 1):
+        if len(valid_rows_top) > 0 or bwrowhaspixel(row, threshhold):
             valid_rows_top.append(i)
             
     for i, row in reversed(list(enumerate(pixels))):
-        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, 1):
+        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, threshhold):
             valid_rows_bot.append(i)
     
     return { 'result' : [row for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)], 'range' : [i for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)]}
+
+def bwtrimhorizontal(pixels):
+    if len(pixels) == 0:
+        return { 'result' : pixels, 'range' : []}
+    
+    valid_cols_left = len(pixels[0])
+    valid_cols_right = 0
+    
+    for row in pixels:
+        for i, pixel in enumerate(row):
+            if(pixel and i < valid_cols_left):
+                valid_cols_left = i
+            if(pixel and i >= valid_cols_right):
+                valid_cols_right = i
+    
+    for i, _ in enumerate(pixels):
+        pixels[i] = pixels[i][valid_cols_left:(valid_cols_right+1)]
+        
+    return { 'result' : pixels, 'range' : range(valid_cols_left, valid_cols_right)}
 
 def bwfindglyphs(pixels, threshhold = 1):
     pixels = bwtranspose(pixels)
@@ -66,7 +88,7 @@ def bwtranspose(pixels):
     return map(list, zip(*pixels))
 
 def bwtrim(pixels):
-    return bwtranspose(bwtrimvertical(bwtranspose(bwtrimvertical(pixels)['result']))['result'])
+    return bwtrimhorizontal(bwtrimvertical(pixels)['result'])['result']
 
 def bwinvert(pixels):
     return bwmap(lambda x : int(not x), pixels)
@@ -101,7 +123,7 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return '4'
     elif(first_row_ratio > 0.5 and pixels[0][c] and pixels[-1][c] and not pixels[-1][-1] and not pixels[m+1][0] and pixels[m][c] and last_row_ratio > 0.5 and pixels[0][0] == pixels[1][0] and pixels[0][0] == pixels[int(height/4)][0] and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
         return '5'
-    elif(not pixels[0][0] and not pixels[0][-1] and pixels[m][1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
+    elif(not pixels[0][0] and not pixels[0][-1] and ((pixels[m][1] and pixels[m][c]) or (pixels[m-1][1] and pixels[m-1][c])) and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/5))][-2]):
         return '6'
     elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-2][0] and not pixels[-1][-1]):
         return '7'
@@ -121,10 +143,13 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     #print "Error cannot match:"
     #printpixels(pixels)
     
+    #Retry with some antialiasing artifact reduction rules
     if(threshold == 1):
         glyphs = bwfindglyphs(pixels, 2)
-        return bwglyphstostring(glyphs, 2, print_errors)['result']
-    
+        attempt = bwglyphstostring(glyphs, 2, print_errors)
+        if(attempt['numerrors'] == 0):
+            return attempt['result']
+
     #Custom rules for small text; the default rules can be too strict with these
     if(height < 8):
         if(not pixels[0][0] and not pixels[0][1] and pixels[0][-1] and not pixels[1][0] and pixels[1][-1] and ((pixels[4][0] and pixels[4][1]) or (pixels[3][0] and pixels[3][1])) and not pixels[-1][0] and not pixels[-1][1] and (pixels[-1][-1] or pixels[-1][-2])):
@@ -135,6 +160,11 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
             return '8'
         elif(pixels[0][1] and pixels[0][1] and pixels[1][0] and not pixels[1][1] and pixels[1][-1] and pixels[m][c] and (pixels[-3][-1] or pixels[-3][-2]) and not pixels[-2][-1] and not pixels[-1][-1] and not pixels[-1][0]):
             return '9'
+    
+    if(threshold == 1):
+        glyphs = bwfindglyphs(bwtrimvertical(pixels, 2)['result'], 2)
+        attempt = bwglyphstostring(glyphs, 2, print_errors)
+        return attempt['result']
     
     return False
 
@@ -173,7 +203,7 @@ def imagetostring(im):
     maxlum = 0
     minlum = 255
     for j in range(0, width):
-        v = int(sum(pixelData[j, m])/float(len(pixelData[j, m])))
+        v = int((sum(pixelData[j, m][0:3])+255)/4)
         if(v > maxlum):
             maxlum = v
         if(v < minlum):
@@ -183,12 +213,15 @@ def imagetostring(im):
         lumFactor = maxlum/float(255)
     else:
         lumFactor = 1
+        
+    if(minlum > 150):
+        lumFactor *= float(255)/minlum
     
     # Turn the color image 2D array into a two-tone (black or white) binary 2D array
     for i in range(0, height):
         pixels.append([])
         for j in range(0, width):
-            pixels[i].append(bwthreshold(pixelData[j, i], 60*lumFactor))
+            pixels[i].append(bwthreshold(pixelData[j, i], 60*lumFactor, 3))
     
     vert_range = bwtrimvertical(pixels)['range']
     true_height = vert_range[-1] - vert_range[0]
@@ -200,7 +233,7 @@ def imagetostring(im):
         for i in range(0, height):
             pixels.append([])
             for j in range(0, width):
-                pixels[i].append(bwthreshold(pixelData[j, i], 80*lumFactor))
+                pixels[i].append(bwthreshold(pixelData[j, i], 80*lumFactor, 3))
     
     """
     if(true_height < 10):
@@ -220,7 +253,6 @@ def imagetostring(im):
     """
     pixels = bwtrim(pixels)
     
-    #printpixels(pixels)
     glyphs = bwfindglyphs(pixels)
     result = bwglyphstostring(glyphs, 1, False)
     
@@ -231,7 +263,7 @@ def imagetostring(im):
         for i in range(0, height):
             pixels.append([])
             for j in range(0, width):
-                pixels[i].append(bwthreshold(pixelData[j, i], 70*lumFactor))
+                pixels[i].append(bwthreshold(pixelData[j, i], 70*lumFactor, 3))
             
             
         pixels = bwtrim(pixels)
