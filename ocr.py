@@ -142,7 +142,7 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return '9'
     elif(width < 11 and not pixels[0][0] and (pixels[0][-1] or (pixels[0][-2] and pixels[1][-1])) and not pixels[m][0] and not pixels[m][-1] and (pixels[-1][0] or (pixels[-2][0] and pixels[-1][1])) and not pixels[-1][-1]):
         return '/'
-    elif(first_row_count == 0 and not pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-1][0] and not pixels[-1][-1]):
+    elif(width < 11 and first_row_count == 0 and not pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-1][0] and not pixels[-1][-1]):
         return ' '
     elif(width < 11 and pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and pixels[m][-1] and pixels[-1][0] and not pixels[-1][-1]):
         return ')'
@@ -167,6 +167,8 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
             return '3'
         elif(not pixels[0][0] and not pixels[0][1] and pixels[0][-1] and not pixels[1][0] and pixels[1][-1] and ((pixels[4][0] and pixels[4][1]) or (pixels[3][0] and pixels[3][1])) and not pixels[-1][0] and not pixels[-1][1] and (pixels[-1][-1] or pixels[-1][-2])):
             return '4'
+        elif(not pixels[0][0] and not pixels[0][1] and pixels[0][-2] and not pixels[0][-1] and not pixels[1][0] and pixels[1][-2] and ((pixels[4][0] and pixels[4][1]) or (pixels[3][0] and pixels[3][1])) and not pixels[-1][0] and not pixels[-1][1] and (pixels[-1][-1] or pixels[-1][-2])):
+            return '4'
         elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[1][-1] and not pixels[1][-2] and pixels[1][0] and pixels[m][0] and pixels[m][c] and pixels[m+1][-1] and pixels[m+2][-1] and not pixels[m+1][c] and not pixels[-2][c] and pixels[-1][c]):
             return '5'
         elif(not pixels[0][0] and pixels[0][1] and pixels[0][2] and not pixels[0][-1] and pixels[1][0] and pixels[1][1] and not pixels[1][2] and not pixels[1][-1] and pixels[2][0] and pixels[2][1] and pixels[2][-1] and pixels[m][0] and pixels[m+1][0] and pixels[m+1][-1] and pixels[-2][0] and not pixels[-2][1] and pixels[-2][-1] and pixels[-1][0] and pixels[-1][1] and pixels[-1][-1]):
@@ -178,8 +180,14 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     
     if(threshold == 1):
         glyphs = bwfindglyphs(bwtrimvertical(pixels, 2)['result'], 2)
-        attempt = bwglyphstostring(glyphs, 2, print_errors)
-        return attempt['result']
+        attempt1 = bwglyphstostring(glyphs, 2, print_errors)
+        glyphs = bwfindglyphs(bwtrimvertical(pixels, 3)['result'], 3)
+        attempt2 = bwglyphstostring(glyphs, 2, print_errors)
+        if(height > 10 and attempt2['numerrors'] == 0):
+            return attempt2['result']
+        return attempt1['result']
+    
+    
     
     return False
 
@@ -282,6 +290,7 @@ def imagetostring(im):
     """
     pixels = bwtrim(pixels)
     
+    #printpixels(pixels)
     glyphs = bwfindglyphs(pixels)
     result = bwglyphstostring(glyphs, 1, False)
     

@@ -5,7 +5,11 @@ import re
 def cint(str):
     if str == '' or str == None:
         return 0
-    return int(re.sub(r'[^\d.]+', '', str))
+    
+    str = re.sub(r'[^\d.]+', '', str)
+    if str == '' or str == None:
+        return 0
+    return int(str)
 
 def getScreenshotData(im):
     width, height = im.size
@@ -26,7 +30,8 @@ def getScreenshotData(im):
     results['players'] = [[], []];
     results['time'] = ocr.imagetostring(im.crop((934, 80, 984, 94))).split(",")
     results['time'] = cint(results['time'][0]) * 60 + int(results['time'][1])
-    results['speed'] = cint(ocr.imagetostring(im.crop((705, 860, 726, 874))).replace('x', ''))
+    results['speed'] = cint(ocr.imagetostring(im.crop((708, 862, 718, 876))).replace('x', ''))
+    im.crop((707, 862, 718, 876)).save('tmp.png')
     if (im.getpixel((674, 905))[0:3] == (247, 231, 173)):
         results['gold_data_available'] = True
         results['item_data_available'] = False
@@ -120,8 +125,9 @@ def getScreenshotData(im):
             if(results['gold_data_available']):
                 results['players'][team][player]['gold'] = results['players'][team][player]['gold'].replace(",", "")
                 results['players'][team][player]['current_gold'] = cint(results['players'][team][player]['gold'].split("(")[0])
-                results['players'][team][player]['total_gold'] = cint(results['players'][team][player]['gold'].split("(")[1].replace(")", ""))
+                results['players'][team][player]['total_gold'] = cint(results['players'][team][player]['gold'].split("(")[-1].replace(")", ""))
                 results['teams'][team]['gold'] += results['players'][team][player]['total_gold']
+                
             results['players'][team][player]['kda'] = results['players'][team][player]['kda'].split("/")
             results['players'][team][player]['kills'] = cint(results['players'][team][player]['kda'][0])
             results['players'][team][player]['deaths'] = cint(results['players'][team][player]['kda'][1])

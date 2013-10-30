@@ -13,7 +13,7 @@ def sendkey(keychar):
         charcode = ord(keychar.upper())
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 1)])
     sendinput.send_input_array(inputarray)
-    time.sleep(0.005)   #League sometimes does't like it if we type too fast
+    time.sleep(0.02)   #League sometimes does't like it if we type too fast
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 0)])
     sendinput.send_input_array(inputarray)
     time.sleep(0.005)
