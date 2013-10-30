@@ -2,14 +2,14 @@ from __future__ import division
 import ocr
 import re
 
-def cint(str):
-    if str == '' or str == None:
+def cint(s):
+    if s == '' or s == None:
         return 0
     
-    str = re.sub(r'[^\d.]+', '', str)
-    if str == '' or str == None:
+    s = re.sub(r'[^\d.]+', '', s)
+    if s == '' or s == None:
         return 0
-    return int(str)
+    return int(s)
 
 def getScreenshotData(im):
     width, height = im.size
@@ -22,7 +22,6 @@ def getScreenshotData(im):
         return {'loading' : True}
     
     if(im.getpixel((615, 38))[0:3] != (247, 235, 215) or im.getpixel((672, 38))[0:3] != (201, 37, 38)):
-        print "Error: not a valid League of Legends screenshot"
         return False
     
     results = {};
@@ -30,7 +29,7 @@ def getScreenshotData(im):
     results['players'] = [[], []];
     results['time'] = ocr.imagetostring(im.crop((934, 80, 984, 94))).split(",")
     results['time'] = cint(results['time'][0]) * 60 + int(results['time'][1])
-    results['speed'] = cint(ocr.imagetostring(im.crop((708, 862, 718, 876))).replace('x', ''))
+    results['speed'] = cint(ocr.imagetostring(im.crop((700, 862, 730, 876))).replace('x', ''))
     im.crop((707, 862, 718, 876)).save('tmp.png')
     if (im.getpixel((674, 905))[0:3] == (247, 231, 173)):
         results['gold_data_available'] = True
