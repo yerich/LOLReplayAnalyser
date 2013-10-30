@@ -15,13 +15,13 @@ def runOCRTests():
                '178   8/4/10       1,815(11,000)', '137   5/2/13       1,549(9,664)', '31,01', '25,45', '28,39', "25,45/35,57", 
                "28,39/32,24", "3   5   5   3", "5   3   5   3", "0    1   0   0", "4   2    1    1", '5   4   3   2',
                '14', '12', '16', '13', '14', '13', '8', '9', '7', '4', '5', '6', '17', '18', '15', '13', '101    1/3/7        452(6,578)',
-               "2,164(11,099)     6/6/3    204", "370", "5"]
+               "2,164(11,099)     6/6/3    204", "370", "5", "9"]
     
     global fopentime
     fopentime = 0
     
     print "Running OCR tests..."
-    for i in range(1, 61):
+    for i in range(1, 62):
         fopenstart = time.clock()
         im = Image.open('tests/image'+str(i)+'.png')
         fopentime += (time.clock() - fopenstart) * 1000
@@ -35,7 +35,7 @@ def runScreenshotTests():
     fopentime = 0
     pp = pprint.PrettyPrinter(indent=4)
     
-    for i in range(1, 8):
+    for i in range(1, 9):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
