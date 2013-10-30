@@ -31,15 +31,15 @@ def bwrowhaspixel(row, threshold = 1):
         return True
     return False
 
-def bwtrimvertical(pixels, threshold = 1):
+def bwtrimvertical(pixels, threshold = 1, limit = None):
     valid_rows_top = []
     valid_rows_bot = [];
     for i, row in enumerate(pixels):
-        if len(valid_rows_top) > 0 or bwrowhaspixel(row, threshold):
+        if len(valid_rows_top) > 0 or bwrowhaspixel(row, threshold) or (limit and i > limit):
             valid_rows_top.append(i)
             
     for i, row in reversed(list(enumerate(pixels))):
-        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, threshold):
+        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, threshold) or (limit and len(pixels)-i > limit):
             valid_rows_bot.append(i)
     
     return { 'result' : [row for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)], 'range' : [i for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)]}
@@ -118,13 +118,13 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     
     if((width/float(height) > 0.33 and width < 4 and height < 6) or (width < 2 and height < 7)):
         return ','
-    elif(width < 4 and height < 9 and pixels[0][c] and not pixels[3][c] and not pixels[m][0] and not pixels[m][c] and not pixels[m][-1] and pixels[-1][c]):
+    elif(width < 4 and (height < 9 or (height == 9 and width == 3)) and pixels[0][c] and not pixels[3][c] and not pixels[m][0] and not pixels[m][c] and not pixels[m][-1] and pixels[-1][c]):
         return ','
     elif(width < 11 and pixels[0][c] and pixels[m][0] and pixels[m][-1] and pixels[-1][c] and not pixels[m][c] and first_row_ratio > 0.3):
         return '0'
     elif(width < 4 and pixels[0][c] and pixels[1][c] and pixels[2][c] and pixels[-1][c] and pixels[-2][c] and pixels[-3][c] and pixels[m][c] and pixels[int(round(float(height)/4))][c]):
         return '1'
-    elif(width < 11 and first_row_ratio >= 0.5 and not pixels[0][-1] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-1]) and pixels[-1][1] and pixels[-1][c] and pixels[-1][-1] and not pixels[m][0] and not pixels[m][c-1]):
+    elif(width < 11 and first_row_ratio >= 0.5 and not pixels[0][-1] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-1]) and pixels[-1][1] and pixels[-1][c] and pixels[-1][-1] and not pixels[m][0] and (not pixels[m][c-1] or not pixels[-3][-1])):
         return '2'
     elif(width < 11 and not pixels[0][-1] and pixels[0][c] and not pixels[int(round(height/4))][0] and not pixels[-1][-1] and pixels[-1][c] and not pixels[m][0] and ((not pixels[m][1] or not pixels[m][-1]) or width == 3) and not pixels[int(round(height/4))][0] and not pixels[int(round(height/4))][1] and (pixels[int(round(height/4))][-1] or pixels[int(round(height/4))][-2]) and last_row_ratio >= 0.5):
         return '3'
@@ -156,6 +156,11 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     
     #Retry with some antialiasing artifact reduction rules
     if(threshold == 1):
+        glyphs = bwfindglyphs(bwtrimvertical(pixels, 2, 1)['result'], 1)
+        attempt = bwglyphstostring(glyphs, 2, print_errors)
+        if(attempt['numerrors'] == 0):
+            return attempt['result']
+        
         glyphs = bwfindglyphs(pixels, 2)
         attempt = bwglyphstostring(glyphs, 2, print_errors)
         if(attempt['numerrors'] == 0):
@@ -272,13 +277,13 @@ def imagetostring(im):
             for j in range(0, width):
                 pixels[i].append(bwthreshold(pixelData[j, i], int(80*lumFactor), 3))
     
-    """
-    if(true_height < 10):
+    
+    if(true_height > 15):
         old_height = height
-        height = int(height * (9/true_height))
-        width = int(width * ((height * 9/true_height)/old_height))
+        height = int(height * (12/true_height))
+        width = int(width * ((height * 12/true_height)/old_height))
         
-        im = im.resize((width, height), Image.BICUBIC)
+        im = im.resize((width, height), Image.ANTIALIAS)
         pixelData = im.load()
         width, height = im.size
         
@@ -286,8 +291,8 @@ def imagetostring(im):
         for i in range(0, height):
             pixels.append([])
             for j in range(0, width):
-                pixels[i].append(bwthreshold(pixelData[j, i], 50))
-    """
+                pixels[i].append(bwthreshold(pixelData[j, i], int(60*lumFactor), 3))
+    
     pixels = bwtrim(pixels)
     
     #printpixels(pixels)
