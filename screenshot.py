@@ -28,6 +28,11 @@ def getScreenshotData(im):
         results['gold_data_available'] = False
         results['item_data_available'] = True
     
+    if(im.getpixel((425, 326))[0:3] == (195, 250, 249) and im.getpixel((958, 348))[0:3] == (243, 223, 184)):
+        results['game_finished'] = True
+    else:
+        results['game_finished'] = False
+    
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 238))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 931, 869, 946))),

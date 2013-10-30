@@ -3,7 +3,8 @@ import Image
 import sys
 import time
 
-# Returns 0 (black) or 1 (white) for a pixel tuple, depending on threshold value (betwwen 0 and 100)
+# Returns 0 (black) or 1 (white) for a pixel tuple, depending on threshold value
+# threshold values range between 0 and 128.
 # Used to convert a color image into a pure-toned black or white one
 def bwthreshold(pixel, threshold, length=None):
     if(length==3):
@@ -17,24 +18,25 @@ def bwmap(func, pixels):
         pixels[i] = map(func, pixels[i])
     return pixels
 
-def bwrowhaspixel(row, threshhold = 1):
+# Returns true if an array has at least threshold True values
+def bwrowhaspixel(row, threshold = 1):
     num = 0
     for i in row:
         if i:
             num += 1
-    if(num >= threshhold):
+    if(num >= threshold):
         return True
     return False
 
-def bwtrimvertical(pixels, threshhold = 1):
+def bwtrimvertical(pixels, threshold = 1):
     valid_rows_top = []
     valid_rows_bot = [];
     for i, row in enumerate(pixels):
-        if len(valid_rows_top) > 0 or bwrowhaspixel(row, threshhold):
+        if len(valid_rows_top) > 0 or bwrowhaspixel(row, threshold):
             valid_rows_top.append(i)
             
     for i, row in reversed(list(enumerate(pixels))):
-        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, threshhold):
+        if len(valid_rows_bot) > 0 or bwrowhaspixel(row, threshold):
             valid_rows_bot.append(i)
     
     return { 'result' : [row for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)], 'range' : [i for i, row in enumerate(pixels) if (i in valid_rows_top and i in valid_rows_bot)]}
@@ -58,14 +60,17 @@ def bwtrimhorizontal(pixels):
         
     return { 'result' : pixels, 'range' : range(valid_cols_left, valid_cols_right)}
 
-def bwfindglyphs(pixels, threshhold = 1):
+#Seperates a pixel arra into an array of glyphs
+#A column with no more than threshold pixels seperates two glyphs
+#Ten seperating columns will be converted into a blank glyph, repesentable as a space or blank
+def bwfindglyphs(pixels, threshold = 1):
     pixels = bwtranspose(pixels)
     glyphs = []
     first_row = 0
     last_row = 0
     num_empty_rows = 0
     for i, row in enumerate(pixels):
-        if(bwrowhaspixel(row, threshhold)):
+        if(bwrowhaspixel(row, threshold)):
             if num_empty_rows > 10:
                 glyphs.append([])
             last_row += 1
@@ -87,6 +92,7 @@ def bwfindglyphs(pixels, threshhold = 1):
 def bwtranspose(pixels):
     return map(list, zip(*pixels))
 
+#Trims blank columns and rows from all sides
 def bwtrim(pixels):
     return bwtrimhorizontal(bwtrimvertical(pixels)['result'])['result']
 
@@ -168,6 +174,8 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     
     return False
 
+#Converts an array of glyphs to a string. Returns an object, with the converted string in 'result',
+#and number of unrecognized glyphs in 'numerrors'
 def bwglyphstostring(glyphs, threshold = 1, print_errors = None):
     result = ""
     
@@ -191,6 +199,8 @@ def printpixels(pixels):
             sys.stdout.write("8" if j else ".")
         print ""
 
+#Converts a PIL Image into a string. Supported characters: 0123456789/,()
+#Colons and periods are generally recognized as commas
 def imagetostring(im):
     width, height = im.size
     
@@ -221,7 +231,7 @@ def imagetostring(im):
     for i in range(0, height):
         pixels.append([])
         for j in range(0, width):
-            pixels[i].append(bwthreshold(pixelData[j, i], 60*lumFactor, 3))
+            pixels[i].append(bwthreshold(pixelData[j, i], int(60*lumFactor), 3))
     
     vert_range = bwtrimvertical(pixels)['range']
     true_height = vert_range[-1] - vert_range[0]
@@ -233,7 +243,7 @@ def imagetostring(im):
         for i in range(0, height):
             pixels.append([])
             for j in range(0, width):
-                pixels[i].append(bwthreshold(pixelData[j, i], 80*lumFactor, 3))
+                pixels[i].append(bwthreshold(pixelData[j, i], int(80*lumFactor), 3))
     
     """
     if(true_height < 10):
@@ -263,7 +273,7 @@ def imagetostring(im):
         for i in range(0, height):
             pixels.append([])
             for j in range(0, width):
-                pixels[i].append(bwthreshold(pixelData[j, i], 70*lumFactor, 3))
+                pixels[i].append(bwthreshold(pixelData[j, i], int(70*lumFactor), 3))
             
             
         pixels = bwtrim(pixels)

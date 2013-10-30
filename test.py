@@ -35,7 +35,7 @@ def runScreenshotTests():
     fopentime = 0
     pp = pprint.PrettyPrinter(indent=4)
     
-    for i in range(1, 7):
+    for i in range(1, 8):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
