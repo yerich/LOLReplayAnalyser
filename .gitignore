@@ -36,3 +36,7 @@ nosetests.xml
 .pydevproject
 .settings/*.project
 .pydevproject
+
+output/*
+test.jpg
+tmp.png
