@@ -118,6 +118,7 @@ def getScreenshotData(im):
     results['teams'] = [{}, {}]
     for team, _ in enumerate(results['teams']):
         results['teams'][team]['gold'] = 0 if results['gold_data_available'] else None
+        results['teams'][team]['kills'] = 0
     
     for team, _ in enumerate(results['players']):
         for player, _ in enumerate(results['players'][team]):
@@ -132,6 +133,7 @@ def getScreenshotData(im):
             results['players'][team][player]['deaths'] = cint(results['players'][team][player]['kda'][1])
             results['players'][team][player]['assists'] = cint(results['players'][team][player]['kda'][2])
             results['players'][team][player]['level'] = cint(results['players'][team][player]['level'])
+            results['teams'][team]['kills'] += int(results['players'][team][player]['kills'])
             
             
     return results

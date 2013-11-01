@@ -6,6 +6,8 @@ import win32com.client as comclt
 import win32api
 import sendinput
 import ctypes
+import json
+import zlib
 
 def sendkey(keychar):
     if(isinstance(keychar, (int, long))):
@@ -26,7 +28,7 @@ def grabScreenshotData(bbox):
 
 logfile = open("output/capturelog.txt", "a")
 
-def client_capture():
+def client_capture(savefile = None):
     window_title = 'league of legends (tm) client'
     #window_title = 'notepad'
     
@@ -91,6 +93,15 @@ def client_capture():
         
         history.append(data)
         print "Finished in " + str((time.clock() - start)*1000)+"ms"
+    
+    if(savefile):
+        savefile = open(savefile, "w")
+        jsonstring = json.dumps( { 'data' : history, 'version' : '0.1' })
+        print >> savefile, zlib.compress(jsonstring)
         
+        savefile = open(savefile+".txt", "w")
+        print >> savefile, jsonstring
+    return 
+
 if __name__ == "__main__":
-    client_capture()
+    client_capture("output/"+str(int(time.time()))+".lra")
