@@ -30,7 +30,13 @@ def getScreenshotData(im):
     results['time'] = ocr.imagetostring(im.crop((934, 80, 984, 94))).split(",")
     results['time'] = cint(results['time'][0]) * 60 + int(results['time'][1])
     results['speed'] = cint(ocr.imagetostring(im.crop((700, 862, 730, 876))).replace('x', ''))
-    im.crop((707, 862, 718, 876)).save('tmp.png')
+    results['events'] = []
+    
+    if(im.getpixel((1259, 189))[0:3] == (41, 250, 254) and im.getpixel((1236, 205))[0:3] == (240, 229, 169)):
+        results['events'].append({'type' : 'dragon', 'team': 0})
+    elif(im.getpixel((1274, 189))[0:3] == (41, 250, 254) and im.getpixel((1251, 205))[0:3] == (240, 229, 169)):
+        results['events'].append({'type' : 'dragon', 'team': 1})
+    
     if (im.getpixel((674, 905))[0:3] == (247, 231, 173)):
         results['gold_data_available'] = True
         results['item_data_available'] = False
