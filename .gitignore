@@ -40,3 +40,4 @@ nosetests.xml
 output/*
 test.jpg
 tmp.png
+icons/icons.dat
