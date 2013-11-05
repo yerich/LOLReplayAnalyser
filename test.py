@@ -4,6 +4,7 @@ import Image
 import pprint
 import cProfile
 from screenshot import getScreenshotData
+import icon
 
 KEYNOTFOUND = '<KEYNOTFOUND>'       # KeyNotFound for dictDiff
 
@@ -55,7 +56,27 @@ def runOCRTests():
             print "Test "+str(i)+" has no expected value. Returned value: '"+result+"'."
         elif result != correct[i-1]:
             print "Test "+str(i)+" failed. Expected: '"+correct[i-1]+"'. Actual: '"+result+"'."
+
+def runIconTests():
+    global fopentime
+    fopentime = 0
     
+    correct = ["champion-blitzcrank", "champion-heimerdinger", "monster-dragon", "champion-orianna", "item-ruby-sightstone", "item-frozen-heart",
+               "item-dorans-ring", "item-mana-potion", "summoner-flash", "champion-sivir", "item-shurelyas-reverie-activated-half", "blank",
+               "item-shurelyas-reverie-activated", "item-shurelyas-reverie-activated-half", "item-shurelyas-reverie-activated-half",
+               "item-shurelyas-reverie-activated-done", "item-sightstone", "item-shurelyas-reverie"]
+    
+    print "Running Icon tests..."
+    for i in range(1, 19):
+        fopenstart = time.clock()
+        im = Image.open('tests/icon'+str(i)+'.png')
+        fopentime += (time.clock() - fopenstart) * 1000
+        result = icon.imageToIconName(im)
+        if len(correct) < i:
+            print "Test "+str(i)+" has no expected value. Returned value: '"+result+"'."
+        elif result != correct[i-1]:
+            print "Test "+str(i)+" failed. Expected: '"+correct[i-1]+"'. Actual: '"+result+"'."
+
 def runScreenshotTests():
     global fopentime
     """
@@ -74,13 +95,14 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(1, 14):
+    for i in range(1, 15):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
         data = (getScreenshotData(im))
-        print data['events'] if data and 'events' in data else None
+        #print data['events'] if data and 'events' in data else None
         #pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."
@@ -89,12 +111,14 @@ def runScreenshotTests():
         #    print "Difference: "
         #    pp.pprint(dict_diff(correct[i-1], data))
         #print data['speed'] if data and 'speed' in data else None
-    
+
 start = time.clock()
 runOCRTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
 
-correct = ["", "", "", ""]
+start = time.clock()
+runIconTests()
+print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
 
 start = time.clock()
 runScreenshotTests()

@@ -1,6 +1,7 @@
 from __future__ import division
 import ocr
 import re
+import icon
 
 def cint(s):
     if s == '' or s == None:
@@ -11,7 +12,31 @@ def cint(s):
         return 0
     return int(s)
 
-def getScreenshotData(im):
+# Returns an item dict for an icon
+def getItemFromIcon(im):
+    icon_name = icon.imageToIconName(im, "item")
+    if icon_name == "blank":
+        return None
+    return icon_name.replace("item-", "")
+
+# Returns an array of items, given the (x, y) coordinate (where (0, 0) is top-left) 
+# of the top-left pixel of the first item in the bar
+def getItems(im, tl):
+    items = []
+    for i in [im.crop((tl[0], tl[1], tl[0]+25, tl[1]+25)), im.crop((tl[0]+27, tl[1], tl[0]+52, tl[1]+25)),
+              im.crop((tl[0]+54, tl[1], tl[0]+79, tl[1]+25)), im.crop((tl[0]+81, tl[1], tl[0]+106, tl[1]+25)),
+              im.crop((tl[0]+108, tl[1], tl[0]+133, tl[1]+25)), im.crop((tl[0]+135, tl[1], tl[0]+160, tl[1]+25))]:
+        item = getItemFromIcon(i)
+        if(item != None):
+            items.append(item)
+    
+    return items
+    
+
+# Returns a dict of data retrieved from a screenshot. If staticdata=true, then
+# static data, such as champion names, summoner spell, etc. will also be retrieved.
+# TODO: implement staticdata
+def getScreenshotData(im, staticdata = False):
     width, height = im.size
     
     if(width != 1920 or height != 1080):
@@ -54,35 +79,40 @@ def getScreenshotData(im):
          "kda" : ocr.imagetostring(im.crop((770, 931, 869, 946))),
          "minions" : ocr.imagetostring(im.crop((884, 930, 919, 946))),
          "dead" : True if im.getpixel((86, 238))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((618, 930, 762, 946))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((618, 930, 762, 946))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (591, 926)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 324, 85, 334))) if im.getpixel((86, 348))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 958, 869, 981))),
          "minions" : ocr.imagetostring(im.crop((884, 958, 919, 981))),
          "dead" : True if im.getpixel((86, 348))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((618, 958, 762, 981))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((618, 958, 762, 981))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (591, 956)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 430, 85, 440))) if im.getpixel((86, 448))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 992, 869, 1012))),
          "minions" : ocr.imagetostring(im.crop((884, 992, 919, 1012))),
          "dead" : True if im.getpixel((86, 448))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((618, 992, 762, 1012))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((618, 992, 762, 1012))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (591, 987)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 536, 85, 546))) if im.getpixel((86, 560))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 1023, 869, 1043))),
          "minions" : ocr.imagetostring(im.crop((884, 1023, 919, 1043))),
          "dead" : True if im.getpixel((86, 560))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((618, 1023, 762, 1043))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((618, 1023, 762, 1043))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (591, 1017)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 642, 85, 652))) if im.getpixel((86, 666))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 1053, 869, 1073))),
          "minions" : ocr.imagetostring(im.crop((884, 1053, 919, 1073))),
          "dead" : True if im.getpixel((86, 666))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((618, 1053, 762, 1073))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((618, 1053, 762, 1073))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (591, 1048)) if results['item_data_available'] else None
          })
     
     results['players'][1].append(
@@ -90,35 +120,40 @@ def getScreenshotData(im):
          "kda" : ocr.imagetostring(im.crop((1060, 931, 1140, 946))),
          "minions" : ocr.imagetostring(im.crop((997, 930, 1037, 946))),
          "dead" : True if im.getpixel((1879, 238))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((1196, 930, 1337, 946))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((1196, 930, 1337, 946))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (1170, 926)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 324, 1879, 334))) if im.getpixel((1879, 344))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1060, 958, 1140, 981))),
          "minions" : ocr.imagetostring(im.crop((997, 958, 1037, 981))),
          "dead" : True if im.getpixel((1879, 344))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((1196, 958, 1337, 981))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((1196, 958, 1337, 981))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (1170, 956)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 430, 1879, 440))) if im.getpixel((1879, 450))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1060, 992, 1140, 1012))),
          "minions" : ocr.imagetostring(im.crop((997, 992, 1037, 1012))),
          "dead" : True if im.getpixel((1879, 450))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((1196, 992, 1337, 1012))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((1196, 992, 1337, 1012))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (1170, 987)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 536, 1879, 546))) if im.getpixel((1879, 560))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1060, 1023, 1140, 1043))),
          "minions" : ocr.imagetostring(im.crop((997, 1023, 1037, 1043))),
          "dead" : True if im.getpixel((1879, 560))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((1196, 1023, 1337, 1043))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((1196, 1023, 1337, 1043))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (1170, 1017)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 642, 1879, 652))) if im.getpixel((1879, 666))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1060, 1053, 1140, 1073))),
          "minions" : ocr.imagetostring(im.crop((997, 1053, 1037, 1073))),
          "dead" : True if im.getpixel((1879, 666))[0] == 0 else False,
-         "gold" : ocr.imagetostring(im.crop((1196, 1053, 1337, 1073))) if results['gold_data_available'] else None
+         "gold" : ocr.imagetostring(im.crop((1196, 1053, 1337, 1073))) if results['gold_data_available'] else None,
+         "items" : getItems(im, (1170, 1048)) if results['item_data_available'] else None
          })
     
     results['teams'] = [{}, {}]
