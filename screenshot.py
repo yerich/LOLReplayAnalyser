@@ -32,6 +32,11 @@ def getItems(im, tl):
     
     return items
     
+def getChampionFromIcon(im):
+    icon_name = icon.imageToIconName(im, "champion")
+    if icon_name == "blank":
+        return None
+    return icon_name.replace("champion-", "")
 
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
@@ -80,6 +85,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((884, 930, 919, 946))),
          "dead" : True if im.getpixel((86, 238))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 930, 762, 946))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((931, 926, 954, 949))),
          "items" : getItems(im, (591, 926)) if results['item_data_available'] else None
          })
     results['players'][0].append(
@@ -88,6 +94,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((884, 958, 919, 981))),
          "dead" : True if im.getpixel((86, 348))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 958, 762, 981))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((931, 957, 954, 980))),
          "items" : getItems(im, (591, 956)) if results['item_data_available'] else None
          })
     results['players'][0].append(
@@ -96,6 +103,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((884, 992, 919, 1012))),
          "dead" : True if im.getpixel((86, 448))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 992, 762, 1012))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((931, 987, 954, 1010))),
          "items" : getItems(im, (591, 987)) if results['item_data_available'] else None
          })
     results['players'][0].append(
@@ -104,6 +112,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((884, 1023, 919, 1043))),
          "dead" : True if im.getpixel((86, 560))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 1023, 762, 1043))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((931, 1018, 954, 1041))),
          "items" : getItems(im, (591, 1017)) if results['item_data_available'] else None
          })
     results['players'][0].append(
@@ -112,6 +121,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((884, 1053, 919, 1073))),
          "dead" : True if im.getpixel((86, 666))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 1053, 762, 1073))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((931, 1049, 954, 1072))),
          "items" : getItems(im, (591, 1048)) if results['item_data_available'] else None
          })
     
@@ -121,6 +131,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((997, 930, 1037, 946))),
          "dead" : True if im.getpixel((1879, 238))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 930, 1337, 946))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((966, 926, 990, 950))),
          "items" : getItems(im, (1170, 926)) if results['item_data_available'] else None
          })
     results['players'][1].append(
@@ -129,6 +140,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((997, 958, 1037, 981))),
          "dead" : True if im.getpixel((1879, 344))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 958, 1337, 981))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((966, 957, 990, 981))),
          "items" : getItems(im, (1170, 956)) if results['item_data_available'] else None
          })
     results['players'][1].append(
@@ -137,6 +149,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((997, 992, 1037, 1012))),
          "dead" : True if im.getpixel((1879, 450))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 992, 1337, 1012))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((966, 987, 990, 1011))),
          "items" : getItems(im, (1170, 987)) if results['item_data_available'] else None
          })
     results['players'][1].append(
@@ -145,6 +158,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((997, 1023, 1037, 1043))),
          "dead" : True if im.getpixel((1879, 560))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 1023, 1337, 1043))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((966, 1018, 990, 1042))),
          "items" : getItems(im, (1170, 1017)) if results['item_data_available'] else None
          })
     results['players'][1].append(
@@ -153,6 +167,7 @@ def getScreenshotData(im, staticdata = False):
          "minions" : ocr.imagetostring(im.crop((997, 1053, 1037, 1073))),
          "dead" : True if im.getpixel((1879, 666))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 1053, 1337, 1073))) if results['gold_data_available'] else None,
+         "champion" : getChampionFromIcon(im.crop((966, 1049, 990, 1073))),
          "items" : getItems(im, (1170, 1048)) if results['item_data_available'] else None
          })
     

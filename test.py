@@ -95,14 +95,14 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(1, 15):
+    for i in range(2, 3):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
-        data = (getScreenshotData(im))
+        data = (getScreenshotData(im, True))
         #print data['events'] if data and 'events' in data else None
-        #pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(data)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."
