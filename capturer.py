@@ -79,9 +79,10 @@ def client_capture(savefile = None):
         if(data['speed'] != 8):
             sendkey(0x6B)
         
-        if(data['gold_data_available'] == False):
-            sendkey('x')
+        #switch between gold and items
+        sendkey('x')
         
+        # Check to see if the game is paused.
         if(len(history) > 5):
             if('time' in history[-5] and 'time' in data and data['time'] == history[-5]['time']):
                 pausedcounter += 1
