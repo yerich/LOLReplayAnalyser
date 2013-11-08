@@ -40,7 +40,6 @@ def getChampionFromIcon(im):
 
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
-# TODO: implement staticdata
 def getScreenshotData(im, staticdata = False):
     width, height = im.size
     
