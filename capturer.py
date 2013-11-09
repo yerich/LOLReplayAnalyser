@@ -102,7 +102,7 @@ def client_capture(savefile = None):
         
         savefile = open(savefile+".txt", "w")
         print >> savefile, jsonstring
-    return 
+    return history
 
 if __name__ == "__main__":
     client_capture("output/"+str(int(time.time()))+".lra")
