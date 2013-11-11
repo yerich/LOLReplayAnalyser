@@ -42,6 +42,7 @@ def getChampionFromIcon(im):
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
 def getScreenshotData(im, staticdata = False):
     width, height = im.size
+    valid = True    # Set to false when there's some blantantly incorrect OCR'd value
     
     if(width != 1920 or height != 1080):
         print "Error: screenshot must be 1920x1080px exactly."
@@ -188,9 +189,15 @@ def getScreenshotData(im, staticdata = False):
             results['players'][team][player]['deaths'] = cint(results['players'][team][player]['kda'][1])
             results['players'][team][player]['assists'] = cint(results['players'][team][player]['kda'][2])
             results['players'][team][player]['level'] = cint(results['players'][team][player]['level'])
+            
+            if(results['players'][team][player]['level'] and results['players'][team][player]['level'] > 18):
+                valid = False
+            
             results['teams'][team]['kills'] += int(results['players'][team][player]['kills'])
-            
-    if(results['teams'][0]['gold'] > 150000 or results['teams'][1]['gold'] > 150000):
-        im.save("output/wtf.png")
-            
-    return results
+    
+    # Check to see if the teams' gold are sane values
+    if(results['teams'][0]['gold'] > 200000 or results['teams'][1]['gold'] > 200000):
+        valid = False
+    
+    if(valid == True):
+        return results

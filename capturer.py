@@ -61,6 +61,10 @@ def client_capture(savefile = None):
         start = time.clock()
         data = grabScreenshotData(bbox)
         
+        if(data == -1):
+            print "OCR Error. Skipping this screenshot"
+            continue
+        
         if(not data):
             print "Could not load screenshot. Waiting 5 seconds to try again..."
             time.sleep(5)

@@ -8,33 +8,35 @@ import pipes
 import subprocess
 
 def analyseLRFFile(filename = None):
-    if(filename == None):
-        filename = promptOpenFile()
-        if(not filename):
-            print "Aborting."
-            return
-        
-    subprocess.Popen(["C:\Program Files (x86)\LOLReplay\LOLReplay.exe", filename])
-        
     window_title = 'league of legends (tm) client'
     
     toplist, winlist = [], []
     def enum_cb(hwnd, results):
         winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
-        
-    while(1):
+    
+    def find_windows_with_name(window_title):
         win32gui.EnumWindows(enum_cb, toplist)
         
-        client = [(hwnd, title) for hwnd, title in winlist if window_title in title.lower()]
-        if(len(client) == 0):
-            continue
-        else:
-            break
-        
-        print "continuing..."
-        time.sleep(1)
+        return [(hwnd, title) for hwnd, title in winlist if window_title in title.lower()]
     
-    time.sleep(10)
+    if(len(find_windows_with_name(window_title)) == 0):
+        if(filename == None):
+            filename = promptOpenFile()
+            if(not filename):
+                print "Aborting."
+                return
+            
+        subprocess.Popen(["C:\Program Files (x86)\LOLReplay\LOLReplay.exe", filename])
+            
+        while(1):
+            if(len(find_windows_with_name(window_title)) == 0):
+                time.sleep(1)
+                continue
+            else:
+                break
+        
+        print "League of Legends client window detected. Waiting 10 seconds for loading screen to appear..."
+        time.sleep(10)
     
     output = client_capture("output/test.lra")
 
