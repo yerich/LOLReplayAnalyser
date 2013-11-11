@@ -6,10 +6,6 @@ import time
 ocrlog = open("output/ocrlog.txt", "a")
 ocrerr = open("output/ocrerr.txt", "a")
 
-glyphlookup = {
-               str([[0, 1, 1, 1], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 1], [0, 0, 0, 1], [0, 0, 0, 1], [1, 1, 1, 1]]) : '5'
-               }
-
 # Returns 0 (black) or 1 (white) for a pixel tuple, depending on threshold value
 # threshold values range between 0 and 128.
 # Used to convert a color image into a pure-toned black or white one
@@ -108,10 +104,7 @@ def bwinvert(pixels):
 
 # Primitive but fast OCR
 def bwglyphtochar(pixels, threshold = 1, print_errors = False):
-    global glyphlookup
-    
-    if str(pixels) in glyphlookup:
-        return glyphlookup[str(pixels)]
+    #printpixels(pixels)
     
     pixels = bwtrimvertical(pixels)['result']
     if len(pixels) == 0:
@@ -131,7 +124,7 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return ','
     elif(width < 11 and pixels[0][c] and pixels[m][0] and pixels[m][-1] and pixels[-1][c] and not pixels[m][c] and first_row_ratio > 0.3):
         return '0'
-    elif(width < 4 and pixels[0][c] and pixels[1][c] and pixels[2][c] and pixels[-1][c] and pixels[-2][c] and pixels[-3][c] and pixels[m][c] and pixels[int(round(float(height)/4))][c]):
+    elif(width < 4 and pixels[0][c] and pixels[1][c] and pixels[2][c] and pixels[-1][c] and pixels[-2][c] and pixels[-3][c] and pixels[m][c] and pixels[int(round(float(height)/4))][c] and ((pixels[0][0] and pixels[m][0] and pixels[-1][0]) or (pixels[0][-1] and pixels[m][-1] and pixels[-1][-1]))):
         return '1'
     elif(width < 3 and height > (width * 5) and ((pixels[0][0] or pixels[0][-1]) and (pixels[1][0] or pixels[1][-1]) and (pixels[2][0] or pixels[2][-1]) and pixels[m-1][0] and pixels[m][0] and pixels[m+1][0] and pixels[-2][0] and pixels[-2][0])):
         return '1'
@@ -163,7 +156,6 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return 'x'
     
     #print "Error cannot match:"
-    #printpixels(pixels)
     
     #Retry with some antialiasing artifact reduction rules
     if(threshold == 1):
@@ -178,7 +170,7 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
             return attempt['result']
 
     #Custom rules for small text; the default rules can be too strict with these
-    if(height < 8):
+    if(height < 8 and height > 4):
         if(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[1][0] and not pixels[1][c] and pixels[1][-1] and pixels[m][c] and pixels[m][-1] and pixels[m+1][-1] and pixels [m-1][-1] and not pixels[-2][0] and not pixels[-2][c] and pixels[-2][-1] and pixels[-1][0] and pixels[-1][c] and pixels[-1][-1]):
             return '3'
         elif(not pixels[0][0] and not pixels[0][1] and pixels[0][-1] and not pixels[1][0] and pixels[1][-1] and ((pixels[4][0] and pixels[4][1]) or (pixels[3][0] and pixels[3][1])) and not pixels[-1][0] and not pixels[-1][1] and (pixels[-1][-1] or pixels[-1][-2])):
@@ -186,6 +178,8 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         elif(not pixels[0][0] and not pixels[0][1] and pixels[0][-2] and not pixels[0][-1] and not pixels[1][0] and pixels[1][-2] and ((pixels[4][0] and pixels[4][1]) or (pixels[3][0] and pixels[3][1])) and not pixels[-1][0] and not pixels[-1][1] and (pixels[-1][-1] or pixels[-1][-2])):
             return '4'
         elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[1][-1] and not pixels[1][-2] and pixels[1][0] and pixels[m][0] and pixels[m][c] and pixels[m+1][-1] and pixels[m+2][-1] and not pixels[m+1][c] and not pixels[-2][c] and pixels[-1][c]):
+            return '5'
+        elif(pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[1][-1] and not pixels[1][-2] and not pixels[1][0] and pixels[1][1] and not pixels[m][0] and pixels[m][1] and pixels[m][c] and pixels[m+1][-1] and pixels[m+2][-1] and not pixels[m+1][c] and not pixels[-2][c] and pixels[-1][c] and not pixels[-1][0] and pixels[-1][-1]):
             return '5'
         elif(not pixels[0][0] and pixels[0][1] and pixels[0][2] and not pixels[0][-1] and pixels[1][0] and pixels[1][1] and not pixels[1][2] and not pixels[1][-1] and pixels[2][0] and pixels[2][1] and pixels[2][-1] and pixels[m][0] and pixels[m+1][0] and pixels[m+1][-1] and pixels[-2][0] and not pixels[-2][1] and pixels[-2][-1] and pixels[-1][0] and pixels[-1][1] and pixels[-1][-1]):
             return '6'

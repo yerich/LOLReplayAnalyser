@@ -41,13 +41,13 @@ def runOCRTests():
                '14', '12', '16', '13', '14', '13', '8', '9', '7', '4', '5', '6', '17', '18', '15', '13', '101    1/3/7        452(6,578)',
                "2,164(11,099)     6/6/3    204", "370", "5", "9", "251    8/1/6        155(13,049)", "1,282(10,931)     1/11/11   169", "7", 
                "1,38", "101(16,951)     9/3/16   304", "177(11,741)     1/12/11   187", "299(14,008)     2/10/10   271", 
-               "287(11,866)     7/8/19    90", "838(18,438)     10/5/18   315", "302(14,207)     12/8/19   32"]
+               "287(11,866)     7/8/19    90", "838(18,438)     10/5/18   315", "302(14,207)     12/8/19   32", "113    2/0/5        629(7,174)"]
     
     global fopentime
     fopentime = 0
     
     print "Running OCR tests..."
-    for i in range(1, 72):
+    for i in range(1, 73):
         fopenstart = time.clock()
         im = Image.open('tests/image'+str(i)+'.png')
         fopentime += (time.clock() - fopenstart) * 1000
@@ -95,14 +95,14 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(2, 3):
+    for i in range(15, 16):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
         data = (getScreenshotData(im, True))
         #print data['events'] if data and 'events' in data else None
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(data)
+        #pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."

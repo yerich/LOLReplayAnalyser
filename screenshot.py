@@ -190,5 +190,7 @@ def getScreenshotData(im, staticdata = False):
             results['players'][team][player]['level'] = cint(results['players'][team][player]['level'])
             results['teams'][team]['kills'] += int(results['players'][team][player]['kills'])
             
+    if(results['teams'][0]['gold'] > 150000 or results['teams'][1]['gold'] > 150000):
+        im.save("output/wtf.png")
             
     return results

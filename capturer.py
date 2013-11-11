@@ -16,7 +16,7 @@ def sendkey(keychar):
         charcode = ord(keychar.upper())
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 1)])
     sendinput.send_input_array(inputarray)
-    time.sleep(0.02)   #League sometimes does't like it if we type too fast
+    time.sleep(0.05)   #League sometimes does't like it if we type too fast
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 0)])
     sendinput.send_input_array(inputarray)
     time.sleep(0.005)
@@ -96,12 +96,12 @@ def client_capture(savefile = None):
         print "Finished in " + str((time.clock() - start)*1000)+"ms"
     
     if(savefile):
-        savefile = open(savefile, "w")
+        savefileh = open(savefile, "w")
         jsonstring = json.dumps( { 'data' : history, 'version' : '0.1' })
-        print >> savefile, zlib.compress(jsonstring)
+        print >> savefileh, zlib.compress(jsonstring)
         
-        savefile = open(savefile+".txt", "w")
-        print >> savefile, jsonstring
+        savefileh = open(savefile+".txt", "w")
+        print >> savefileh, jsonstring
     return history
 
 if __name__ == "__main__":
