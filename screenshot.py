@@ -2,6 +2,7 @@ from __future__ import division
 import ocr
 import re
 import icon
+import Image
 
 def cint(s):
     if s == '' or s == None:
@@ -41,6 +42,7 @@ def getChampionFromIcon(im):
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
 def getScreenshotData(im, staticdata = False):
+    im = im.convert("RGB")
     width, height = im.size
     valid = True    # Set to false when there's some blantantly incorrect OCR'd value
     
@@ -78,6 +80,30 @@ def getScreenshotData(im, staticdata = False):
         results['game_finished'] = True
     else:
         results['game_finished'] = False
+    
+    if(im.getpixel((314, 846))[0:3] == (39, 34, 40) and im.getpixel((4, 846))[0:3] == (50, 45, 50)):
+        def greenthreshold(img):
+            width, _ = img.size
+            for i, px in enumerate(img.getdata()):
+                y = i // width
+                x = i % width
+                if px[1] > 140:
+                    img.putpixel((x, y), (255, 255, 255))
+                else:
+                    img.putpixel((x, y), (0, 0, 0))
+            return img
+                
+        results['active_champion'] = {}
+        results['active_champion']['champion'] = getChampionFromIcon(im.crop((16, 856, 49, 889)))
+        champion_overlay_active = (im.getpixel((647, 401))[0:3] == (8, 8, 8) and im.getpixel((1275, 399))[0:3] == (24, 20, 17))
+        results['active_champion']['hitpoints'] = ocr.imagetostring(greenthreshold(im.crop((851, 458, 953, 472)))) if champion_overlay_active else None
+        results['active_champion']['attack_damage'] = ocr.imagetostring(greenthreshold(im.crop((910, 505, 953, 520)))) if champion_overlay_active else None
+        results['active_champion']['mana'] = ocr.imagetostring(greenthreshold(im.crop((1160, 458, 1265, 473)))) if champion_overlay_active else None
+        results['active_champion']['ability_power'] = ocr.imagetostring(greenthreshold(im.crop((1225, 505, 1265, 520)))) if champion_overlay_active else None
+        results['active_champion']['armor'] = ocr.imagetostring(greenthreshold(im.crop((1225, 627, 1265, 642)))) if champion_overlay_active else None
+        results['active_champion']['magic_resist'] = ocr.imagetostring(greenthreshold(im.crop((1225, 651, 1265, 666)))) if champion_overlay_active else None
+    else:
+        results['active_champion'] = None
     
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 238))[0] < 50 else None,

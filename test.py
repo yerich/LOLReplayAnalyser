@@ -95,7 +95,7 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(15, 16):
+    for i in range(1, 17):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
