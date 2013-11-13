@@ -110,7 +110,7 @@ def client_capture(savefile = None):
             break
         
         # Check to see if the game is paused.
-        if(data['paused'] == True):
+        if(data['paused'] == True and turns_with_gold <= 10):
             sendkey('p', 0.1)
         
         if(data['speed'] != 8):
@@ -138,9 +138,11 @@ def client_capture(savefile = None):
             turns_with_gold += 1
             if(turns_with_gold > 10):
                 sendkey('x')
+                sendkey('p')
         else:
             turns_with_gold = 0
             turns_with_items += 1
+            sendkey('p')
             sendkey('x')
         
         #turn on info overlay
