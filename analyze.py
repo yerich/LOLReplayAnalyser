@@ -6,6 +6,7 @@ import Tkinter
 from capturer import client_capture
 import pipes
 import subprocess
+import config
 
 def analyseLRFFile(filename = None):
     window_title = 'league of legends (tm) client'
@@ -26,7 +27,7 @@ def analyseLRFFile(filename = None):
                 print "Aborting."
                 return
             
-        subprocess.Popen(["C:\Program Files (x86)\LOLReplay\LOLReplay.exe", filename])
+        subprocess.Popen([config.LOLREPLAY_PATH, filename])
             
         while(1):
             if(len(find_windows_with_name(window_title)) == 0):
