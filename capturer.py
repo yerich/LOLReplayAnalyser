@@ -17,7 +17,7 @@ def sendkey(keychar, delay = 0.2):
         if(keyrecord['time'] > time.clock()):
             inputarray = sendinput.make_input_array([sendinput.KeyboardInput(keyrecord['charcode'], 0)])
             sendinput.send_input_array(inputarray)
-            time.sleep(0.01)
+            time.sleep(0.025)
             return True
         else:
             return False
@@ -29,7 +29,7 @@ def sendkey(keychar, delay = 0.2):
     
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 1)])
     sendinput.send_input_array(inputarray)
-    time.sleep(0.01)
+    time.sleep(0.025)
     
     keypressdelay[charcode] = {'charcode' : charcode, 'time': time.clock() + delay}
     
@@ -70,6 +70,8 @@ def client_capture(savefile = None):
     
     history = []
     overlay_inactive_counter = 0
+    turns_with_gold = 0
+    turns_with_items = 0
     
     logfile.write("============================================================\n")
     currchamp = -1  # Active champion
@@ -77,7 +79,11 @@ def client_capture(savefile = None):
     while True:
         
         start = time.clock()
-        data = grabScreenshotData(bbox)
+        try:
+            data = grabScreenshotData(bbox)
+        except:
+            print "Exception caught. Continuing..."
+            continue
         
         if(data == -1):
             print "OCR Error. Skipping this screenshot"
@@ -127,7 +133,15 @@ def client_capture(savefile = None):
         sendkey(champ_key_map[currchamp])
         
         #switch between gold and items
-        sendkey('x')
+        if(data['gold_data_available']):
+            turns_with_items = 0
+            turns_with_gold += 1
+            if(turns_with_gold > 10):
+                sendkey('x')
+        else:
+            turns_with_gold = 0
+            turns_with_items += 1
+            sendkey('x')
         
         #turn on info overlay
         if(data['active_champion'] and not data['active_champion']['overlay_active']):
