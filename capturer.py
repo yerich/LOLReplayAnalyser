@@ -9,17 +9,32 @@ import ctypes
 import json
 import zlib
 
-def sendkey(keychar):
+keypressdelay = {}
+def sendkey(keychar, delay = 0.2):
+    global keypressdelay
+    
+    def keyup(keyrecord):
+        if(keyrecord['time'] > time.clock()):
+            inputarray = sendinput.make_input_array([sendinput.KeyboardInput(keyrecord['charcode'], 0)])
+            sendinput.send_input_array(inputarray)
+            time.sleep(0.01)
+            return True
+        else:
+            return False
+    
     if(isinstance(keychar, (int, long))):
         charcode = keychar
     else:
         charcode = ord(keychar.upper())
+    
     inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 1)])
     sendinput.send_input_array(inputarray)
-    time.sleep(0.05)   #League sometimes does't like it if we type too fast
-    inputarray = sendinput.make_input_array([sendinput.KeyboardInput(charcode, 0)])
-    sendinput.send_input_array(inputarray)
-    time.sleep(0.005)
+    time.sleep(0.01)
+    
+    keypressdelay[charcode] = {'charcode' : charcode, 'time': time.clock() + delay}
+    
+    keypressdelay = {key: value for (key, value) in keypressdelay.iteritems() if not keyup(value)}
+
 
 def grabScreenshotData(bbox):
     im = ImageGrab.grab(bbox)
@@ -31,6 +46,7 @@ logfile = open("output/capturelog.txt", "a")
 def client_capture(savefile = None):
     window_title = 'league of legends (tm) client'
     #window_title = 'notepad'
+    champ_key_map = ['1', '2', '3', '4', '5', 'q', 'w', 'e', 'r', 't']
     
     toplist, winlist = [], []
     def enum_cb(hwnd, results):
@@ -53,11 +69,13 @@ def client_capture(savefile = None):
     bbox = win32gui.GetWindowRect(hwnd)
     
     history = []
-    pausedcounter = 0
+    overlay_inactive_counter = 0
     
     logfile.write("============================================================\n")
+    currchamp = -1  # Active champion
     
     while True:
+        
         start = time.clock()
         data = grabScreenshotData(bbox)
         
@@ -66,38 +84,63 @@ def client_capture(savefile = None):
             continue
         
         if(not data):
-            print "Could not load screenshot. Waiting 5 seconds to try again..."
-            time.sleep(5)
+            print "Could not load screenshot. Waiting 2 seconds to try again..."
+            time.sleep(2)
             continue
         
-        if(data['loading'] == True):
+        if('loading' in data and data['loading'] == True):
+            print "In loading screen. Continuing..."
+            time.sleep(3)
+            continue
+        
+        if('teamfight' in data and data['teamfight'] == True):
+            print "In teamfight mode (not supported). Disabling..."
+            sendkey('a', 0.1)
+            time.sleep(1)
             continue
         
         if(data['game_finished'] == True):
             print "Game Finished."
             break
         
-        print str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
-        logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
+        # Check to see if the game is paused.
+        if(data['paused'] == True):
+            sendkey('p', 0.1)
         
         if(data['speed'] != 8):
             sendkey(0x6B)
         
+        #switch between active champions, center camera
+        if(data['active_champion']):
+            print data['active_champion']
+            if(data['active_champion']['champion'] != data['players'][currchamp // 5][currchamp % 5]['champion']):
+                print "Error: active champion not expected value. Disregarding."
+            else:
+                data['active_champion']['champion_id'] = currchamp
+                currchamp = (currchamp + 1) % 10
+        
+        if(currchamp < 0):
+            currchamp = 0
+            
+        sendkey('s')
+        sendkey(champ_key_map[currchamp])
+        sendkey(champ_key_map[currchamp])
+        
         #switch between gold and items
         sendkey('x')
         
-        # Check to see if the game is paused.
-        if(len(history) > 5):
-            if('time' in history[-5] and 'time' in data and data['time'] == history[-5]['time']):
-                pausedcounter += 1
-                if(pausedcounter >= 5):
-                    sendkey('p')
-                    pausedcounter = 0
-            else:
-                pausedcounter = 0
+        #turn on info overlay
+        if(data['active_champion'] and not data['active_champion']['overlay_active']):
+            overlay_inactive_counter += 1
+            if(overlay_inactive_counter > 1):
+                sendkey('c', 0.1)
+                overlay_inactive_counter = 0
+        else:
+            overlay_inactive_counter = 0
         
         history.append(data)
-        print "Finished in " + str((time.clock() - start)*1000)+"ms"
+        logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
+        print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
     
     if(savefile):
         savefileh = open(savefile, "w")

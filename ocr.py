@@ -128,21 +128,23 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return '1'
     elif(width < 3 and height > (width * 5) and ((pixels[0][0] or pixels[0][-1]) and (pixels[1][0] or pixels[1][-1]) and (pixels[2][0] or pixels[2][-1]) and pixels[m-1][0] and pixels[m][0] and pixels[m+1][0] and pixels[-2][0] and pixels[-2][0])):
         return '1'
-    elif(width < 11 and first_row_ratio >= 0.5 and not pixels[0][-1] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-1]) and pixels[-1][1] and pixels[-1][c] and pixels[-1][-1] and not pixels[m][0] and (not pixels[m][c-1] or not pixels[-3][-1])):
+    elif(width < 2 and height > 10):
+        return '1'
+    elif(width < 11 and width > 2 and first_row_ratio >= 0.5 and not pixels[0][-1] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-1]) and pixels[-1][1] and pixels[-1][c] and pixels[-1][-1] and not pixels[m][0] and (not pixels[m][c-1] or not pixels[-3][-1])):
         return '2'
-    elif(width < 11 and not pixels[0][-1] and pixels[0][c] and not pixels[int(round(height/4))][0] and not pixels[-1][-1] and pixels[-1][c] and not pixels[m][0] and ((not pixels[m][1] or not pixels[m][-1]) or width == 3) and not pixels[int(round(height/4))][0] and not pixels[int(round(height/4))][1] and (pixels[int(round(height/4))][-1] or pixels[int(round(height/4))][-2]) and last_row_ratio >= 0.5):
+    elif(width < 11 and width > 2 and not pixels[0][-1] and pixels[0][c] and not pixels[int(round(height/4))][0] and not pixels[-1][-1] and pixels[-1][c] and not pixels[m][0] and ((not pixels[m][1] or not pixels[m][-1]) or width == 3) and not pixels[int(round(height/4))][0] and not pixels[int(round(height/4))][1] and (pixels[int(round(height/4))][-1] or pixels[int(round(height/4))][-2]) and last_row_ratio >= 0.5):
         return '3'
-    elif(width < 11 and not pixels[0][0] and not pixels[0][c] and not pixels[-1][0] and (pixels[3][-1] or pixels[3][-2]) and (not pixels[-1][c] or not pixels[-1][c-1]) and not pixels[-3][1] and first_row_ratio < 0.35 and first_row_ratio > 0 and last_row_ratio <= 0.40):
+    elif(width < 11 and width > 2 and not pixels[0][0] and not pixels[0][c] and not pixels[-1][0] and (pixels[3][-1] or pixels[3][-2]) and (not pixels[-1][c] or not pixels[-1][c-1]) and not pixels[-3][1] and first_row_ratio < 0.35 and first_row_ratio > 0 and last_row_ratio <= 0.40):
         return '4'
-    elif(width < 11 and first_row_ratio > 0.5 and pixels[0][c] and pixels[-1][c] and not pixels[-1][-1] and not pixels[m+1][0] and pixels[m][c] and last_row_ratio > 0.5 and pixels[0][0] == pixels[1][0] and pixels[0][0] == pixels[int(height/4)][0] and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
+    elif(width < 11 and width > 2 and first_row_ratio > 0.5 and pixels[0][c] and pixels[-1][c] and not pixels[-1][-1] and not pixels[m+1][0] and pixels[m][c] and last_row_ratio > 0.5 and pixels[0][0] == pixels[1][0] and pixels[0][0] == pixels[int(height/4)][0] and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/4))][-2]):
         return '5'
-    elif(width < 11 and last_row_ratio > 0.35 and not pixels[0][0] and not pixels[0][-1] and ((pixels[m][1] and pixels[m][c]) or (pixels[m-1][1] and pixels[m-1][c])) and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/5))][-2]):
+    elif(width < 11 and width > 2 and last_row_ratio > 0.35 and not pixels[0][0] and not pixels[0][-1] and ((pixels[m][1] and pixels[m][c]) or (pixels[m-1][1] and pixels[m-1][c])) and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/5))][-2]):
         return '6'
-    elif(width < 11 and pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-2][0] and not pixels[-1][-1]):
+    elif(width < 11 and width > 2 and pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-2][0] and not pixels[-1][-1]):
         return '7'
-    elif(width < 11 and not pixels[0][0] and pixels[0][c] and pixels[0][c+1] and pixels[0][c-1] and not pixels[0][-1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and pixels[-1][c+1] and pixels[-1][c-1] and (not pixels[-1][-1]) and (first_row_ratio >= 0.4 and last_row_ratio >= 0.4)):
+    elif(width < 11 and width > 2 and not pixels[0][0] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-2]) and pixels[0][c-1] and not pixels[0][-1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and pixels[-1][c+1] and pixels[-1][c-1] and (not pixels[-1][-1]) and (first_row_ratio >= 0.4 and last_row_ratio >= 0.4)):
         return '8'
-    elif(width < 11 and not pixels[0][0] and pixels[0][c] and pixels[0][c+1] and pixels[0][c-1] and not pixels[0][-1] and (pixels[m-1][c] or pixels[m][c]) and not pixels[-1][0] and not pixels[-1][-1] and last_row_ratio <= 0.40):
+    elif(width < 11 and width > 2 and not pixels[0][0] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-2]) and pixels[0][c-1] and not pixels[0][-1] and (pixels[m-1][c] or pixels[m][c]) and not pixels[-1][0] and not pixels[-1][-1] and last_row_ratio <= 0.40):
         return '9'
     elif(width < 11 and not pixels[0][0] and (pixels[0][-1] or (pixels[0][-2] and pixels[1][-1])) and not pixels[m][0] and not pixels[m][-1] and (pixels[-1][0] or (pixels[-2][0] and pixels[-1][1])) and not pixels[-1][-1]):
         return '/'
@@ -181,7 +183,7 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
             return '5'
         elif(not pixels[0][0] and pixels[0][1] and pixels[0][c] and pixels[0][-1] and not pixels[1][-1] and not pixels[1][-2] and not pixels[1][0] and pixels[1][1] and not pixels[m][0] and pixels[m][1] and pixels[m][c] and pixels[m+1][-1] and pixels[m+2][-1] and pixels[-1][0] and pixels[-1][c] and pixels[-1][-1]):
             return '5'
-        elif(not pixels[0][0] and pixels[0][1] and pixels[0][2] and not pixels[0][-1] and pixels[1][0] and pixels[1][1] and not pixels[1][2] and not pixels[1][-1] and pixels[2][0] and pixels[2][1] and pixels[2][-1] and pixels[m][0] and pixels[m+1][0] and pixels[m+1][-1] and pixels[-2][0] and not pixels[-2][1] and pixels[-2][-1] and pixels[-1][0] and pixels[-1][1] and pixels[-1][-1]):
+        elif(width > 2 and not pixels[0][0] and pixels[0][1] and pixels[0][2] and not pixels[0][-1] and pixels[1][0] and pixels[1][1] and not pixels[1][2] and not pixels[1][-1] and pixels[2][0] and pixels[2][1] and pixels[2][-1] and pixels[m][0] and pixels[m+1][0] and pixels[m+1][-1] and pixels[-2][0] and not pixels[-2][1] and pixels[-2][-1] and pixels[-1][0] and pixels[-1][1] and pixels[-1][-1]):
             return '6'
         elif(pixels[0][1] and pixels[0][1] and pixels[1][0] and not pixels[1][1] and pixels[1][-1] and pixels[m][c] and pixels[-2][0] and not pixels[-2][1] and pixels[-2][-1] and pixels[-1][1] and pixels[-1][2]):
             return '8'

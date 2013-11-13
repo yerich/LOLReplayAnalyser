@@ -38,6 +38,7 @@ def analyseLRFFile(filename = None):
         print "League of Legends client window detected. Waiting 10 seconds for loading screen to appear..."
         time.sleep(10)
     
+    print "Beginning client capture."
     output = client_capture("output/test.lra")
 
 def promptOpenFile():

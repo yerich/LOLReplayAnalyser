@@ -101,8 +101,8 @@ def runScreenshotTests():
         fopentime += (time.clock() - fopenstart) * 1000
         data = (getScreenshotData(im, True))
         #print data['events'] if data and 'events' in data else None
-        #pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(data)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."

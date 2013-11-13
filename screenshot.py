@@ -3,6 +3,7 @@ import ocr
 import re
 import icon
 import Image
+import config
 
 def cint(s):
     if s == '' or s == None:
@@ -50,14 +51,18 @@ def getScreenshotData(im, staticdata = False):
         print "Error: screenshot must be 1920x1080px exactly."
         return False
     
-    if(im.getpixel((948, 538))[0:3] == (212, 161, 89) and im.getpixel((974, 537))[0:3] == (216, 163, 90)):
+    if(im.getpixel((0, 300))[0:3] == (0, 0, 0) and im.getpixel((1900, 300))[0:3] == (0, 0, 0)):
         return {'loading' : True}
+    
+    if(im.getpixel((945, 945))[0:3] == (148, 150, 156)):
+        return {'teamfight' : True}
     
     if(im.getpixel((615, 38))[0:3] != (247, 235, 215) or im.getpixel((672, 38))[0:3] != (201, 37, 38)):
         return False
     
     results = {};
     results['loading'] = False
+    results['teamfight'] = False
     results['players'] = [[], []];
     results['time'] = ocr.imagetostring(im.crop((934, 80, 984, 94))).split(",")
     results['time'] = cint(results['time'][0]) * 60 + int(results['time'][1])
@@ -68,6 +73,11 @@ def getScreenshotData(im, staticdata = False):
         results['events'].append({'type' : 'dragon', 'team': 0})
     elif(im.getpixel((1274, 189))[0:3] == (41, 250, 254) and im.getpixel((1251, 205))[0:3] == (240, 229, 169)):
         results['events'].append({'type' : 'dragon', 'team': 1})
+    
+    if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
+        results['paused'] = True
+    else:
+        results['paused'] = False
     
     if (im.getpixel((674, 905))[0:3] == (247, 231, 173)):
         results['gold_data_available'] = True
@@ -87,21 +97,22 @@ def getScreenshotData(im, staticdata = False):
             for i, px in enumerate(img.getdata()):
                 y = i // width
                 x = i % width
-                if px[1] > 140:
+                if px[1] > 130:
                     img.putpixel((x, y), (255, 255, 255))
                 else:
                     img.putpixel((x, y), (0, 0, 0))
             return img
-                
+        
         results['active_champion'] = {}
         results['active_champion']['champion'] = getChampionFromIcon(im.crop((16, 856, 49, 889)))
-        champion_overlay_active = (im.getpixel((647, 401))[0:3] == (8, 8, 8) and im.getpixel((1275, 399))[0:3] == (24, 20, 17))
+        champion_overlay_active = (im.getpixel((647, 401))[0:3] == (8, 8, 8) and im.getpixel((1272, 401))[0:3] == (41, 40, 41))
         results['active_champion']['hitpoints'] = ocr.imagetostring(greenthreshold(im.crop((851, 458, 953, 472)))) if champion_overlay_active else None
         results['active_champion']['attack_damage'] = ocr.imagetostring(greenthreshold(im.crop((910, 505, 953, 520)))) if champion_overlay_active else None
-        results['active_champion']['mana'] = ocr.imagetostring(greenthreshold(im.crop((1160, 458, 1265, 473)))) if champion_overlay_active else None
+        results['active_champion']['mana'] = ocr.imagetostring(greenthreshold(im.crop((1160, 458, 1265, 473)))) if champion_overlay_active and results['active_champion']['champion'] not in config.MANALESS_CHAMPS else None
         results['active_champion']['ability_power'] = ocr.imagetostring(greenthreshold(im.crop((1225, 505, 1265, 520)))) if champion_overlay_active else None
         results['active_champion']['armor'] = ocr.imagetostring(greenthreshold(im.crop((1225, 627, 1265, 642)))) if champion_overlay_active else None
         results['active_champion']['magic_resist'] = ocr.imagetostring(greenthreshold(im.crop((1225, 651, 1265, 666)))) if champion_overlay_active else None
+        results['active_champion']['overlay_active'] = True if champion_overlay_active else False
     else:
         results['active_champion'] = None
     
