@@ -9,7 +9,7 @@ import subprocess
 import config
 
 def analyseLRFFile(filename = None):
-    window_title = 'league of legends (tm) client'
+    window_title = config.LOL_WINDOW_TITLE
     
     toplist, winlist = [], []
     def enum_cb(hwnd, results):
