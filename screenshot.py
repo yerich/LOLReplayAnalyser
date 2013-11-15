@@ -23,6 +23,7 @@ def getItemFromIcon(im):
 
 # Returns an array of items, given the (x, y) coordinate (where (0, 0) is top-left) 
 # of the top-left pixel of the first item in the bar
+#TODO: Finish
 def getItems(im, tl):
     items = []
     for i in [im.crop((tl[0], tl[1], tl[0]+25, tl[1]+25)), im.crop((tl[0]+27, tl[1], tl[0]+52, tl[1]+25)),
@@ -33,7 +34,16 @@ def getItems(im, tl):
             items.append(item)
     
     return items
-    
+
+# Returns event information for the given top-right pixel, if available
+def getEvent(im, tr):
+    if ((im.getpixel((tr[0], tr[1]+1)) == (41, 130, 192) or im.getpixel((tr[0], tr[1]+1)) == (41, 130, 194)) and
+        (im.getpixel((tr[0], tr[0])) != (41, 130, 192) or im.getpixel((tr[0], tr[0])) != (41, 130, 194)) and
+        (im.getpixel((tr[0], tr[1]+63)) == (41, 130, 192) or im.getpixel((tr[0], tr[1]+63)) == (41, 130, 194)) and
+        (im.getpixel((tr[0], tr[0]+64)) != (41, 130, 192) and im.getpixel((tr[0], tr[0]+64)) != (41, 130, 194))):
+        return { 'team' : 0 }
+    return False
+
 def getChampionFromIcon(im):
     icon_name = icon.imageToIconName(im, "champion")
     if icon_name == "blank":
@@ -73,6 +83,10 @@ def getScreenshotData(im, staticdata = False):
         results['events'].append({'type' : 'dragon', 'team': 0})
     elif(im.getpixel((1274, 189))[0:3] == (41, 250, 254) and im.getpixel((1251, 205))[0:3] == (240, 229, 169)):
         results['events'].append({'type' : 'dragon', 'team': 1})
+    
+    # Get the notifications that appear in the right side for kills, dragons, barons, etc.
+    
+    
     
     if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
         results['paused'] = True
