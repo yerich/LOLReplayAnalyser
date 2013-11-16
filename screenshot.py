@@ -61,8 +61,6 @@ def getEvent(im, tr):
     
     eventinfo['killer'] = icon.imageToIconName(im.crop((tr[0] - 144, tr[1] + 12, tr[0] - 98, tr[1] + 58)))
     eventinfo['victim'] = icon.imageToIconName(im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58)))
-    q = im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58))
-    q.save("tmp.png")
     return eventinfo
 
 def getChampionFromIcon(im):
@@ -281,3 +279,5 @@ def getScreenshotData(im, staticdata = False):
     
     if(valid == True):
         return results
+    else:
+        return None
