@@ -12,7 +12,10 @@ import os
 
 iconData = None
 
+# Get the difference i color between two pixels. The difference is calculated by adding
+# the sum of differences for each layer (RGB)
 def pixelDiff(pixel, color):
+    # This is for performance purposes; this function is called thousands of times per second
     if(pixel[0] > color[0]):
         if(pixel[1] > color[1]):
             if(pixel[2] > color[2]):
@@ -87,12 +90,13 @@ def imageToIconData(im):
     
     return dat
 
+# Convert an image to the name of an icon
 def imageToIconName(im, restrict = None):
     imdat = imageToIconData(im)
     icon_dat = getIconData()
     
     differences = {};
-    for dat, name in enumerate(icon_dat):
+    for _, name in enumerate(icon_dat):
         if restrict and not name.startswith(restrict) and name != "blank":
             continue
         differences[name] = iconDataDiff(imdat, icon_dat[name])
