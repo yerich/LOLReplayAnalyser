@@ -102,4 +102,6 @@ def imageToIconName(im, restrict = None):
     return matches[0][0]
 
 if __name__ == "__main__":
-    generateIconDataFile()
+    print "Generating icon data file."
+    dat = generateIconDataFile()
+    print "Icon data file generated. "+str(len(dat))+" icons in database."

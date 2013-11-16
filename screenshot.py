@@ -4,6 +4,7 @@ import re
 import icon
 import Image
 import config
+from icon import pixelDiff
 
 def cint(s):
     if s == '' or s == None:
@@ -14,6 +15,14 @@ def cint(s):
         return 0
     return int(s)
 
+def colorDiff(p1, p2):
+    print p1, p2
+    diff = 0
+    for i in range(0, 2):
+        diff += abs(p1[i] - p2[i])
+    print diff
+    return diff
+
 # Returns an item dict for an icon
 def getItemFromIcon(im):
     icon_name = icon.imageToIconName(im, "item")
@@ -23,7 +32,6 @@ def getItemFromIcon(im):
 
 # Returns an array of items, given the (x, y) coordinate (where (0, 0) is top-left) 
 # of the top-left pixel of the first item in the bar
-#TODO: Finish
 def getItems(im, tl):
     items = []
     for i in [im.crop((tl[0], tl[1], tl[0]+25, tl[1]+25)), im.crop((tl[0]+27, tl[1], tl[0]+52, tl[1]+25)),
@@ -36,13 +44,26 @@ def getItems(im, tl):
     return items
 
 # Returns event information for the given top-right pixel, if available
+# TODO: assists
 def getEvent(im, tr):
-    if ((im.getpixel((tr[0], tr[1]+1)) == (41, 130, 192) or im.getpixel((tr[0], tr[1]+1)) == (41, 130, 194)) and
-        (im.getpixel((tr[0], tr[0])) != (41, 130, 192) or im.getpixel((tr[0], tr[0])) != (41, 130, 194)) and
-        (im.getpixel((tr[0], tr[1]+63)) == (41, 130, 192) or im.getpixel((tr[0], tr[1]+63)) == (41, 130, 194)) and
-        (im.getpixel((tr[0], tr[0]+64)) != (41, 130, 192) and im.getpixel((tr[0], tr[0]+64)) != (41, 130, 194))):
-        return { 'team' : 0 }
-    return False
+    if ((pixelDiff(im.getpixel((tr[0], tr[1]+1))[0:3], (41, 130, 192)) < 10) and 
+        (pixelDiff(im.getpixel((tr[0], tr[1]))[0:3], (41, 130, 192)) >= 10) and
+        (pixelDiff(im.getpixel((tr[0], tr[1]+62))[0:3], (41, 130, 192)) < 10) and 
+        (pixelDiff(im.getpixel((tr[0], tr[1]+63))[0:3], (41, 130, 192)) >= 10)):
+        eventinfo = { 'team' : 0 }
+    elif ((pixelDiff(im.getpixel((tr[0], tr[1]+1))[0:3], (132, 40, 192)) < 10) and 
+        (pixelDiff(im.getpixel((tr[0], tr[1]))[0:3], (132, 40, 192)) >= 10) and
+        (pixelDiff(im.getpixel((tr[0], tr[1]+62))[0:3], (132, 40, 192)) < 10) and 
+        (pixelDiff(im.getpixel((tr[0], tr[1]+63))[0:3], (132, 40, 192)) >= 10)):
+        eventinfo = { 'team' : 1 }
+    else:
+        return None
+    
+    eventinfo['killer'] = icon.imageToIconName(im.crop((tr[0] - 144, tr[1] + 12, tr[0] - 98, tr[1] + 58)))
+    eventinfo['victim'] = icon.imageToIconName(im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58)))
+    q = im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58))
+    q.save("tmp.png")
+    return eventinfo
 
 def getChampionFromIcon(im):
     icon_name = icon.imageToIconName(im, "champion")
@@ -79,14 +100,22 @@ def getScreenshotData(im, staticdata = False):
     results['speed'] = cint(ocr.imagetostring(im.crop((700, 862, 730, 876))).replace('x', ''))
     results['events'] = []
     
-    if(im.getpixel((1259, 189))[0:3] == (41, 250, 254) and im.getpixel((1236, 205))[0:3] == (240, 229, 169)):
-        results['events'].append({'type' : 'dragon', 'team': 0})
-    elif(im.getpixel((1274, 189))[0:3] == (41, 250, 254) and im.getpixel((1251, 205))[0:3] == (240, 229, 169)):
-        results['events'].append({'type' : 'dragon', 'team': 1})
+    #if(im.getpixel((1259, 189))[0:3] == (41, 250, 254) and im.getpixel((1236, 205))[0:3] == (240, 229, 169)):
+    #    results['events'].append({'type' : 'dragon', 'team': 0})
+    #elif(im.getpixel((1274, 189))[0:3] == (41, 250, 254) and im.getpixel((1251, 205))[0:3] == (240, 229, 169)):
+    #    results['events'].append({'type' : 'dragon', 'team': 1})
     
-    # Get the notifications that appear in the right side for kills, dragons, barons, etc.
-    
-    
+    # Get the event (kill) notifications that appear in the right side for kills, dragons, barons, etc.
+    for tr in [(1685, 694), (1685, 625), (1685, 556), (1685, 487)]:
+        event = getEvent(im, tr)
+        if(event != None):
+            results['events'].append(event)
+        else:   # Events with many assists are shifted right 3 pixels
+            event = getEvent(im, (tr[0]+3, tr[1]))
+            if(event == None):
+                break
+            else:
+                results['events'].append(event)
     
     if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
         results['paused'] = True

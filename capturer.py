@@ -116,9 +116,10 @@ def client_capture(savefile = None):
         if(data['speed'] != 8):
             sendkey(0x6B)
         
+        print data['events']
+        
         #switch between active champions, center camera
         if(data['active_champion']):
-            print data['active_champion']
             if(data['active_champion']['champion'] != data['players'][currchamp // 5][currchamp % 5]['champion']):
                 print "Error: active champion not expected value. Disregarding."
             else:
