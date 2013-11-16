@@ -72,6 +72,7 @@ def client_capture(savefile = None):
     overlay_inactive_counter = 0
     turns_with_gold = 0
     turns_with_items = 0
+    turns_too_many_events = 0
     
     logfile.write("============================================================\n")
     currchamp = -1  # Active champion
@@ -106,17 +107,25 @@ def client_capture(savefile = None):
             continue
         
         if(data['game_finished'] == True):
-            print "Game Finished."
+            print "Game Finished. Capture Complete."
             break
         
         # Check to see if the game is paused.
         if(data['paused'] == True and turns_with_gold <= 10):
             sendkey('p', 0.1)
         
-        if(data['speed'] != 8):
-            sendkey(0x6B)
+        # Control game speed with numpad + and - keys
+        # Virtual key codes from here: http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+        if(data['speed'] != 8 and len(data['events']) < 4):
+            if(turns_too_many_events <= 0):
+                sendkey(0x6B)
+            else:
+                turns_too_many_events -= 1
         
-        print data['events']
+        # Slow game down if too many events on screen
+        if(len(data['events']) == 4):
+            sendkey(0x6D)
+            turns_too_many_events = 7
         
         #switch between active champions, center camera
         if(data['active_champion']):
@@ -129,9 +138,9 @@ def client_capture(savefile = None):
         if(currchamp < 0):
             currchamp = 0
             
-        sendkey('s')
-        sendkey(champ_key_map[currchamp])
-        sendkey(champ_key_map[currchamp])
+        sendkey('s')    # Force manual camera
+        sendkey(champ_key_map[currchamp])   # Select currchamp
+        sendkey(champ_key_map[currchamp])   # Center camera on currchamp
         
         #switch between gold and items
         if(data['gold_data_available']):
