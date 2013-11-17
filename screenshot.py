@@ -15,14 +15,6 @@ def cint(s):
         return 0
     return int(s)
 
-def colorDiff(p1, p2):
-    print p1, p2
-    diff = 0
-    for i in range(0, 2):
-        diff += abs(p1[i] - p2[i])
-    print diff
-    return diff
-
 # Returns an item dict for an icon
 def getItemFromIcon(im):
     icon_name = icon.imageToIconName(im, "item")
@@ -132,6 +124,7 @@ def getScreenshotData(im, staticdata = False):
     else:
         results['game_finished'] = False
     
+    #Active Champion Information
     if(im.getpixel((314, 846))[0:3] == (39, 34, 40) and im.getpixel((4, 846))[0:3] == (50, 45, 50)):
         def greenthreshold(img):
             width, _ = img.size
@@ -157,6 +150,31 @@ def getScreenshotData(im, staticdata = False):
     else:
         results['active_champion'] = None
     
+    results['inhibitors'] = [{}, {}];
+    
+    # Inhibitors
+    if(im.getpixel((1696, 1049))[0:3] == (147, 147, 143) and im.getpixel((1697, 1049))[0:3] == (83, 75, 66)):
+        results['inhibitors'][0]['bottom'] = False
+    elif(im.getpixel((1696, 1049))[0:3] == (25, 165, 236) and im.getpixel((1697, 1049))[0:3] == (21, 139, 201)):
+        results['inhibitors'][0]['bottom'] = True
+    else:
+        results['inhibitors'][0]['bottom'] = None
+    
+    if(im.getpixel((1688, 1013))[0:3] == (146, 148, 146) and im.getpixel((1689, 1013))[0:3] == (108, 112, 108)):
+        results['inhibitors'][0]['middle'] = False
+    elif(im.getpixel((1688, 1013))[0:3] == (33, 153, 208) and im.getpixel((1689, 1013))[0:3] == (10, 108, 176)):
+        results['inhibitors'][0]['middle'] = True
+    else:
+        results['inhibitors'][0]['middle'] = None
+    
+    if(im.getpixel((1649, 1005))[0:3] == (126, 127, 126) and im.getpixel((1650, 1005))[0:3] == (72, 73, 72)):
+        results['inhibitors'][0]['top'] = False
+    elif(im.getpixel((1649, 1005))[0:3] == (22, 108, 163) and im.getpixel((1650, 1005))[0:3] == (25, 78, 147)):
+        results['inhibitors'][0]['top'] = True
+    else:
+        results['inhibitors'][0]['top'] = None
+    
+    #Information on each of the ten champions
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 238))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((770, 931, 869, 946))),
