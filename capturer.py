@@ -164,6 +164,7 @@ def client_capture(savefile = None):
         else:
             overlay_inactive_counter = 0
         
+        print data['inhibitors']
         history.append(data)
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])

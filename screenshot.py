@@ -152,7 +152,7 @@ def getScreenshotData(im, staticdata = False):
     
     results['inhibitors'] = [{}, {}];
     
-    # Inhibitors
+    # Blue Inhibitors
     if(im.getpixel((1696, 1049))[0:3] == (147, 147, 143) and im.getpixel((1697, 1049))[0:3] == (83, 75, 66)):
         results['inhibitors'][0]['bottom'] = False
     elif(im.getpixel((1696, 1049))[0:3] == (25, 165, 236) and im.getpixel((1697, 1049))[0:3] == (21, 139, 201)):
@@ -173,6 +173,28 @@ def getScreenshotData(im, staticdata = False):
         results['inhibitors'][0]['top'] = True
     else:
         results['inhibitors'][0]['top'] = None
+    
+    # Purple Inhibitors
+    if(im.getpixel((1900, 846))[0:3] == (90, 89, 88) and im.getpixel((1901, 846))[0:3] == (142, 140, 134)):
+        results['inhibitors'][1]['bottom'] = False
+    elif(im.getpixel((1900, 846))[0:3] == (109, 44, 137) and im.getpixel((1901, 846))[0:3] == (183, 9, 196)):
+        results['inhibitors'][1]['bottom'] = True
+    else:
+        results['inhibitors'][1]['bottom'] = None
+    
+    if(im.getpixel((1861, 839))[0:3] == (128, 127, 125) and im.getpixel((1862, 839))[0:3] == (77, 70, 65)):
+        results['inhibitors'][1]['middle'] = False
+    elif(im.getpixel((1861, 839))[0:3] == (229, 21, 237) and im.getpixel((1862, 839))[0:3] == (245, 38, 246)):
+        results['inhibitors'][1]['middle'] = True
+    else:
+        results['inhibitors'][1]['middle'] = None
+        
+    if(im.getpixel((1853, 803))[0:3] == (124, 126, 124) and im.getpixel((1854, 803))[0:3] == (81, 81, 80)):
+        results['inhibitors'][1]['top'] = False
+    elif(im.getpixel((1853, 803))[0:3] == (167, 9, 182) and im.getpixel((1854, 803))[0:3] == (127, 11, 146)):
+        results['inhibitors'][1]['top'] = True
+    else:
+        results['inhibitors'][1]['top'] = None
     
     #Information on each of the ten champions
     results['players'][0].append(
