@@ -141,6 +141,45 @@ def getScreenshotData(im, staticdata = False):
     results['towers'].append(int(icon.imageToIconName(im.crop((688, 24, 688+30, 24+30)), "tower").split("-")[-1]))
     results['towers'].append(int(icon.imageToIconName(im.crop((1234, 24, 1234+30, 24+30)), "tower").split("-")[-1]))
     
+    # Get the current map position based on the box in the minimap
+    camera_box_y = []
+    results['map_position'] = [-1, -1]
+    for x in [1630, 1700, 1770, 1840, 1890]:
+        prevpixel = (0, 0, 0)
+        for y in range(784, 1071):
+            pixel = im.getpixel((x, y))[0:3]
+            if(pixel == (255, 255, 255) and prevpixel == (255, 255, 255)):
+                camera_box_y.append((x, y))
+            prevpixel = pixel
+        
+        if len(camera_box_y) > 0:
+            break
+    
+    if(len(camera_box_y) == 1):
+        if(camera_box_y[0][1] < 900):
+            camera_box_search_y = camera_box_y[0][1] - 5
+            results['map_position'][1] = camera_box_y[0][1] - 20 - 858
+        else:
+            camera_box_search_y = camera_box_y[0][1] + 5
+            results['map_position'][1] = camera_box_y[0][1] + 29 - 858
+    else:
+        camera_box_search_y = camera_box_y[0][1] + 5
+        results['map_position'][1] = camera_box_y[0][1] + 29 - 858
+    
+    camera_box_x = []
+    prevpixel = (0, 0, 0)
+    for x in range(1625, 1914):
+        pixel = im.getpixel((x, camera_box_search_y))[0:3]
+        if (pixel == (255, 255, 255) and prevpixel == (255, 255, 255)):
+            camera_box_x.append((x, camera_box_search_y))
+        prevpixel = pixel
+    
+    if(len(camera_box_x) == 1 and camera_box_x[0][0] < 1720):
+        results['map_position'][0] = camera_box_x[0][0] - 46 - 1453
+    else:
+        results['map_position'][0] = camera_box_x[0][0] + 45 - 1453
+    
+    # Get spectator client states
     if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
         results['paused'] = True
     else:
