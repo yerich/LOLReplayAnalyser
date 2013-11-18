@@ -96,8 +96,8 @@ def client_capture(savefile = None):
             continue
         
         if('loading' in data and data['loading'] == True):
-            print data['summoner_spells']
             print "In loading screen. Continuing..."
+            summoner_spells = data['summoner_spells']
             time.sleep(3)
             continue
         
@@ -125,6 +125,8 @@ def client_capture(savefile = None):
         
         # Slow game down if too many events on screen
         if(len(data['events']) == 4):
+            sendkey(0x6D)
+            sendkey(0x6D)
             sendkey(0x6D)
             turns_too_many_events = 7
         
@@ -177,7 +179,8 @@ def client_capture(savefile = None):
         
         savefileh = open(savefile+".txt", "w")
         print >> savefileh, jsonstring
-    return history
+        
+    return { 'history' : history, 'summoner_spells': summoner_spells }
 
 if __name__ == "__main__":
     client_capture("output/"+str(int(time.time()))+".lra")
