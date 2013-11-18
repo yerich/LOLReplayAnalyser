@@ -55,7 +55,8 @@ def iconDataDiff(icon, data):
         pixelDiff(icon[11], data[11]) + \
         pixelDiff(icon[12], data[12]) + \
         pixelDiff(icon[13], data[13]) + \
-        pixelDiff(icon[14], data[14])
+        pixelDiff(icon[14], data[14]) + \
+        pixelDiff(icon[15], data[15])
 
 def generateIconDataFile():
     icons = [ f for f in listdir("icons/") if isfile(join("icons/",f)) and f.split(".")[-1] == "png" ]

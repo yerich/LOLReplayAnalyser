@@ -67,6 +67,15 @@ def getEvent(im, tr):
     eventinfo['victim'] = icon.imageToIconName(im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58)))
     return eventinfo
 
+# This will return the winner of the game given a very specific screenshot: one side must have already won,
+# and the pixel (1886, 803) MUST be clicked on the minimap. This function will then check if the purple nexus
+# is destroyed or not. If it is, blue team won and return 0. Otherwise purple team won so return 1.
+def getGameWinner(im):
+    if(pixelDiff(im.getpixel((1181, 711)), (33, 32, 33)) < 100):
+        return 0
+    else:
+        return 1
+
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
 def getScreenshotData(im, staticdata = False):
@@ -127,6 +136,11 @@ def getScreenshotData(im, staticdata = False):
             else:
                 results['events'].append(event)
     
+    # Get number of towers down for each team
+    results['towers'] = [];
+    results['towers'].append(int(icon.imageToIconName(im.crop((688, 24, 688+30, 24+30)), "tower").split("-")[-1]))
+    results['towers'].append(int(icon.imageToIconName(im.crop((1234, 24, 1234+30, 24+30)), "tower").split("-")[-1]))
+    
     if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
         results['paused'] = True
     else:
@@ -139,7 +153,8 @@ def getScreenshotData(im, staticdata = False):
         results['gold_data_available'] = False
         results['item_data_available'] = True
     
-    if(im.getpixel((425, 326))[0:3] == (195, 250, 249) and im.getpixel((958, 348))[0:3] == (243, 223, 184)):
+    if(pixelDiff(im.getpixel((425, 326))[0:3], (195, 250, 249)) < 3 and pixelDiff(im.getpixel((958, 348))[0:3], (243, 223, 184)) < 3 
+       and pixelDiff(im.getpixel((1410, 323))[0:3], (116, 175, 186)) < 3):
         results['game_finished'] = True
     else:
         results['game_finished'] = False

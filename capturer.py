@@ -1,13 +1,12 @@
 import ImageGrab
 import win32gui
-from screenshot import getScreenshotData
 import time
-import win32com.client as comclt
-import win32api
 import sendinput
 import ctypes
 import json
 import zlib
+from config import MOUSEEVENTF_MOVEABS, MOUSEEVENTF_CLICK
+import screenshot
 
 keypressdelay = {}
 def sendkey(keychar, delay = 0.2):
@@ -36,9 +35,25 @@ def sendkey(keychar, delay = 0.2):
     keypressdelay = {key: value for (key, value) in keypressdelay.iteritems() if not keyup(value)}
 
 
+def sendmouseclick(coords, delay = 0.2):
+    x, y = coords
+    #move first
+    x = 65536L * x / ctypes.windll.user32.GetSystemMetrics(0) + 1
+    y = 65536L * y / ctypes.windll.user32.GetSystemMetrics(1) + 1
+    ctypes.windll.user32.mouse_event(MOUSEEVENTF_MOVEABS, x, y, 0, 0)
+    
+    time.sleep(delay)
+
+    #then click
+    ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
+    
+def grabScreenshotWinner(bbox):
+    im = ImageGrab.grab(bbox)
+    return screenshot.getGameWinner(im)
+
 def grabScreenshotData(bbox):
     im = ImageGrab.grab(bbox)
-    data = (getScreenshotData(im))
+    data = (screenshot.getScreenshotData(im))
     return data
 
 logfile = open("output/capturelog.txt", "a")
@@ -64,6 +79,9 @@ def client_capture(savefile = None):
     
     win32gui.SetForegroundWindow(hwnd)
     
+    window_coords = win32gui.GetWindowRect(hwnd)
+    print window_coords
+    
     time.sleep(0.1)
     
     bbox = win32gui.GetWindowRect(hwnd)
@@ -73,6 +91,8 @@ def client_capture(savefile = None):
     turns_with_gold = 0
     turns_with_items = 0
     turns_too_many_events = 0
+    winner = -1
+    exception_count = 0
     
     logfile.write("============================================================\n")
     currchamp = -1  # Active champion
@@ -84,7 +104,15 @@ def client_capture(savefile = None):
             data = grabScreenshotData(bbox)
         except:
             print "Exception caught. Continuing..."
+            exception_count += 1
+            if(exception_count == 5):
+                print "More than 5 exceptions in a row. Going to see if pausing/unpausing the game will fix things..."
+                sendkey('p', 0.1)
+            elif(exception_count > 20):
+                raise "Too many OCR exceptions in a row. "
             continue
+        
+        exception_count = 0
         
         if(data == -1):
             print "OCR Error. Skipping this screenshot"
@@ -108,8 +136,21 @@ def client_capture(savefile = None):
             continue
         
         if(data['game_finished'] == True):
-            print "Game Finished. Capture Complete."
+            print "Game Finished. Getting game winner..."
+            # Move the mouse to a location where we can see the purple team nexus
+            sendmouseclick((window_coords[0] + 1886, window_coords[1] + 803))
+            time.sleep(3)
+            winner = (grabScreenshotWinner(bbox))
+            if(winner == 0):
+                print "Blue team wins."
+            else:
+                print "Purple team wins."
+            
+            data['winner'] = winner
+            
+            print "Capture Complete."
             break
+        
         
         # Check to see if the game is paused.
         if(data['paused'] == True and turns_with_gold <= 10):
@@ -167,11 +208,11 @@ def client_capture(savefile = None):
         else:
             overlay_inactive_counter = 0
         
-        print data['inhibitors']
+        print data['towers']
         history.append(data)
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
-    
+        
     if(savefile):
         savefileh = open(savefile, "w")
         jsonstring = json.dumps( { 'data' : history, 'version' : '0.1' })
@@ -180,7 +221,7 @@ def client_capture(savefile = None):
         savefileh = open(savefile+".txt", "w")
         print >> savefileh, jsonstring
         
-    return { 'history' : history, 'summoner_spells': summoner_spells }
+    return { 'history' : history, 'summoner_spells': summoner_spells, 'winner' : winner }
 
 if __name__ == "__main__":
     client_capture("output/"+str(int(time.time()))+".lra")

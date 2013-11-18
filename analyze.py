@@ -15,4 +15,4 @@ class LOLGameData:
 
 if __name__ == "__main__":
     data = LOLGameData("output/sample.lra")
-    print len(data['history'])
+    print str(len(data.data['history'])) + " data points loaded."

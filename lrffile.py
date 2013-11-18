@@ -52,14 +52,20 @@ def analyseLRFFile(filename = None, savefile = None):
         print "League of Legends client window detected. Waiting 10 seconds for loading screen to appear..."
         time.sleep(10)
     
-    lrfmeta = getLRFMetadata(open(filename))
-    print "output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
+        lrfmeta = getLRFMetadata(open(filename))
+    else:
+        lrfmeta = {}
+    
+    if(not filename):
+        filename = "tmp.lrf"
+    print "Analysis will be saved to output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     
     print "Beginning client capture."
     output = client_capture()
     print "Client capture completed."
     
     hwnd = find_windows_with_name(window_title)[0][0]
+    # Close the LOL Client Window
     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
     
     savefile = "output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
@@ -69,7 +75,7 @@ def analyseLRFFile(filename = None, savefile = None):
     if(savefile):
         savefileh = gzip.open(savefile, "wb")
         jsonstring = json.dumps(output)
-        savefileh.write(savefileh)
+        savefileh.write(jsonstring)
         
         savefileh = open(savefile+".txt", "w")
         print >> savefileh, jsonstring
