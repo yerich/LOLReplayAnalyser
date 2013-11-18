@@ -96,6 +96,7 @@ def client_capture(savefile = None):
             continue
         
         if('loading' in data and data['loading'] == True):
+            print data['summoner_spells']
             print "In loading screen. Continuing..."
             time.sleep(3)
             continue

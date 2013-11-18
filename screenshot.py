@@ -22,6 +22,18 @@ def getItemFromIcon(im):
         return None
     return icon_name.replace("item-", "")
 
+def getSummonerSpellFromIcon(im):
+    icon_name = icon.imageToIconName(im, "summoner")
+    if icon_name == "blank":
+        return None
+    return icon_name.replace("summoner-", "")
+
+def getChampionFromIcon(im):
+    icon_name = icon.imageToIconName(im, "champion")
+    if icon_name == "blank":
+        return None
+    return icon_name.replace("champion-", "")
+
 # Returns an array of items, given the (x, y) coordinate (where (0, 0) is top-left) 
 # of the top-left pixel of the first item in the bar
 def getItems(im, tl):
@@ -55,12 +67,6 @@ def getEvent(im, tr):
     eventinfo['victim'] = icon.imageToIconName(im.crop((tr[0] - 53, tr[1] + 12, tr[0] - 7, tr[1] + 58)))
     return eventinfo
 
-def getChampionFromIcon(im):
-    icon_name = icon.imageToIconName(im, "champion")
-    if icon_name == "blank":
-        return None
-    return icon_name.replace("champion-", "")
-
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
 def getScreenshotData(im, staticdata = False):
@@ -73,7 +79,21 @@ def getScreenshotData(im, staticdata = False):
         return False
     
     if(im.getpixel((0, 300))[0:3] == (0, 0, 0) and im.getpixel((1900, 300))[0:3] == (0, 0, 0)):
-        return {'loading' : True}
+        def getSummonerSpellIcon(tr):
+            return im.crop((tr[0], tr[1], tr[0]+36, tr[1]+36))
+        results = {'loading' : True}
+        results['summoner_spells'] = [[], []];
+        results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((362, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((409, 455)))])
+        results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((644, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((690, 455)))])
+        results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((925, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((972, 455)))])
+        results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((1207, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((1253, 455)))])
+        results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((1488, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((1535, 455)))])
+        results['summoner_spells'][1].append([getSummonerSpellFromIcon(getSummonerSpellIcon((362, 1006))), getSummonerSpellFromIcon(getSummonerSpellIcon((409, 1006)))])
+        results['summoner_spells'][1].append([getSummonerSpellFromIcon(getSummonerSpellIcon((644, 1006))), getSummonerSpellFromIcon(getSummonerSpellIcon((690, 1006)))])
+        results['summoner_spells'][1].append([getSummonerSpellFromIcon(getSummonerSpellIcon((925, 1006))), getSummonerSpellFromIcon(getSummonerSpellIcon((972, 1006)))])
+        results['summoner_spells'][1].append([getSummonerSpellFromIcon(getSummonerSpellIcon((1207, 1006))), getSummonerSpellFromIcon(getSummonerSpellIcon((1253, 1006)))])
+        results['summoner_spells'][1].append([getSummonerSpellFromIcon(getSummonerSpellIcon((1488, 1006))), getSummonerSpellFromIcon(getSummonerSpellIcon((1535, 1006)))])
+        return results
     
     if(im.getpixel((945, 945))[0:3] == (148, 150, 156)):
         return {'teamfight' : True}
