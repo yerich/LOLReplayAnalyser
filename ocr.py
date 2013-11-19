@@ -5,6 +5,7 @@ import time
 
 ocrlog = open("output/ocrlog.txt", "a")
 ocrerr = open("output/ocrerr.txt", "a")
+numerrors_str = 0
 
 # Returns 0 (black) or 1 (white) for a pixel tuple, depending on threshold value
 # threshold values range between 0 and 128.
@@ -208,15 +209,17 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
 def bwglyphstostring(glyphs, threshold = 1, print_errors = None):
     result = ""
     
-    global numerrors    #Weird bug. Doesn't get set if not global.
+    global numerrors, numerrors_str    #Weird bug. Doesn't get set if not global.
     numerrors = 0
     for i in glyphs:
         character = bwglyphtochar(i, threshold, print_errors)
+        #print character
         if(character == False):
             if(print_errors):
                 ocrerr.write("Could not recognize the following glyph: \n")
                 ocrerr.write(pixelstoasciiart(bwtrimvertical(i, threshold)['result']))
             numerrors += 1
+            numerrors_str += 1
         else:
             #ocrlog.write(pixelstoasciiart(i))
             #ocrlog.write(character+"\n")
@@ -238,6 +241,9 @@ def pixelstoasciiart(pixels):
 #Converts a PIL Image into a string. Supported characters: 0123456789/,()
 #Colons and periods are generally recognized as commas
 def imagetostring(im):
+    global numerrors_str
+    numerrors_str = 0
+    
     width, height = im.size
     
     pixelData = im.load()
@@ -305,8 +311,9 @@ def imagetostring(im):
     #printpixels(pixels)
     glyphs = bwfindglyphs(pixels)
     result = bwglyphstostring(glyphs, 1, False)
+    #print result
     
-    if(result['numerrors'] == 0):
+    if(result['numerrors'] == 0 and numerrors_str == 0):
         return result['result']
     else:
         pixels = []

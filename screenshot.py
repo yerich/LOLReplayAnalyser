@@ -6,6 +6,8 @@ import Image
 import config
 from icon import pixelDiff
 
+last = False
+
 def cint(s):
     if s == '' or s == None:
         return 0
@@ -71,7 +73,7 @@ def getEvent(im, tr):
 # and the pixel (1886, 803) MUST be clicked on the minimap. This function will then check if the purple nexus
 # is destroyed or not. If it is, blue team won and return 0. Otherwise purple team won so return 1.
 def getGameWinner(im):
-    if(pixelDiff(im.getpixel((1181, 711)), (33, 32, 33)) < 100):
+    if(pixelDiff(im.getpixel((1181, 711)), (33, 32, 33)) < 150):
         return 0
     else:
         return 1
@@ -79,6 +81,8 @@ def getGameWinner(im):
 # Returns a dict of data retrieved from a screenshot. If staticdata=true, then
 # static data, such as champion names, summoner spell, etc. will also be retrieved.
 def getScreenshotData(im, staticdata = False):
+    global last
+    
     im = im.convert("RGB")
     width, height = im.size
     valid = True    # Set to false when there's some blantantly incorrect OCR'd value
@@ -90,7 +94,7 @@ def getScreenshotData(im, staticdata = False):
     if(im.getpixel((0, 300))[0:3] == (0, 0, 0) and im.getpixel((1900, 300))[0:3] == (0, 0, 0)):
         def getSummonerSpellIcon(tr):
             return im.crop((tr[0], tr[1], tr[0]+36, tr[1]+36))
-        results = {'loading' : True}
+        results = {'loading' : True, "valid" : True}
         results['summoner_spells'] = [[], []];
         results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((362, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((409, 455)))])
         results['summoner_spells'][0].append([getSummonerSpellFromIcon(getSummonerSpellIcon((644, 455))), getSummonerSpellFromIcon(getSummonerSpellIcon((690, 455)))])
@@ -105,12 +109,13 @@ def getScreenshotData(im, staticdata = False):
         return results
     
     if(im.getpixel((945, 945))[0:3] == (148, 150, 156)):
-        return {'teamfight' : True}
+        return {'teamfight' : True, "valid" : True}
     
     if(im.getpixel((615, 38))[0:3] != (247, 235, 215) or im.getpixel((672, 38))[0:3] != (201, 37, 38)):
         return False
     
     results = {};
+    results['valid'] = True
     results['loading'] = False
     results['teamfight'] = False
     results['players'] = [[], []];
@@ -372,6 +377,7 @@ def getScreenshotData(im, staticdata = False):
          "items" : getItems(im, (1170, 1048)) if results['item_data_available'] else None
          })
     
+    errmsg = ""
     results['teams'] = [{}, {}]
     for team, _ in enumerate(results['teams']):
         results['teams'][team]['gold'] = 0 if results['gold_data_available'] else None
@@ -384,6 +390,9 @@ def getScreenshotData(im, staticdata = False):
                 results['players'][team][player]['current_gold'] = cint(results['players'][team][player]['gold'].split("(")[0])
                 results['players'][team][player]['total_gold'] = cint(results['players'][team][player]['gold'].split("(")[-1].replace(")", ""))
                 results['teams'][team]['gold'] += results['players'][team][player]['total_gold']
+                if(results['players'][team][player]['current_gold'] > results['players'][team][player]['total_gold']):
+                    errmsg = "Total gold greater than current gold."
+                    valid = False
                 
             results['players'][team][player]['kda'] = results['players'][team][player]['kda'].split("/")
             results['players'][team][player]['kills'] = cint(results['players'][team][player]['kda'][0])
@@ -392,15 +401,27 @@ def getScreenshotData(im, staticdata = False):
             results['players'][team][player]['level'] = cint(results['players'][team][player]['level'])
             
             if(results['players'][team][player]['level'] and results['players'][team][player]['level'] > 18):
+                errmsg = "Player level above 18."
                 valid = False
+            
             
             results['teams'][team]['kills'] += int(results['players'][team][player]['kills'])
     
     # Check to see if the teams' gold are sane values
     if(results['teams'][0]['gold'] > 200000 or results['teams'][1]['gold'] > 200000):
+        errmsg = "A team's gold is absurdly high."
         valid = False
+        
+    if last:
+        if(results['gold_data_available'] and last['gold_data_available'] and (results['teams'][0]['gold'] < last['teams'][0]['gold'] or results['teams'][1]['gold'] < last['teams'][1]['gold'])):
+            errmsg = "Somehow, a team's gold decreased!"
+            valid = False
+    
     
     if(valid == True):
+        last = results
         return results
     else:
-        return None
+        results['valid'] = False
+        results['errmsg'] = errmsg
+        return results

@@ -47,12 +47,10 @@ def sendmouseclick(coords, delay = 0.2):
     #then click
     ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
     
-def grabScreenshotWinner(bbox):
-    im = ImageGrab.grab(bbox)
+def grabScreenshotWinner(im):
     return screenshot.getGameWinner(im)
 
-def grabScreenshotData(bbox):
-    im = ImageGrab.grab(bbox)
+def grabScreenshotData(im):
     data = (screenshot.getScreenshotData(im))
     return data
 
@@ -100,7 +98,19 @@ def client_capture(savefile = None):
     while True:
         
         start = time.clock()
-        data = grabScreenshotData(bbox)
+        try:
+            im = ImageGrab.grab(bbox)
+            data = grabScreenshotData(im)
+        except:
+            im.save("wtf.png")
+            print "Exception caught. Continuing..."
+            exception_count += 1
+            if(exception_count == 5):
+                print "More than 5 exceptions in a row. Going to see if pausing/unpausing the game will fix things..."
+                sendkey('p', 0.1)
+            elif(exception_count > 20):
+                raise "Too many OCR exceptions in a row. "
+            continue
         
         exception_count = 0
         
@@ -130,7 +140,7 @@ def client_capture(savefile = None):
             # Move the mouse to a location where we can see the purple team nexus
             sendmouseclick((window_coords[0] + 1886, window_coords[1] + 803))
             time.sleep(3)
-            winner = (grabScreenshotWinner(bbox))
+            winner = grabScreenshotWinner(im)
             if(winner == 0):
                 print "Blue team wins."
             else:
@@ -198,8 +208,13 @@ def client_capture(savefile = None):
         else:
             overlay_inactive_counter = 0
         
-        #print data['map_position']
-        history.append(data)
+        #print data['towers']
+        if(data['valid'] == True):
+            history.append(data)
+        else:
+            print data['errmsg']
+            im.save("wtf.png")
+        
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
         
