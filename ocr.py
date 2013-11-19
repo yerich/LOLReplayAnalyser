@@ -104,7 +104,7 @@ def bwinvert(pixels):
 
 # Primitive but fast OCR
 def bwglyphtochar(pixels, threshold = 1, print_errors = False):
-    printpixels(pixels)
+    #printpixels(pixels)
     
     pixels = bwtrimvertical(pixels)['result']
     if len(pixels) == 0:
@@ -141,7 +141,6 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
     elif(width < 11 and width > 2 and last_row_ratio > 0.35 and not pixels[0][0] and not pixels[0][-1] and ((pixels[m][1] and pixels[m][c]) or (pixels[m-1][1] and pixels[m-1][c])) and not pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1] and first_row_ratio < 0.45 and not pixels[int(round(height/4))][-1] and not pixels[int(round(height/5))][-2]):
         return '6'
     elif(width < 11 and width > 2 and pixels[0][0] and pixels[0][c] and pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and (not pixels[-2][0] or (not pixels[-3][0] and not pixels[-4][0] and pixels[-1][0] and not pixels[-1][3])) and not pixels[-1][-1]):
-        print "yay"
         return '7'
     elif(width < 11 and width > 2 and not pixels[0][0] and pixels[0][c] and (pixels[0][c+1] or pixels[0][c-2]) and pixels[0][c-1] and not pixels[0][-1] and pixels[m][c] and not pixels[-1][0] and pixels[-1][c] and pixels[-1][c+1] and pixels[-1][c-1] and (not pixels[-1][-1]) and (first_row_ratio >= 0.4 and last_row_ratio >= 0.4)):
         return '8'
@@ -303,7 +302,7 @@ def imagetostring(im):
     
     pixels = bwtrim(pixels)
     
-    printpixels(pixels)
+    #printpixels(pixels)
     glyphs = bwfindglyphs(pixels)
     result = bwglyphstostring(glyphs, 1, False)
     
