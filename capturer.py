@@ -100,17 +100,7 @@ def client_capture(savefile = None):
     while True:
         
         start = time.clock()
-        try:
-            data = grabScreenshotData(bbox)
-        except:
-            print "Exception caught. Continuing..."
-            exception_count += 1
-            if(exception_count == 5):
-                print "More than 5 exceptions in a row. Going to see if pausing/unpausing the game will fix things..."
-                sendkey('p', 0.1)
-            elif(exception_count > 20):
-                raise "Too many OCR exceptions in a row. "
-            continue
+        data = grabScreenshotData(bbox)
         
         exception_count = 0
         
@@ -208,7 +198,7 @@ def client_capture(savefile = None):
         else:
             overlay_inactive_counter = 0
         
-        print data['towers']
+        #print data['map_position']
         history.append(data)
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])

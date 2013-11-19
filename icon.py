@@ -9,6 +9,7 @@ from os.path import isfile, join
 import pickle
 import operator
 import os
+import ImageDraw
 
 iconData = None
 
@@ -106,7 +107,45 @@ def imageToIconName(im, restrict = None):
     #print matches[0][0], matches[0][1], matches[1][0], matches[1][1], matches[2][0], matches[2][1]
     return matches[0][0]
 
+# Utility function that is used to automatically generated icons for activated versions of items
+# on cooldown
+def generateActivatedItemIcons():
+    icons = [ f for f in listdir("icons_activated/") if isfile(join("icons_activated/",f)) and f.split(".")[-1] == "png" ]
+    
+    for i in icons:
+        filename = ".".join(i.split(".")[0:-1])
+        
+        im = Image.open("icons_activated/"+i).convert("RGBA")
+        color_layer = Image.new('RGBA', im.size, (0, 0, 0))
+        
+        line_layer = Image.new('RGBA', im.size, (109, 109, 109))
+        alpha_mask = Image.new('L', im.size, 0)
+        alpha_mask_draw = ImageDraw.Draw(alpha_mask)
+        alpha_mask_draw.line([(im.size[0]//2, im.size[1]//2), (im.size[0]//2, 0)], fill=186, width = 3)
+        
+        newim = Image.blend(im, color_layer, 0.51)
+        newim = Image.composite(line_layer, newim, alpha_mask)
+        newim.save("icons_activated/"+filename+"-activated.png")
+        
+        newim = Image.blend(im, color_layer, 0.29)
+        newim = Image.composite(line_layer, newim, alpha_mask)
+        newim.save("icons_activated/"+filename+"-activated-done.png")
+        
+        rect_layer = Image.new('RGBA', im.size, (0, 0, 0))
+        rect_alpha_mask = Image.new("L", im.size, 0)
+        rect_alpha_mask_draw = ImageDraw.Draw(rect_alpha_mask)
+        rect_alpha_mask_draw.rectangle((0, 0, im.size[0]//2, im.size[1]), fill=131)
+        rect_alpha_mask_draw.rectangle((im.size[0]//2+1, 0, im.size[0], im.size[1]), fill=75)
+        
+        newim = Image.composite(rect_layer, im, rect_alpha_mask)
+        newim = Image.composite(line_layer, newim, alpha_mask)
+        newim.save("icons_activated/"+filename+"-activated-half.png")
+        
+        
+        
 if __name__ == "__main__":
     print "Generating icon data file."
     dat = generateIconDataFile()
     print "Icon data file generated. "+str(len(dat))+" icons in database."
+    
+    #generateActivatedItemIcons()

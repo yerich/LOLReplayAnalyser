@@ -143,8 +143,9 @@ def getScreenshotData(im, staticdata = False):
     
     # Get the current map position based on the box in the minimap
     camera_box_y = []
+    camera_box_y[:] = []
     results['map_position'] = [-1, -1]
-    for x in [1630, 1700, 1770, 1840, 1890]:
+    for x in [1630, 1700, 1770, 1840, 1890] + range(1625, 1914):
         prevpixel = (0, 0, 0)
         for y in range(784, 1071):
             pixel = im.getpixel((x, y))[0:3]
@@ -157,27 +158,35 @@ def getScreenshotData(im, staticdata = False):
     
     if(len(camera_box_y) == 1):
         if(camera_box_y[0][1] < 900):
-            camera_box_search_y = camera_box_y[0][1] - 5
-            results['map_position'][1] = camera_box_y[0][1] - 20 - 858
+            camera_box_search_y = camera_box_y[0][1] - 15
+            results['map_position'][1] = camera_box_y[0][1] - 16 - 782
         else:
-            camera_box_search_y = camera_box_y[0][1] + 5
-            results['map_position'][1] = camera_box_y[0][1] + 29 - 858
-    else:
-        camera_box_search_y = camera_box_y[0][1] + 5
-        results['map_position'][1] = camera_box_y[0][1] + 29 - 858
+            camera_box_search_y = camera_box_y[0][1] + 15
+            results['map_position'][1] = camera_box_y[0][1] + 33 - 782
+    elif(len(camera_box_y) > 1):
+        camera_box_search_y = camera_box_y[0][1] + 15
+        results['map_position'][1] = camera_box_y[0][1] + 33 - 782
+    
     
     camera_box_x = []
-    prevpixel = (0, 0, 0)
-    for x in range(1625, 1914):
-        pixel = im.getpixel((x, camera_box_search_y))[0:3]
-        if (pixel == (255, 255, 255) and prevpixel == (255, 255, 255)):
-            camera_box_x.append((x, camera_box_search_y))
-        prevpixel = pixel
-    
-    if(len(camera_box_x) == 1 and camera_box_x[0][0] < 1720):
-        results['map_position'][0] = camera_box_x[0][0] - 46 - 1453
-    else:
-        results['map_position'][0] = camera_box_x[0][0] + 45 - 1453
+    camera_box_x[:] = []
+    if(len(camera_box_y) > 0):
+        for y in [camera_box_search_y] + range(864, 1075):
+            prevpixel = (0, 0, 0)
+            for x in range(1625, 1914):
+                pixel = im.getpixel((x, y))[0:3]
+                if (pixel == (255, 255, 255) and prevpixel == (255, 255, 255)):
+                    camera_box_x.append((x, y))
+                prevpixel = pixel
+                
+            if len(camera_box_x) > 0:
+                break
+        
+        if(len(camera_box_x) == 1 and camera_box_x[0][0] < 1720):
+            results['map_position'][0] = camera_box_x[0][0] - 51 - 1623
+        elif(len(camera_box_x) > 0):
+            results['map_position'][0] = camera_box_x[0][0] + 44 - 1623
+
     
     # Get spectator client states
     if(im.getpixel((638, 867))[0:3] == (165, 166, 165)):
