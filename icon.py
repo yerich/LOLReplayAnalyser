@@ -148,4 +148,4 @@ if __name__ == "__main__":
     dat = generateIconDataFile()
     print "Icon data file generated. "+str(len(dat))+" icons in database."
     
-    #generateActivatedItemIcons()
+    generateActivatedItemIcons()
