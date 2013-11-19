@@ -33,11 +33,22 @@ $(document).ready(function() {
                     var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';
     
                     $.each(this.points, function(i, point) {
-                        s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
+                        if(this.series.name == "Difference") {
+                            if(point.y == 0)
+                                s += '<br/>Tied';
+                            else if(point.y > 0)
+                                s += '<br/><span style="color: #0046AF;"><strong>Blue team leads</strong></span> by ' + Math.round(point.y);
+                            else
+                                s += '<br/><span style="color: #7000AD;"><strong>Purple team leads</strong></span> by ' + Math.round(-point.y);
+                        }
+                        else {
+                            s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
+                        }
                     });
                 
                     return s;
-                }
+                },
+                useHTML: true
             },
             
             credits : false, 
@@ -58,12 +69,12 @@ $(document).ready(function() {
                     plotBands: [{
                       from: 0,
                       to: 10000000,
-                      color: '#AAD9FF'
+                      color: '#DDF0FF'
                     },
                     {
                       from: -10000000,
                       to: 0,
-                      color: '#B1AAFF'
+                      color: '#E0DDFF'
                     }]
                 }
                 ],
@@ -88,7 +99,7 @@ $(document).ready(function() {
                 {
                     name : 'Difference',
                     type : 'area',
-                    fillColor : "rgba(0, 0, 0, 0.5)",
+                    fillColor : "rgba(0, 0, 0, 0.3)",
                     data : convertDataTime(data['difference']),
                     tooltip: {
                         valueDecimals: 0
@@ -96,7 +107,11 @@ $(document).ready(function() {
                     lineColor: "#000",
                     yAxis: 1
                 }
-            ]
+            ],
+            
+            navigator : {
+                baseSeries: 2
+            }
         });
     });
 });
