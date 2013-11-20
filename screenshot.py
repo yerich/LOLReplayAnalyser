@@ -398,12 +398,18 @@ def getScreenshotData(im, staticdata = False):
             results['players'][team][player]['kills'] = cint(results['players'][team][player]['kda'][0])
             results['players'][team][player]['deaths'] = cint(results['players'][team][player]['kda'][1])
             results['players'][team][player]['assists'] = cint(results['players'][team][player]['kda'][2])
+            
             results['players'][team][player]['level'] = cint(results['players'][team][player]['level'])
+            results['players'][team][player]['minions'] = cint(results['players'][team][player]['minions'])
             
             if(results['players'][team][player]['level'] and results['players'][team][player]['level'] > 18):
                 errmsg = "Player level above 18."
                 valid = False
             
+            if last:
+                if(results['players'][team][player]['minions'] < results['players'][team][player]['minions']):
+                    errmsg = "Some how player "+str((team, player))+" CS decreased!"
+                    valid = False
             
             results['teams'][team]['kills'] += int(results['players'][team][player]['kills'])
     

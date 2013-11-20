@@ -42,10 +42,17 @@ $(document).ready(function() {
     $.getJSON(baseurl+"data.json", function(data) {
         console.log(data);
         
+        // Get last entry from objective data
+        last_objective_entry = -1;
+        for(i in data['objectives']['teams'][0]) {
+            if(parseInt(i) > last_objective_entry) {
+                last_objective_entry = parseInt(i);
+            }
+        }
+        
         // Populate the scoreboard
         for(i = 0; i < 2; i++) {
             for(j = 0; j < 5; j++) {
-                $("#main_scoreboard_champion_"+i+"_"+j).html(championIconTag(data['game']['players'][i][j]['champion']));
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append("<td>"+championIconTag(data['game']['players'][i][j]['champion'])+"</td>");
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append(
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['level']+"</span></td>");
@@ -55,7 +62,7 @@ $(document).ready(function() {
                     "<span class='detailed_scoreboard_summoner_name'>"+quickfindLink(data['game']['players'][i][j]['summoner'])+"</span></td>");
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append("<td class='detailed_scoreboard_summoner_spells'></td>");
                 for(k = 0; k < 2; k++) {
-                    $("#detailed_scoreboard_champion_"+i+"_"+j+" .detailed_scoreboard_summoner_spells").append(summonerSpellIconTag(data['game']['players'][i][j]['summoner-spells'][k]));
+                    $("#detailed_scoreboard_champion_"+i+"_"+j+" .detailed_scoreboard_summoner_spells").append(summonerSpellIconTag(data['game']['players'][i][j]['summoner_spells'][k]));
                 }
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append("<td class='detailed_scoreboard_items'></td>");
                 for(k = 0; k < data['game']['players'][i][j]['items'].length; k++) {
@@ -68,6 +75,13 @@ $(document).ready(function() {
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append(
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['total_gold']+"</span></td>");
             }
+            
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_kda'>"+data['game']['teams'][i]['kda'].join(" / ")+"</div>");
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_towers'>Towers: "+data['objectives']['teams'][i][last_objective_entry]['num_towers']+"</div>");
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_dragons'>Dragons: "+data['objectives']['teams'][i][last_objective_entry]['num_dragons']+"</div>");
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_barons'>Barons: "+data['objectives']['teams'][i][last_objective_entry]['num_barons']+"</div>");
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_cs'>CS: "+data['game']['teams'][i]['minions']+"</div>");
+            
         }
         
         // Create the gold chart
