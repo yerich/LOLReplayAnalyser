@@ -6,13 +6,40 @@
     <style type="text/css">
         @import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
         body { font-family: "Open Sans", "Tahoma", sans-serif; background: #F0F0F0; }
+        a { text-decoration: none; color: #0042AE;}
+        a:hover { text-decoration: underline;}
+        a:visited { color: #2E00AD;}
+        a:active { color: #BC0000;}
+        
+        table { width: 100%;}
+        table, td, th { border-collapse: collapse; padding: 2px 4px;}
+        th { border-bottom: 1px solid #CCC; text-align: left;}
+        
         #wrapper { width: 900px; margin: 0 auto; padding: 30px; background: #FFF;}
+        
+        #main_scoreboard { margin-bottom: 50px;}
+        .main_scoreboard_team { display: inline-block;}
+        #main_scoreboard_0 { float: left; background: #DDF0FF;}
+        #main_scoreboard_1 { float: right; background: #E0DDFF;}
+        .main_scoreboard_champion { display: inline-block; padding: 5px; width: 60px; }
+        .main_scoreboard_champion img { width: 60px;}
+        
+        #detailed_scoreboard { clear: both; padding: 30px 0;}
+        #detailed_scoreboard td { padding: 2px 4px;}
+        #detailed_scoreboard img { width: 40px; border-radius: 5px; margin-right: 1px; display: inline-block;}
+        
+        .detailed_scoreboard_champion_name { font-weight: bold;}
+        .detailed_scoreboard_champion_blue td { background: #F2F6FF; }
+        .detailed_scoreboard_champion_purple td { background: #F3F2FF; }
+        .detailed_scoreboard_champion_blue .detailed_scoreboard_champion_name { color: #002763; }
+        .detailed_scoreboard_champion_purple .detailed_scoreboard_champion_name { color: #3D0060; }
     </style>
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://code.highcharts.com/stock/highstock.js"></script>
     <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
     
+    <script src="highcharts.theme.js"></script>
     <script src="analysis.js"></script>
 </head>
 
@@ -20,6 +47,49 @@
 
 <div id="wrapper">
     <h1>League of Legends Replay Analysis</h1>
+    
+    <div id="main_scoreboard">
+        <div id="main_scoreboard_0" class="main_scoreboard_team">
+            <div id="main_scoreboard_champion_0_0" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_0_1" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_0_2" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_0_3" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_0_4" class="main_scoreboard_champion"></div>
+        </div>
+        <div id="main_scoreboard_1" class="main_scoreboard_team">
+            <div id="main_scoreboard_champion_1_0" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_1_1" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_1_2" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_1_3" class="main_scoreboard_champion"></div>
+            <div id="main_scoreboard_champion_1_4" class="main_scoreboard_champion"></div>
+        </div>
+    </div>
+    
+    <div id="detailed_scoreboard">
+        <table>
+            <tr>
+                <th style="width: 50px;"></th>
+                <th>Level</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>K / D / A</th>
+                <th>CS</th>
+                <th>Gold</th>
+            </tr>
+            <tr id="detailed_scoreboard_champion_0_0" class="detailed_scoreboard_champion_blue"></tr>
+            <tr id="detailed_scoreboard_champion_0_1" class="detailed_scoreboard_champion_blue"></tr>
+            <tr id="detailed_scoreboard_champion_0_2" class="detailed_scoreboard_champion_blue"></tr>
+            <tr id="detailed_scoreboard_champion_0_3" class="detailed_scoreboard_champion_blue"></tr>
+            <tr id="detailed_scoreboard_champion_0_4" class="detailed_scoreboard_champion_blue"></tr>
+            <tr><td colspan="3" style="height: 5px;"></td></tr>
+            <tr id="detailed_scoreboard_champion_1_0" class="detailed_scoreboard_champion_purple"></tr>
+            <tr id="detailed_scoreboard_champion_1_1" class="detailed_scoreboard_champion_purple"></tr>
+            <tr id="detailed_scoreboard_champion_1_2" class="detailed_scoreboard_champion_purple"></tr>
+            <tr id="detailed_scoreboard_champion_1_3" class="detailed_scoreboard_champion_purple"></tr>
+            <tr id="detailed_scoreboard_champion_1_4" class="detailed_scoreboard_champion_purple"></tr>
+        </table>
+    </div>
     
     <div id="team_gold_chart" style="height: 570px"></div>
 </div>
