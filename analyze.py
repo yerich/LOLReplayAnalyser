@@ -152,6 +152,6 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/sample.lra")
+    data = LOLGameData("sample.lra")
     print str(len(data.data['history'])) + " data points loaded."
     data.generateAnalysisFile()

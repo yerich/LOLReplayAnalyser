@@ -37,7 +37,7 @@ function printableChampionName(name) {
 }
 
 $(document).ready(function() {
-    baseurl = "output/sample/";
+    baseurl = "sample/";
     
     $.getJSON(baseurl+"data.json", function(data) {
         console.log(data);
