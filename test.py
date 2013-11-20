@@ -39,7 +39,7 @@ def runOCRTests():
                '178   8/4/10       1,815(11,000)', '137   5/2/13       1,549(9,664)', '31,01', '25,45', '28,39', "25,45/35,57", 
                "28,39/32,24", "3   5   5   3", "5   3   5   3", "0    1   0   0", "4   2    1    1", '5   4   3   2',
                '14', '12', '16', '13', '14', '13', '8', '9', '7', '4', '5', '6', '17', '18', '15', '13', '101    1/3/7        452(6,578)',
-               "2,164(11,099)     6/6/3    204", "370", "5", "9", "251    8/1/6        155(13,049)", "1,282(10,931)     1/11/11   169", "7", 
+               "2,164(11,099)     6/6/3    204", "5", "5", "9", "251    8/1/6        155(13,049)", "1,282(10,931)     1/11/11   169", "4", 
                "1,38", "101(16,951)     9/3/16   304", "177(11,741)     1/12/11   187", "299(14,008)     2/10/10   271", 
                "287(11,866)     7/8/19    90", "838(18,438)     10/5/18   315", "302(14,207)     12/8/19   32", "113    2/0/5        629(7,174)",
                '307(10,702)     4/2/10   188', '1,610(12,004)']
@@ -48,7 +48,7 @@ def runOCRTests():
     fopentime = 0
     
     print "Running OCR tests..."
-    for i in range(1, 75):
+    for i in range(1, 76):
         fopenstart = time.clock()
         im = Image.open('tests/image'+str(i)+'.png')
         fopentime += (time.clock() - fopenstart) * 1000
@@ -96,7 +96,7 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(1, 17):
+    for i in range(4, 5):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
@@ -116,7 +116,7 @@ def runScreenshotTests():
 start = time.clock()
 runOCRTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
-
+"""
 start = time.clock()
 runIconTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
@@ -124,3 +124,4 @@ print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"m
 start = time.clock()
 runScreenshotTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
+"""

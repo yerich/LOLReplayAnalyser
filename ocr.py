@@ -151,12 +151,15 @@ def bwglyphtochar(pixels, threshold = 1, print_errors = False):
         return '/'
     elif(width < 11 and first_row_count == 0 and not pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and not pixels[m][-1] and not pixels[-1][0] and not pixels[-1][-1]):
         return ' '
-    elif(width < 11 and pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and pixels[m][-1] and pixels[-1][0] and not pixels[-1][-1]):
+    elif(width < 11 and pixels[0][0] and not pixels[0][-1] and not pixels[m][0] and pixels[m][-1] and pixels[-1][0] and not pixels[-1][-1] and (not pixels[m][1] or width < 4)):
         return ')'
     elif(width < 11 and not pixels[0][0] and pixels[0][-1] and pixels[m][0] and not pixels[m][-1] and not pixels[-1][0] and pixels[-1][-1]):
         return '('
     elif(width < 11 and pixels[0][0] and not pixels[0][c] and pixels[0][-1] and not pixels[m][0] and pixels[m][c] and not pixels[m][-1] and pixels[-1][0] and not pixels[-1][c] and pixels[-1][-1]):
         return 'x'
+    elif(width == 5 and pixels[0][0] and pixels[0][c] and not pixels[0][-1] and pixels[1][-1] and not pixels[2][0] and not pixels[m][0] and pixels[m][1] and pixels[m][c] and not pixels[m+1][0] and pixels[-1][0] and pixels[-1][c] and not pixels[-1][-1]):
+        return '3'
+    
     
     #print "Error cannot match:"
     
@@ -309,9 +312,11 @@ def imagetostring(im):
     pixels = bwtrim(pixels)
     
     #printpixels(pixels)
+    numerrors_str = 0
     glyphs = bwfindglyphs(pixels)
     result = bwglyphstostring(glyphs, 1, False)
     #print result
+    #print numerrors_str
     
     if(result['numerrors'] == 0 and numerrors_str == 0):
         return result['result']
