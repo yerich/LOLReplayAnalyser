@@ -10,12 +10,18 @@
         a:hover { text-decoration: underline;}
         a:visited { color: #2E00AD;}
         a:active { color: #BC0000;}
+        p.analysis_note { text-align: right; margin-top: 0;}
+        .analysis_note { color: #999999; font-style: italic; font-size: 10pt;}
+        
+        h1 { padding-bottom: 0; margin-bottom: 0;}
+        h2 { border-bottom: 1px solid #999; height: 29px; padding: 0; margin: 25px 0 20px 0;}
         
         table { width: 100%;}
         table, td, th { border-collapse: collapse; padding: 2px 4px;}
         th { border-bottom: 1px solid #CCC; text-align: left;}
         
         #wrapper { width: 900px; margin: 0 auto; padding: 30px; background: #FFF;}
+        #analysis_nav { margin-bottom: 20px;}
         
         #main_scoreboard { margin-bottom: 50px;}
         .main_scoreboard_team { display: inline-block; width: 50%; padding-bottom: 5px;}
@@ -26,7 +32,7 @@
         #main_scoreboard_0 .main_scoreboard_kda { color: #002763;}
         #main_scoreboard_1 .main_scoreboard_kda { color: #3D0060;}
         .main_scoreboard_team div { display: inline-block;}
-        .main_scoreboard_kda { font-size: 30px; padding: 4px 10px; font-weight: bold;}
+        .main_scoreboard_kda { font-size: 30px; padding: 4px 50px; font-weight: bold;}
         .main_scoreboard_towers { padding: 18px 30px 0 30px; font-size: 18px;}
         .main_scoreboard_dragons { clear: both; padding: 0 13px;}
         
@@ -43,6 +49,8 @@
         .detailed_scoreboard_champion_purple td { background: #F3F2FF; }
         .detailed_scoreboard_champion_blue .detailed_scoreboard_champion_name { color: #002763; }
         .detailed_scoreboard_champion_purple .detailed_scoreboard_champion_name { color: #3D0060; }
+        
+        .full_chart { margin: 15px 0 5px 0;}
     </style>
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -57,6 +65,9 @@
 
 <div id="wrapper">
     <h1>League of Legends Replay Analysis</h1>
+    <div id="analysis_nav">
+        <a href="#gold_history">Gold History</a> | <a href="#objective_history">Objective History</a>
+    </div>
     
     <div id="main_scoreboard">
         <div id="main_scoreboard_0" class="main_scoreboard_team">
@@ -93,7 +104,16 @@
         </table>
     </div>
     
-    <div id="team_gold_chart" style="height: 570px"></div>
+    <h2 id="gold_history">Gold History</h2>
+    <div id="team_gold_chart" style="height: 540px" class="full_chart"></div>
+    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="gold_history_accuracy"></span> seconds.</p>
+    
+    <h2 id="objective_history">Objective History</h2>
+    <div id="team_towers_chart" style="height: 200px;" class="full_chart"></div>
+    <div id="team_dragons_chart" style="height: 100px;" class="full_chart"></div>
+    <div id="team_barons_chart" style="height: 100px;" class="full_chart"></div>
+    
+    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.</p>
 </div>
 
 </body>

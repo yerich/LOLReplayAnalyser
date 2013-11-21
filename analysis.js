@@ -5,6 +5,57 @@ function convertDataTime(data) {
     return data;
 }
 
+// Takes {0 : v1, 1 : v2} to [[0, v1], [0, v2]]
+function convertHashToArray(hash) {
+    var retarray = [];
+    for(key in hash) {
+        retarray.push([key, hash[key]]);
+    }
+    return retarray;
+}
+
+/* Turns
+ * data['teams'][0] = { time -> {stat1 -> 0, stat2 -> 0}} into
+ * [data['teams'][0]['stat1'][time], data['teams'][0]['stat2'][time]]
+ */
+function convertTeamStatsToSingle(teamsData) {
+    statList = [];
+    splitStats = [{}, {}];
+    for (time in teamsData[0]) {
+        for (stat in teamsData[0][time]) {
+            statList.push(stat);
+            splitStats[0][stat] = {};
+            splitStats[1][stat] = {};
+        }
+        break;
+    }
+    
+    for(team in teamsData) {
+        for(time in teamsData[team]) {
+            for(stat in statList) {
+                splitStats[team][statList[stat]][time] = teamsData[team][time][statList[stat]];
+            }
+        }
+    }
+    return splitStats;
+}
+
+//Get the time interval for which percent% of the time intervals are within
+function getPercentTimeInterval(data, percent) {
+    timeIntervals = [];
+    lastTime = false;
+    for(time in data) {
+        if(lastTime == false) {
+            lastTime = time;
+            continue;
+        }
+        timeIntervals.push(time - lastTime);
+        lastTime = time;
+    }
+    timeIntervals.sort();
+    return timeIntervals[Math.floor((timeIntervals.length-1)*percent)];
+}
+
 function championIconTag(name) {
     return "<img src='icons/champion-"+name+".png' />";
 }
@@ -49,6 +100,8 @@ $(document).ready(function() {
                 last_objective_entry = parseInt(i);
             }
         }
+        
+        objectives_by_time = convertTeamStatsToSingle(data['objectives']['teams']);
         
         // Populate the scoreboard
         for(i = 0; i < 2; i++) {
@@ -102,11 +155,12 @@ $(document).ready(function() {
             },
 
             title : {
-                text : 'Gold over time'
+                enabled: 'false'
             },
             
             xAxis: {
-                type : 'datetime'
+                type : 'datetime',
+                ordinal : true
             },
             
             tooltip: {
@@ -132,7 +186,11 @@ $(document).ready(function() {
                 useHTML: true
             },
             
-            credits : false, 
+            plotOptions: {
+                series : {
+                    dataGrouping: {"units" : [['second', [1, 5]]], "approximation": "average"}
+                }
+            },
             
             yAxis: [
                 {
@@ -144,7 +202,7 @@ $(document).ready(function() {
                 {
                     title : { text: "Difference" },
                     height: 150,
-                    top: 325,
+                    top: 295,
                     offset: 0,
                     lineWidth: 2,
                     plotBands: [{
@@ -163,7 +221,7 @@ $(document).ready(function() {
             series : [
                 {
                     name : 'Blue Team',
-                    data : convertDataTime(data['gold']['teams'][0]),
+                    data : convertDataTime(convertHashToArray(data['gold']['teams'][0])),
                     tooltip: {
                         valueDecimals: 0
                     },
@@ -172,7 +230,7 @@ $(document).ready(function() {
                 },
                 {
                     name : 'Purple Team',
-                    data : convertDataTime(data['gold']['teams'][1]),
+                    data : convertDataTime(convertHashToArray(data['gold']['teams'][1])),
                     tooltip: {
                         valueDecimals: 0
                     },
@@ -183,7 +241,7 @@ $(document).ready(function() {
                     name : 'Difference',
                     type : 'area',
                     fillColor : "rgba(0, 0, 0, 0.3)",
-                    data : convertDataTime(data['gold']['difference']),
+                    data : convertDataTime(convertHashToArray(data['gold']['difference'])),
                     tooltip: {
                         valueDecimals: 0
                     },
@@ -197,5 +255,93 @@ $(document).ready(function() {
                 baseSeries: 2
             }
         });
+        
+        //Calculate accuracy of gold plots
+        $("#gold_history_accuracy").text(getPercentTimeInterval(data['gold']['teams'][0], 0.99) / 2);
+       
+        plots = {"towers" : {title: "Towers"}, "dragons" : {title: "Dragons"}, "barons" : {title: "Barons"}};
+        for(i in plots) {
+            //Create the objective chart
+            $('#team_'+i+'_chart').highcharts('StockChart', {
+                rangeSelector : {
+                    enabled: false
+                },
+    
+                title : {
+                    enabled: false
+                },
+                
+                xAxis: {
+                    type : 'datetime',
+                    tickLength : 5,
+                    minRange : 10000000
+                },
+                
+                scrollbar : {
+                    enabled: false
+                },
+                
+                plotOptions: {
+                    series : {
+                        dataGrouping: {"units" : [['second', [5]]], "approximation": "open"}
+                    }
+                },
+                
+                tooltip: {
+                    formatter: function() {
+                        var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';
+        
+                        $.each(this.points, function(i, point) {
+                            s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
+                        });
+                    
+                        return s;
+                    },
+                    useHTML: true
+                },
+                
+                credits : false, 
+                
+                yAxis: [
+                    {
+                        title : { text: plots[i]['title'] },
+                        min : 0,
+                        lineWidth: 2,
+                        minTickInterval: 1,
+                        minorTickInterval: null
+                    }
+                    ],
+                
+                series : [
+                    {
+                        name : 'Blue Team '+plots[i]['title'],
+                        data : convertDataTime(convertHashToArray(objectives_by_time[0]['num_'+i])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#0046AF",
+                        color: "#0046AF",
+                        step: true
+                    },
+                    {
+                        name : 'Purple Team '+plots[i]['title'],
+                        data : convertDataTime(convertHashToArray(objectives_by_time[1]['num_'+i])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#7000AD",
+                        color: "#7000AD",
+                        step: true
+                    }
+                ],
+                
+                navigator : {
+                   enabled: false
+                }
+            });
+        }
+        
+        //Calculate accuracy of objective plots
+        $("#objective_history_accuracy").text(getPercentTimeInterval(objectives_by_time[0]['num_towers'], 0.99) / 2);
     });
 });

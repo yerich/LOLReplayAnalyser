@@ -49,7 +49,7 @@ class LOLGameData:
                     for player in range(0, 5):
                         gold_data['players'][team][player][i['time']] = i['players'][team][player]['gold']
         
-        return self.__convertDataToTuples(gold_data)
+        return gold_data
     
     # Get final scoreboard, summoner names, etc.
     def getGameData(self):
@@ -123,7 +123,7 @@ class LOLGameData:
                     
                     # Dragon data is a bit delayed, so we'll have to rewrite history
                     for k, _ in enumerate(objective_data):
-                        if(k > i['time'] - 4):
+                        if(k > i['time'] - 2):
                             objective_data[k][j['team']]['num_dragons'] += 1
                     
                 if(j['victim'] == "monster-baron" and i['time'] > last_baron + 200):
@@ -131,7 +131,7 @@ class LOLGameData:
                     num_barons['teams'][j['team']] += 1
                     
                     for k, _ in enumerate(objective_data):
-                        if(k > i['time'] - 4):
+                        if(k > i['time'] - 2):
                             objective_data[k][j['team']]['num_barons'] += 1
             
             for team in [0, 1]:
