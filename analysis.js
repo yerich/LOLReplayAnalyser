@@ -81,7 +81,15 @@ $(document).ready(function() {
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_dragons'>Dragons: "+data['objectives']['teams'][i][last_objective_entry]['num_dragons']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_barons'>Barons: "+data['objectives']['teams'][i][last_objective_entry]['num_barons']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_cs'>CS: "+data['game']['teams'][i]['minions']+"</div>");
-            
+        }
+        
+        if(data['game']['teams'][0]['winner'] == true) {
+            $("#winner").addClass("winner_blue_team");
+            $("#winner").html("Blue Team Wins");
+        }
+        else {
+            $("#winner").addClass("winner_purple_team");
+            $("#winner").html("Purple Team Wins");
         }
         
         // Create the gold chart

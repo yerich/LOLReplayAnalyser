@@ -18,11 +18,21 @@
         #wrapper { width: 900px; margin: 0 auto; padding: 30px; background: #FFF;}
         
         #main_scoreboard { margin-bottom: 50px;}
-        .main_scoreboard_team { display: inline-block; padding: 5px;}
+        .main_scoreboard_team { display: inline-block; width: 50%; padding-bottom: 5px;}
         #main_scoreboard_0 { float: left; background: #DDF0FF;}
+        #main_scoreboard_0 div { float: left; padding-right: 20px;}
         #main_scoreboard_1 { float: right; background: #E0DDFF;}
-        .main_scoreboard_champion { display: inline-block; padding: 2px; }
-        .main_scoreboard_champion img { width: 50px;}
+        #main_scoreboard_1 div { float: right; text-align: right; padding-left: 20px;}
+        #main_scoreboard_0 .main_scoreboard_kda { color: #002763;}
+        #main_scoreboard_1 .main_scoreboard_kda { color: #3D0060;}
+        .main_scoreboard_team div { display: inline-block;}
+        .main_scoreboard_kda { font-size: 30px; padding: 4px 10px; font-weight: bold;}
+        .main_scoreboard_towers { padding: 18px 30px 0 30px; font-size: 18px;}
+        .main_scoreboard_dragons { clear: both; padding: 0 13px;}
+        
+        #winner { clear: both; margin: 0px; text-align: center; padding: 15px 0 0 0; text-transform: uppercase; font-size: 25px; font-weight: bold;}
+        .winner_blue_team { color: #002763; }
+        .winner_purple_team { color: #3D0060; }
         
         #detailed_scoreboard { clear: both; padding: 30px 0;}
         #detailed_scoreboard td { padding: 2px 4px;}
@@ -54,6 +64,8 @@
         <div id="main_scoreboard_1" class="main_scoreboard_team">
         </div>
     </div>
+    
+    <div id="winner"></div>
     
     <div id="detailed_scoreboard">
         <table>
