@@ -32,9 +32,10 @@
         #main_scoreboard_0 .main_scoreboard_kda { color: #002763;}
         #main_scoreboard_1 .main_scoreboard_kda { color: #3D0060;}
         .main_scoreboard_team div { display: inline-block;}
-        .main_scoreboard_kda { font-size: 30px; padding: 4px 50px; font-weight: bold;}
-        .main_scoreboard_towers { padding: 18px 30px 0 30px; font-size: 18px;}
+        .main_scoreboard_kda { font-size: 30px; font-weight: bold; float: none !important; display: block !important; text-align: center !important; padding: 10px 0;}
         .main_scoreboard_dragons { clear: both; padding: 0 13px;}
+        #main_scoreboard_0 .main_scoreboard_towers { float: right;}
+        #main_scoreboard_1 .main_scoreboard_towers { float: left;}
         
         #winner { clear: both; margin: 0px; text-align: center; padding: 15px 0 0 0; text-transform: uppercase; font-size: 25px; font-weight: bold;}
         .winner_blue_team { color: #002763; }
@@ -55,6 +56,7 @@
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
     <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
     
     <script src="highcharts.theme.js"></script>
@@ -112,8 +114,9 @@
     <div id="team_towers_chart" style="height: 200px;" class="full_chart"></div>
     <div id="team_dragons_chart" style="height: 100px;" class="full_chart"></div>
     <div id="team_barons_chart" style="height: 100px;" class="full_chart"></div>
-    
-    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.</p>
+    <div id="team_inhibitors_chart" style="height: 250px;" class="full_chart"></div>
+    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.
+        Solid areas represent periods of uncertainty.</p>
 </div>
 
 </body>

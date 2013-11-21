@@ -3,6 +3,7 @@ import gzip
 import json
 import os
 import re
+import config
 
 class LOLGameData:
     data = {}
@@ -53,7 +54,6 @@ class LOLGameData:
     
     # Get final scoreboard, summoner names, etc.
     def getGameData(self):
-        basename = ".".join(self.filename.split(".")[0:-1])
         game_data = { 'players' : [[], []], 'teams' : [{}, {}] }
         
         itemAvaliableIndex = len(self.data['history']) - 1
@@ -114,7 +114,8 @@ class LOLGameData:
         last_baron = -1000
         num_dragons = { 'teams' : [0, 0]}
         num_barons = { 'teams' : [0, 0]}
-        for i in self.data['history']:
+        last_data = { 'teams' : [{}, {}]}
+        for i in self.data['history']:  # Loop through data points
             for j in i['events']:
                 # Detect dragon and baron based on the event notifications
                 if(j['victim'] == "monster-dragon" and i['time'] > last_dragon + 200):
@@ -122,7 +123,7 @@ class LOLGameData:
                     num_dragons['teams'][j['team']] += 1
                     
                     # Dragon data is a bit delayed, so we'll have to rewrite history
-                    for k, _ in enumerate(objective_data):
+                    for k, _ in enumerate(objective_data['teams'][0]):
                         if(k > i['time'] - 2):
                             objective_data[k][j['team']]['num_dragons'] += 1
                     
@@ -130,13 +131,135 @@ class LOLGameData:
                     last_baron = i['time']
                     num_barons['teams'][j['team']] += 1
                     
-                    for k, _ in enumerate(objective_data):
+                    for k, _ in enumerate(objective_data['teams'][0]):
                         if(k > i['time'] - 2):
                             objective_data[k][j['team']]['num_barons'] += 1
             
-            for team in [0, 1]:
-                objective_data['teams'][team][i['time']] = { "num_dragons" : num_dragons['teams'][team], "num_barons" : num_barons['teams'][team], "num_towers" : i['towers'][team] }
+            # Inhibitors
+            num_inhibitors = [0, 0]
             
+            # Sometimes we can't get the state of an inhibitor because something is covering it on the minimap
+            unknown_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
+            up_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
+            down_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
+            for team in [0, 1]:
+                for lane in i['inhibitors'][team]:
+                    if i['inhibitors'][team][lane] == False:
+                        num_inhibitors[-(team-1)] += 1  # -(team-1) turns 0 into 1 and vice versa
+                        down_inhibitors[-(team-1)][lane] = 1
+                    elif i['inhibitors'][team][lane] == None:
+                        unknown_inhibitors[-(team-1)][lane] = 1
+                    elif i['inhibitors'][team][lane] == True:
+                        up_inhibitors[-(team-1)][lane] = 1
+                                
+            # Conpile data into our list for this data point
+            for team in [0, 1]:
+                objective_data['teams'][team][i['time']] = {
+                                                             "num_dragons" : num_dragons['teams'][team], 
+                                                             "num_barons" : num_barons['teams'][team], 
+                                                             "num_towers" : i['towers'][team], 
+                                                             "num_inhibitors" : num_inhibitors[team], 
+                                                             "up_inhibitors" : up_inhibitors[team].copy(),
+                                                             "down_inhibitors" : down_inhibitors[team].copy(),
+                                                             "unknown_inhibitors" : unknown_inhibitors[team].copy(),
+                                                             }
+
+                last_data['teams'][team] = objective_data['teams'][team][i['time']]
+        
+        
+        # Fill in the gaps in our knowledge of inhibitors
+        for team in [0, 1]:
+            last = False
+            for time in sorted(objective_data['teams'][team].keys()):
+                for lane in ["top", "middle", "bottom"]:
+                    # Unknown -> True
+                    if(last and objective_data['teams'][team][time]['up_inhibitors'][lane] == 1 and last['unknown_inhibitors'][lane]):
+                        # Look for True -> Unknown -> True. If length of Unknown < 5 minutes, we know that the inhib was up during that time
+                        last_true = -1000
+                        for i in objective_data['teams'][team]:
+                            if(i < time and i > last_true and i > (time - config.INHIB_RESPAWN_TIME) and objective_data['teams'][team][i]['up_inhibitors'][lane]):
+                                last_true = i
+                        if(last_true > time - config.INHIB_RESPAWN_TIME):
+                            #print "Case 1 looking between "+str(last_true)+" and "+str(time)+" for "+lane
+                            for i in objective_data['teams'][team]:
+                                if(i <= time and i >= last_true and objective_data['teams'][team][i]['unknown_inhibitors'][lane]):
+                                    objective_data['teams'][team][i]['unknown_inhibitors'][lane] = 0
+                                    objective_data['teams'][team][i]['up_inhibitors'][lane] = 1
+                                    #print "case 1 at "+str(i)
+                    
+                    #(Unknown/False) -> True.
+                    if(last and objective_data['teams'][team][time]['up_inhibitors'][lane] == 1 and (last['unknown_inhibitors'][lane] or last['down_inhibitors'][lane])):
+                        # Look for True -> False -> (Unknown) -> True. False must be exactly 5 minutes.
+                        last_false = -1000
+                        last_true = -1000
+                        
+                        for i in objective_data['teams'][team]:
+                            if(i < time and objective_data['teams'][team][i]['down_inhibitors'][lane]):
+                                last_false = i
+                        
+                        print last_false
+                        
+                        for i in objective_data['teams'][team]:
+                            if(i < time and i > last_true and i <= (time - config.INHIB_RESPAWN_TIME) and i > (time - 2*config.INHIB_RESPAWN_TIME) and objective_data['teams'][team][i]['up_inhibitors'][lane]):
+                                last_true = i
+                        
+                        print last_true
+                        
+                        if(last_true < last_false and last_true <= (time - config.INHIB_RESPAWN_TIME) and last_true > (time - 2*config.INHIB_RESPAWN_TIME)):
+                            for i in objective_data['teams'][team]:
+                                if(i <= last_false - config.INHIB_RESPAWN_TIME and i >= last_true and objective_data['teams'][team][i]['unknown_inhibitors'][lane]):
+                                    objective_data['teams'][team][i]['unknown_inhibitors'][lane] = 0
+                                    objective_data['teams'][team][i]['up_inhibitors'][lane] = 1
+                        
+                    # Unknown -> False
+                    if(last and objective_data['teams'][team][time]['down_inhibitors'][lane] == 1 and last['unknown_inhibitors'][lane]):
+                        # Look for Unknown -> False -> (Unknown) -> True.
+                        first_true = 10000000
+                        for i in objective_data['teams'][team]:
+                            if(i > time and i < first_true and i < (time + config.INHIB_RESPAWN_TIME) and objective_data['teams'][team][i]['up_inhibitors'][lane]):
+                                first_true = i
+                        
+                        if(first_true < time + config.INHIB_RESPAWN_TIME):
+                            #print "Case 2 looking between "+str(first_true - config.INHIB_RESPAWN_TIME)+" and "+str(time)+" for "+lane
+                            for i in objective_data['teams'][team]:
+                                if(i > first_true - config.INHIB_RESPAWN_TIME and i < time and objective_data['teams'][team][i]['unknown_inhibitors'][lane]):
+                                    objective_data['teams'][team][i]['unknown_inhibitors'][lane] = 0
+                                    objective_data['teams'][team][i]['down_inhibitors'][lane] = 1
+                                    objective_data['teams'][team][i]['num_inhibitors'] += 1
+                                    #print "case 2 at "+str(i)
+                        
+                        # Look for True -> Unknown -> False
+                        last_true = -1000
+                        for i in objective_data['teams'][team]:
+                            if(i < time and i > last_true and i > (time - config.INHIB_RESPAWN_TIME) and objective_data['teams'][team][i]['up_inhibitors'][lane]):
+                                last_true = i
+                        if(last_true > time - config.INHIB_RESPAWN_TIME):
+                            #print "Case 3 looking between "+str(last_true)+" and "+str(time)+" for "+lane
+                            for i in objective_data['teams'][team]:
+                                if(i > time and i < last_true + config.INHIB_RESPAWN_TIME and objective_data['teams'][team][i]['unknown_inhibitors'][lane]):
+                                    objective_data['teams'][team][i]['unknown_inhibitors'][lane] = 0
+                                    objective_data['teams'][team][i]['down_inhibitors'][lane] = 1
+                                    objective_data['teams'][team][i]['num_inhibitors'] += 1
+                                    #print "case 3 at "+str(i)
+                        
+                last = objective_data['teams'][team][time].copy()
+                                    
+        
+        
+        # Generate the area of uncertainty for unknown inhibitors
+        for team in [0, 1]:
+            last = False
+            for k in objective_data['teams'][team]:
+                unknown_inhibitors_count = 0
+                for lane in objective_data['teams'][team][k]['unknown_inhibitors']:
+                    if(objective_data['teams'][team][k]['unknown_inhibitors'][lane]):
+                        unknown_inhibitors_count += 1
+                
+                objective_data['teams'][team][k]['num_inhibitors_range'] = [objective_data['teams'][team][k]['num_inhibitors'], 
+                                                                            objective_data['teams'][team][k]['num_inhibitors'] + unknown_inhibitors_count]
+                
+                #if(objective_data['teams'][team][k]['num_inhibitors_range'][0] != objective_data['teams'][team][k]['num_inhibitors_range'][1]):
+                #     print k, objective_data['teams'][team][k]['num_inhibitors_range'], team
         return objective_data
     
     def generateAnalysisFile(self):
@@ -154,4 +277,6 @@ class LOLGameData:
 if __name__ == "__main__":
     data = LOLGameData("sample.lra")
     print str(len(data.data['history'])) + " data points loaded."
+    print "Generating analysis json file..."
     data.generateAnalysisFile()
+    print "Done."

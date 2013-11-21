@@ -14,9 +14,22 @@ function convertHashToArray(hash) {
     return retarray;
 }
 
+// Takes {0 : [v11, v12], 1 : [v21, v22]} to [[0, v11, v12], [0, v21, v22]]
+function convertHashArrayToArray(hash) {
+    var retarray = [];
+    for(key in hash) {
+        var arrayentry = [key];
+        for(entry in hash[key]) {
+            arrayentry.push(hash[key][entry]);
+        }
+        retarray.push(arrayentry);
+    }
+    return retarray;
+}
+
 /* Turns
- * data['teams'][0] = { time -> {stat1 -> 0, stat2 -> 0}} into
- * [data['teams'][0]['stat1'][time], data['teams'][0]['stat2'][time]]
+ * data['teams'][0] = { time -> {stat1 -> v1, stat2 -> v2}} into
+ * [data['teams'][0]['stat1'][time] -> v1, data['teams'][0]['stat2'][time] -> v2]
  */
 function convertTeamStatsToSingle(teamsData) {
     statList = [];
@@ -130,10 +143,10 @@ $(document).ready(function() {
             }
             
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_kda'>"+data['game']['teams'][i]['kda'].join(" / ")+"</div>");
-            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_towers'>Towers: "+data['objectives']['teams'][i][last_objective_entry]['num_towers']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_dragons'>Dragons: "+data['objectives']['teams'][i][last_objective_entry]['num_dragons']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_barons'>Barons: "+data['objectives']['teams'][i][last_objective_entry]['num_barons']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_cs'>CS: "+data['game']['teams'][i]['minions']+"</div>");
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_towers'>Towers: "+data['objectives']['teams'][i][last_objective_entry]['num_towers']+"</div>");
         }
         
         if(data['game']['teams'][0]['winner'] == true) {
@@ -343,5 +356,104 @@ $(document).ready(function() {
         
         //Calculate accuracy of objective plots
         $("#objective_history_accuracy").text(getPercentTimeInterval(objectives_by_time[0]['num_towers'], 0.99) / 2);
+        
+        //Inhibitors graph
+        console.log(convertDataTime(convertHashArrayToArray(objectives_by_time[0]['num_inhibitors_range'])));
+        $('#team_inhibitors_chart').highcharts('StockChart', {
+            chart : {
+                type: 'arearange'
+            },
+            
+            rangeSelector : {
+                enabled: false
+            },
+
+            title : {
+                enabled: false
+            },
+            
+            xAxis: {
+                type : 'datetime',
+                tickLength : 5,
+                minRange : 10000000
+            },
+            
+            scrollbar : {
+                enabled: false
+            },
+            
+            plotOptions: {
+                series : {
+                    dataGrouping: {"enabled" : false}
+                }
+            },
+            
+            tooltip: {
+                formatter: function() {
+                    var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';
+    
+                    $.each(this.points, function(i, point) {
+                        s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
+                    });
+                
+                    return s;
+                },
+                useHTML: true
+            },
+            
+            credits : false, 
+            
+            yAxis: [
+                {
+                    title : { text: "Blue Inhibs" },
+                    min : 0,
+                    max: 3,
+                    offset: 0,
+                    height: 100,
+                    lineWidth: 2,
+                    tickInterval: 1,
+                    minorTickInterval: null
+                },
+                {
+                    title : { text: "Purple Inhibs" },
+                    min : 0,
+                    max: 3,
+                    offset: 0,
+                    height: 100,
+                    top: 120,
+                    lineWidth: 2,
+                    tickInterval: 1,
+                    minorTickInterval: null
+                }
+                ],
+            
+            series : [
+                {
+                    name : 'Blue Team Inhibitors Taken',
+                    data : convertDataTime(convertHashArrayToArray(objectives_by_time[0]['num_inhibitors_range'])),
+                    tooltip: {
+                        valueDecimals: 0
+                    },
+                    lineColor: "#0046AF",
+                    color: "#0046AF",
+                    step: true
+                },
+                {
+                    name : 'Purple Team Inhibitors Taken',
+                    data : convertDataTime(convertHashArrayToArray(objectives_by_time[1]['num_inhibitors_range'])),
+                    tooltip: {
+                        valueDecimals: 0
+                    },
+                    lineColor: "#7000AD",
+                    color: "#7000AD",
+                    step: true,
+                    yAxis: 1
+                }
+            ],
+            
+            navigator : {
+               enabled: false
+            }
+        });
     });
 });
