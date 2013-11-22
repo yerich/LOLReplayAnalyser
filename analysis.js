@@ -189,6 +189,9 @@ $(document).ready(function() {
                             else
                                 s += '<br/><span style="color: #7000AD;"><strong>Purple team leads</strong></span> by ' + Math.round(-point.y);
                         }
+                        else if(this.series.name == "Difference2") {
+                            return;
+                        }
                         else {
                             s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
                         }
@@ -221,12 +224,12 @@ $(document).ready(function() {
                     plotBands: [{
                       from: 0,
                       to: 10000000,
-                      color: '#DDF0FF'
+                      color: '#EFF8FF'
                     },
                     {
                       from: -10000000,
                       to: 0,
-                      color: '#E0DDFF'
+                      color: '#F5EFFF'
                     }]
                 }
                 ],
@@ -253,19 +256,35 @@ $(document).ready(function() {
                 {
                     name : 'Difference',
                     type : 'area',
-                    fillColor : "rgba(0, 0, 0, 0.3)",
                     data : convertDataTime(convertHashToArray(data['gold']['difference'])),
                     tooltip: {
                         valueDecimals: 0
                     },
-                    lineColor: "#000",
-                    color: "#000",
-                    yAxis: 1
-                }
+                    color: "rgba(0, 0, 0, 0.3)",
+                    fillColor: "rgba(0, 0, 0, 0.3)",
+                    yAxis: 1,
+                },
+                {
+                    name : 'Difference2',
+                    type : 'area',
+                    fillColor : "#BFE3FF",
+                    data : convertDataTime(convertHashToArray(data['gold']['difference'])),
+                    tooltip: {
+                        valueDecimals: 0
+                    },
+                    color: "#0046AF",
+                    yAxis: 1,
+                    negativeColor: "#7000AD",
+                    negativeFillColor: "#D6BFFF"
+                },
             ],
             
             navigator : {
-                baseSeries: 2
+                baseSeries: 2,
+                color: "#000",
+                fillColor: "#FFF",
+                negativeColor: "#000",
+                negativeFillColor: "#FFF"
             }
         });
         
@@ -412,7 +431,8 @@ $(document).ready(function() {
                     height: 100,
                     lineWidth: 2,
                     tickInterval: 1,
-                    minorTickInterval: null
+                    minorTickInterval: null,
+                    fillColor: "#BFE3FF"
                 },
                 {
                     title : { text: "Purple Inhibs" },
@@ -423,7 +443,8 @@ $(document).ready(function() {
                     top: 120,
                     lineWidth: 2,
                     tickInterval: 1,
-                    minorTickInterval: null
+                    minorTickInterval: null,
+                    fillColor: "#D6BFFF"
                 }
                 ],
             
