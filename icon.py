@@ -12,6 +12,7 @@ import os
 import ImageDraw
 
 iconData = None
+iconFolder = "icons/"
 
 # Get the difference i color between two pixels. The difference is calculated by adding
 # the sum of differences for each layer (RGB)
@@ -60,14 +61,14 @@ def iconDataDiff(icon, data):
         pixelDiff(icon[15], data[15])
 
 def generateIconDataFile():
-    icons = [ f for f in listdir("icons/") if isfile(join("icons/",f)) and f.split(".")[-1] == "png" ]
+    icons = [ f for f in listdir(iconFolder) if isfile(join(iconFolder,f)) and f.split(".")[-1] == "png" ]
     
     icon_dat = {}
     for i in icons:
-        imdat = imageToIconData(Image.open("icons/"+i))
+        imdat = imageToIconData(Image.open(iconFolder+i))
         icon_dat[i.split(".")[0]] = imdat
         
-    pickle.dump(icon_dat, open("icons/icons.dat", "w"))
+    pickle.dump(icon_dat, open(iconFolder+"icons.dat", "w"))
     return icon_dat
 
 def getIconData():
@@ -75,8 +76,8 @@ def getIconData():
     if iconData != None:
         return iconData
     
-    if isfile("icons/icons.dat"):
-        iconData = pickle.load(open("icons/icons.dat", "r"))
+    if isfile(iconFolder+"icons.dat"):
+        iconData = pickle.load(open(iconFolder+"icons.dat", "r"))
     else:
         iconData = generateIconDataFile()
         
@@ -141,7 +142,9 @@ def generateActivatedItemIcons():
         newim = Image.composite(line_layer, newim, alpha_mask)
         newim.save("icons_activated/"+filename+"-activated-half.png")
         
-        
+def setIconFolder(folder = "icons/"):
+    global iconFolder
+    iconFolder = folder
         
 if __name__ == "__main__":
     print "Generating icon data file."

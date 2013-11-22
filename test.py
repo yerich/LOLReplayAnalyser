@@ -100,7 +100,7 @@ def runScreenshotTests():
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
-        data = (getScreenshotData(im, True))
+        data = (getScreenshotData(im, {"clientVersion" : "3.13"}))
         #print data['events'] if data and 'events' in data else None
         #pp = pprint.PrettyPrinter(indent=4)
         #pp.pprint(data)
@@ -116,7 +116,7 @@ def runScreenshotTests():
 start = time.clock()
 runOCRTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
-"""
+
 start = time.clock()
 runIconTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
@@ -124,4 +124,3 @@ print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"m
 start = time.clock()
 runScreenshotTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
-"""

@@ -50,13 +50,13 @@ def sendmouseclick(coords, delay = 0.2):
 def grabScreenshotWinner(im):
     return screenshot.getGameWinner(im)
 
-def grabScreenshotData(im):
-    data = (screenshot.getScreenshotData(im))
+def grabScreenshotData(im, metadata = None):
+    data = (screenshot.getScreenshotData(im, metadata))
     return data
 
 logfile = open("output/capturelog.txt", "a")
 
-def client_capture(savefile = None):
+def client_capture(metadata = None):
     window_title = 'league of legends (tm) client'
     #window_title = 'notepad'
     champ_key_map = ['1', '2', '3', '4', '5', 'q', 'w', 'e', 'r', 't']
@@ -98,19 +98,8 @@ def client_capture(savefile = None):
     while True:
         
         start = time.clock()
-        try:
-            im = ImageGrab.grab(bbox)
-            data = grabScreenshotData(im)
-        except:
-            im.save("wtf.png")
-            print "Exception caught. Continuing..."
-            exception_count += 1
-            if(exception_count == 5):
-                print "More than 5 exceptions in a row. Going to see if pausing/unpausing the game will fix things..."
-                sendkey('p', 0.1)
-            elif(exception_count > 20):
-                raise "Too many OCR exceptions in a row. "
-            continue
+        im = ImageGrab.grab(bbox)
+        data = grabScreenshotData(im, metadata)
         
         exception_count = 0
         
@@ -218,15 +207,4 @@ def client_capture(savefile = None):
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
         
-    if(savefile):
-        savefileh = open(savefile, "w")
-        jsonstring = json.dumps( { 'data' : history, 'version' : '0.1' })
-        print >> savefileh, zlib.compress(jsonstring)
-        
-        savefileh = open(savefile+".txt", "w")
-        print >> savefileh, jsonstring
-        
     return { 'history' : history, 'summoner_spells': summoner_spells, 'winner' : winner }
-
-if __name__ == "__main__":
-    client_capture("output/"+str(int(time.time()))+".lra")

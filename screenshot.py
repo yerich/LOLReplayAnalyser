@@ -78,10 +78,16 @@ def getGameWinner(im):
     else:
         return 1
 
-# Returns a dict of data retrieved from a screenshot. If staticdata=true, then
-# static data, such as champion names, summoner spell, etc. will also be retrieved.
-def getScreenshotData(im, staticdata = False):
+# Returns a dict of data retrieved from a screenshot
+def getScreenshotData(im, metadata = None):
     global last
+    
+    if(metadata and "clientVersion" in metadata):
+        clientVersion = metadata["clientVersion"]
+        if(clientVersion < "3.14"):
+            icon.setIconFolder("icons/3.13/")
+    else:
+        clientVersion = None
     
     im = im.convert("RGB")
     width, height = im.size
@@ -169,8 +175,8 @@ def getScreenshotData(im, staticdata = False):
             camera_box_search_y = camera_box_y[0][1] + 15
             results['map_position'][1] = camera_box_y[0][1] + 33 - 782
     elif(len(camera_box_y) > 1):
-        camera_box_search_y = camera_box_y[0][1] + 15
-        results['map_position'][1] = camera_box_y[0][1] + 33 - 782
+        camera_box_search_y = min(camera_box_y[0][1], camera_box_y[1][1]) + 15
+        results['map_position'][1] = min(camera_box_y[0][1], camera_box_y[1][1]) + 33 - 782
     
     
     camera_box_x = []

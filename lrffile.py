@@ -61,7 +61,7 @@ def analyseLRFFile(filename = None, savefile = None):
     print "Analysis will be saved to output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     
     print "Beginning client capture."
-    output = client_capture()
+    output = client_capture(lrfmeta)
     print "Client capture completed."
     
     hwnd = find_windows_with_name(window_title)[0][0]

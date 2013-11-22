@@ -54,7 +54,7 @@ class LOLGameData:
     
     # Get final scoreboard, summoner names, etc.
     def getGameData(self):
-        game_data = { 'players' : [[], []], 'teams' : [{}, {}] }
+        game_data = { 'players' : [[], []], 'teams' : [{}, {}], "clientVersion" : "0.0" }
         
         itemAvaliableIndex = len(self.data['history']) - 1
         while(self.data['history'][itemAvaliableIndex]['item_data_available'] == False):
@@ -104,7 +104,8 @@ class LOLGameData:
                 game_data['teams'][team]['winner'] = True
             else:
                 game_data['teams'][team]['winner'] = False
-            
+        
+        game_data['clientVersion'] = self.data['lrf_meta']['clientVersion']
         return game_data
     
     # Gets data on towers, inhibitors, dragons, barons
@@ -197,13 +198,9 @@ class LOLGameData:
                             if(i < time and objective_data['teams'][team][i]['down_inhibitors'][lane]):
                                 last_false = i
                         
-                        print last_false
-                        
                         for i in objective_data['teams'][team]:
                             if(i < time and i > last_true and i <= (time - config.INHIB_RESPAWN_TIME) and i > (time - 2*config.INHIB_RESPAWN_TIME) and objective_data['teams'][team][i]['up_inhibitors'][lane]):
                                 last_true = i
-                        
-                        print last_true
                         
                         if(last_true < last_false and last_true <= (time - config.INHIB_RESPAWN_TIME) and last_true > (time - 2*config.INHIB_RESPAWN_TIME)):
                             for i in objective_data['teams'][team]:

@@ -1,3 +1,5 @@
+iconFolder = "icons/";
+
 function convertDataTime(data) {
     for(datum in data) {
         data[datum][0] = data[datum][0] * 1000;
@@ -70,15 +72,15 @@ function getPercentTimeInterval(data, percent) {
 }
 
 function championIconTag(name) {
-    return "<img src='icons/champion-"+name+".png' />";
+    return "<img src='"+iconFolder+"champion-"+name+".png' />";
 }
 
 function itemIconTag(name) {
-    return "<img src='icons/item-"+name+".png' />";
+    return "<img src='"+iconFolder+"item-"+name+".png' />";
 }
 
 function summonerSpellIconTag(name) {
-    return "<img src='icons/summoner-"+name+".png' />";
+    return "<img src='"+iconFolder+"summoner-"+name+".png' />";
 }
 
 function quickfindLink(summoner) {
@@ -105,6 +107,8 @@ $(document).ready(function() {
     
     $.getJSON(baseurl+"data.json", function(data) {
         console.log(data);
+        if(data['game']['clientVersion'] < "3.14")
+            iconFolder = "icons/3.13/";
         
         // Get last entry from objective data
         last_objective_entry = -1;
