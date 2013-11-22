@@ -99,7 +99,12 @@ def client_capture(metadata = None):
         
         start = time.clock()
         im = ImageGrab.grab(bbox)
-        data = grabScreenshotData(im, metadata)
+        try:
+            data = grabScreenshotData(im, metadata)
+        except Exception, e:
+            print "Error: Exception caught: "+str(e)
+            time.sleep(1)
+            continue
         
         exception_count = 0
         
@@ -155,9 +160,7 @@ def client_capture(metadata = None):
         
         # Slow game down if too many events on screen
         if(len(data['events']) == 4):
-            sendkey(0x6D)
-            sendkey(0x6D)
-            sendkey(0x6D)
+            sendkey('0')
             turns_too_many_events = 7
         
         #switch between active champions, center camera

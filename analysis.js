@@ -29,6 +29,31 @@ function convertHashArrayToArray(hash) {
     return retarray;
 }
 
+// http://stackoverflow.com/questions/979975/how-to-get-the-value-from-url-parameter
+// By SO user Quentin - CC-BY-SA 3.0
+var QueryString = function () {
+  // This function is anonymous, is executed immediately and 
+  // the return value is assigned to QueryString!
+  var query_string = {};
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+        // If first entry with this name
+    if (typeof query_string[pair[0]] === "undefined") {
+      query_string[pair[0]] = pair[1];
+        // If second entry with this name
+    } else if (typeof query_string[pair[0]] === "string") {
+      var arr = [ query_string[pair[0]], pair[1] ];
+      query_string[pair[0]] = arr;
+        // If third or later entry with this name
+    } else {
+      query_string[pair[0]].push(pair[1]);
+    }
+  } 
+    return query_string;
+} ();
+
 /* Turns
  * data['teams'][0] = { time -> {stat1 -> v1, stat2 -> v2}} into
  * [data['teams'][0]['stat1'][time] -> v1, data['teams'][0]['stat2'][time] -> v2]
@@ -103,7 +128,10 @@ function printableChampionName(name) {
 }
 
 $(document).ready(function() {
-    baseurl = "sample/";
+    if(QueryString.file)
+        baseurl = QueryString.file+"/"
+    else
+        baseurl = "sample/";
     
     $.getJSON(baseurl+"data.json", function(data) {
         console.log(data);

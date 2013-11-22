@@ -40,9 +40,10 @@ def getChampionFromIcon(im):
 # of the top-left pixel of the first item in the bar
 def getItems(im, tl):
     items = []
-    for i in [im.crop((tl[0], tl[1], tl[0]+25, tl[1]+25)), im.crop((tl[0]+27, tl[1], tl[0]+52, tl[1]+25)),
-              im.crop((tl[0]+54, tl[1], tl[0]+79, tl[1]+25)), im.crop((tl[0]+81, tl[1], tl[0]+106, tl[1]+25)),
-              im.crop((tl[0]+108, tl[1], tl[0]+133, tl[1]+25)), im.crop((tl[0]+135, tl[1], tl[0]+160, tl[1]+25))]:
+    for i in [im.crop((tl[0], tl[1], tl[0]+26, tl[1]+26)), im.crop((tl[0]+27, tl[1], tl[0]+53, tl[1]+26)),
+              im.crop((tl[0]+54, tl[1], tl[0]+80, tl[1]+26)), im.crop((tl[0]+81, tl[1], tl[0]+107, tl[1]+26)),
+              im.crop((tl[0]+108, tl[1], tl[0]+134, tl[1]+26)), im.crop((tl[0]+135, tl[1], tl[0]+161, tl[1]+26)),
+              im.crop((tl[0]+162, tl[1], tl[0]+188, tl[1]+26))]:
         item = getItemFromIcon(i)
         if(item != None):
             items.append(item)
@@ -205,7 +206,7 @@ def getScreenshotData(im, metadata = None):
     else:
         results['paused'] = False
     
-    if (im.getpixel((674, 905))[0:3] == (247, 231, 173)):
+    if (im.getpixel((690, 905))[0:3] == (247, 231, 173)):
         results['gold_data_available'] = True
         results['item_data_available'] = False
     else:
@@ -219,7 +220,7 @@ def getScreenshotData(im, metadata = None):
         results['game_finished'] = False
     
     #Active Champion Information
-    if(im.getpixel((314, 846))[0:3] == (39, 34, 40) and im.getpixel((4, 846))[0:3] == (50, 45, 50)):
+    if(im.getpixel((6, 848))[0:3] == (40, 36, 40) and im.getpixel((309, 849))[0:3] == (178, 184, 186)):
         def greenthreshold(img):
             width, _ = img.size
             for i, px in enumerate(img.getdata()):
@@ -293,94 +294,94 @@ def getScreenshotData(im, metadata = None):
     #Information on each of the ten champions
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 238))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((770, 931, 869, 946))),
-         "minions" : ocr.imagetostring(im.crop((884, 930, 919, 946))),
+         "kda" : ocr.imagetostring(im.crop((785, 931, 880, 946))),
+         "minions" : ocr.imagetostring(im.crop((884, 930, 927, 946))),
          "dead" : True if im.getpixel((86, 238))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 930, 762, 946))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((931, 926, 954, 949))),
-         "items" : getItems(im, (591, 926)) if results['item_data_available'] else None
+         "items" : getItems(im, (590, 925)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 324, 85, 334))) if im.getpixel((86, 348))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((770, 958, 869, 981))),
-         "minions" : ocr.imagetostring(im.crop((884, 958, 919, 981))),
+         "kda" : ocr.imagetostring(im.crop((785, 958, 880, 981))),
+         "minions" : ocr.imagetostring(im.crop((884, 958, 927, 981))),
          "dead" : True if im.getpixel((86, 348))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 958, 762, 981))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((931, 957, 954, 980))),
-         "items" : getItems(im, (591, 956)) if results['item_data_available'] else None
+         "items" : getItems(im, (590, 956)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 430, 85, 440))) if im.getpixel((86, 448))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((770, 992, 869, 1012))),
-         "minions" : ocr.imagetostring(im.crop((884, 992, 919, 1012))),
+         "kda" : ocr.imagetostring(im.crop((785, 992, 880, 1012))),
+         "minions" : ocr.imagetostring(im.crop((884, 992, 927, 1012))),
          "dead" : True if im.getpixel((86, 448))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 992, 762, 1012))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((931, 987, 954, 1010))),
-         "items" : getItems(im, (591, 987)) if results['item_data_available'] else None
+         "items" : getItems(im, (590, 986)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 536, 85, 546))) if im.getpixel((86, 560))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((770, 1023, 869, 1043))),
-         "minions" : ocr.imagetostring(im.crop((884, 1023, 919, 1043))),
+         "kda" : ocr.imagetostring(im.crop((785, 1023, 880, 1043))),
+         "minions" : ocr.imagetostring(im.crop((884, 1023, 927, 1043))),
          "dead" : True if im.getpixel((86, 560))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 1023, 762, 1043))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((931, 1018, 954, 1041))),
-         "items" : getItems(im, (591, 1017)) if results['item_data_available'] else None
+         "items" : getItems(im, (590, 1017)) if results['item_data_available'] else None
          })
     results['players'][0].append(
         {"level" : ocr.imagetostring(im.crop((74, 642, 85, 652))) if im.getpixel((86, 666))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((770, 1053, 869, 1073))),
-         "minions" : ocr.imagetostring(im.crop((884, 1053, 919, 1073))),
+         "kda" : ocr.imagetostring(im.crop((785, 1053, 880, 1073))),
+         "minions" : ocr.imagetostring(im.crop((884, 1053, 927, 1073))),
          "dead" : True if im.getpixel((86, 666))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((618, 1053, 762, 1073))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((931, 1049, 954, 1072))),
-         "items" : getItems(im, (591, 1048)) if results['item_data_available'] else None
+         "items" : getItems(im, (590, 1048)) if results['item_data_available'] else None
          })
     
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 218, 1879, 228))) if im.getpixel((1879, 238))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((1060, 931, 1140, 946))),
-         "minions" : ocr.imagetostring(im.crop((997, 930, 1037, 946))),
+         "kda" : ocr.imagetostring(im.crop((1045, 931, 1140, 946))),
+         "minions" : ocr.imagetostring(im.crop((992, 930, 1033, 946))),
          "dead" : True if im.getpixel((1879, 238))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 930, 1337, 946))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((966, 926, 990, 950))),
-         "items" : getItems(im, (1170, 926)) if results['item_data_available'] else None
+         "items" : getItems(im, (1145, 925)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 324, 1879, 334))) if im.getpixel((1879, 344))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((1060, 958, 1140, 981))),
-         "minions" : ocr.imagetostring(im.crop((997, 958, 1037, 981))),
+         "kda" : ocr.imagetostring(im.crop((1045, 958, 1140, 981))),
+         "minions" : ocr.imagetostring(im.crop((992, 958, 1033, 981))),
          "dead" : True if im.getpixel((1879, 344))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 958, 1337, 981))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((966, 957, 990, 981))),
-         "items" : getItems(im, (1170, 956)) if results['item_data_available'] else None
+         "items" : getItems(im, (1145, 956)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 430, 1879, 440))) if im.getpixel((1879, 450))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((1060, 992, 1140, 1012))),
-         "minions" : ocr.imagetostring(im.crop((997, 992, 1037, 1012))),
+         "kda" : ocr.imagetostring(im.crop((1045, 992, 1140, 1012))),
+         "minions" : ocr.imagetostring(im.crop((992, 992, 1033, 1012))),
          "dead" : True if im.getpixel((1879, 450))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 992, 1337, 1012))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((966, 987, 990, 1011))),
-         "items" : getItems(im, (1170, 987)) if results['item_data_available'] else None
+         "items" : getItems(im, (1145, 986)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 536, 1879, 546))) if im.getpixel((1879, 560))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((1060, 1023, 1140, 1043))),
-         "minions" : ocr.imagetostring(im.crop((997, 1023, 1037, 1043))),
+         "kda" : ocr.imagetostring(im.crop((1045, 1023, 1140, 1043))),
+         "minions" : ocr.imagetostring(im.crop((992, 1023, 1033, 1043))),
          "dead" : True if im.getpixel((1879, 560))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 1023, 1337, 1043))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((966, 1018, 990, 1042))),
-         "items" : getItems(im, (1170, 1017)) if results['item_data_available'] else None
+         "items" : getItems(im, (1145, 1017)) if results['item_data_available'] else None
          })
     results['players'][1].append(
         {"level" : ocr.imagetostring(im.crop((1865, 642, 1879, 652))) if im.getpixel((1879, 666))[0] < 50 else None,
-         "kda" : ocr.imagetostring(im.crop((1060, 1053, 1140, 1073))),
-         "minions" : ocr.imagetostring(im.crop((997, 1053, 1037, 1073))),
+         "kda" : ocr.imagetostring(im.crop((1045, 1053, 1140, 1073))),
+         "minions" : ocr.imagetostring(im.crop((992, 1053, 1033, 1073))),
          "dead" : True if im.getpixel((1879, 666))[0] == 0 else False,
          "gold" : ocr.imagetostring(im.crop((1196, 1053, 1337, 1073))) if results['gold_data_available'] else None,
          "champion" : getChampionFromIcon(im.crop((966, 1049, 990, 1073))),
-         "items" : getItems(im, (1170, 1048)) if results['item_data_available'] else None
+         "items" : getItems(im, (1145, 1048)) if results['item_data_available'] else None
          })
     
     errmsg = ""
@@ -388,6 +389,7 @@ def getScreenshotData(im, metadata = None):
     for team, _ in enumerate(results['teams']):
         results['teams'][team]['gold'] = 0 if results['gold_data_available'] else None
         results['teams'][team]['kills'] = 0
+        results['teams'][team]['towers'] = results['towers'][team]
     
     for team, _ in enumerate(results['players']):
         for player, _ in enumerate(results['players'][team]):

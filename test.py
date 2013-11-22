@@ -42,7 +42,7 @@ def runOCRTests():
                "2,164(11,099)     6/6/3    204", "5", "5", "9", "251    8/1/6        155(13,049)", "1,282(10,931)     1/11/11   169", "4", 
                "1,38", "101(16,951)     9/3/16   304", "177(11,741)     1/12/11   187", "299(14,008)     2/10/10   271", 
                "287(11,866)     7/8/19    90", "838(18,438)     10/5/18   315", "302(14,207)     12/8/19   32", "113    2/0/5        629(7,174)",
-               '307(10,702)     4/2/10   188', '1,610(12,004)']
+               '307(10,702)     4/2/10   188', '1,610(12,004)', '243']
     
     global fopentime
     fopentime = 0
@@ -63,12 +63,10 @@ def runIconTests():
     fopentime = 0
     
     correct = ["champion-blitzcrank", "champion-heimerdinger", "monster-dragon", "champion-orianna", "item-ruby-sightstone", "item-frozen-heart",
-               "item-dorans-ring", "item-mana-potion", "summoner-flash", "champion-sivir", "item-shurelyas-reverie-activated-half", "blank",
-               "item-shurelyas-reverie-activated", "item-shurelyas-reverie-activated-half", "item-shurelyas-reverie-activated-half",
-               "item-shurelyas-reverie-activated-done", "item-sightstone", "item-shurelyas-reverie"]
+               "item-dorans-ring", "item-mana-potion", "summoner-flash", "champion-sivir"]
     
     print "Running Icon tests..."
-    for i in range(1, 19):
+    for i in range(1, 11):
         fopenstart = time.clock()
         im = Image.open('tests/icon'+str(i)+'.png')
         fopentime += (time.clock() - fopenstart) * 1000
@@ -96,14 +94,14 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(4, 5):
+    for i in range(1, 2):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
-        data = (getScreenshotData(im, {"clientVersion" : "3.13"}))
+        data = (getScreenshotData(im, {"clientVersion" : "3.14"}))
         #print data['events'] if data and 'events' in data else None
-        #pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(data)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."
