@@ -4,6 +4,7 @@ import json
 import os
 import re
 import config
+from screenshot import cint
 
 class LOLGameData:
     data = {}
@@ -74,7 +75,7 @@ class LOLGameData:
                                                "deaths" : self.data['history'][-1]['players'][i//5][i%5]['deaths'],
                                                "assists" : self.data['history'][-1]['players'][i//5][i%5]['assists'],
                                                "kda" : self.data['history'][-1]['players'][i//5][i%5]['kda'],
-                                               "minions" : int(self.data['history'][-1]['players'][i//5][i%5]['minions']),
+                                               "minions" : cint(self.data['history'][-1]['players'][i//5][i%5]['minions']),
                                                "level" : self.data['history'][-1]['players'][i//5][i%5]['level']})
         
         for team in [0, 1]:
@@ -96,7 +97,7 @@ class LOLGameData:
                 game_data['teams'][team]['deaths'] += self.data['history'][-1]['players'][team][player]['deaths']
                 game_data['teams'][team]['assists'] += self.data['history'][-1]['players'][team][player]['assists']
                 game_data['teams'][team]['gold'] += self.data['history'][-1]['players'][team][player]['total_gold']
-                game_data['teams'][team]['minions'] += int(self.data['history'][-1]['players'][team][player]['minions'])
+                game_data['teams'][team]['minions'] += cint(self.data['history'][-1]['players'][team][player]['minions'])
             
             game_data['teams'][team]['kda'] = [game_data['teams'][team]['kills'], game_data['teams'][team]['deaths'], game_data['teams'][team]['assists']]
             
@@ -257,7 +258,28 @@ class LOLGameData:
                 
                 #if(objective_data['teams'][team][k]['num_inhibitors_range'][0] != objective_data['teams'][team][k]['num_inhibitors_range'][1]):
                 #     print k, objective_data['teams'][team][k]['num_inhibitors_range'], team
+        
         return objective_data
+    
+    
+    def getItemBuildData(self):
+        item_builds = [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]]
+        last_seen_build = [[[], [], [], [], []], [[], [], [], [], []]]
+        
+        for team in [0, 1]:
+            for player in range(0, 5):
+                print self.data['history'][0]
+                for time in self.data['history']:
+                    print time
+                    if not self.data['history'][time]['item_data_available']:
+                        continue
+                    
+                    if(sorted(last_seen_build[team][player]) != sorted(self.data['history'][time]['players'][team][player]['items'])):
+                        item_builds[team][player][time] = self.data['history'][time]['players'][team][player]['items']
+                    last_seen_build[team][player] = self.data['history'][time]['players'][team][player]['items']
+                    
+        
+        return item_builds
     
     def generateAnalysisFile(self):
         basename = ".".join(self.filename.split(".")[0:-1])
@@ -267,13 +289,15 @@ class LOLGameData:
         jsondata = { 
                     "gold" : self.getTotalGoldOverTime(),
                     "game" : self.getGameData(),
-                    "objectives" : self.getObjectiveData()
+                    "objectives" : self.getObjectiveData(),
+                    "item_builds" : self.getItemBuildData()
                     }
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
     data = LOLGameData("sample.lra")
     print str(len(data.data['history'])) + " data points loaded."
+    print data.data['history']
     print "Generating analysis json file..."
     data.generateAnalysisFile()
     print "Done."

@@ -103,7 +103,9 @@ def client_capture(metadata = None):
             data = grabScreenshotData(im, metadata)
         except Exception, e:
             print "Error: Exception caught: "+str(e)
-            time.sleep(1)
+            exception_count += 1
+            if(exception_count % 10 == 0):
+                sendkey('p')
             continue
         
         exception_count = 0
