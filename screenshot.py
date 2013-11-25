@@ -223,7 +223,7 @@ def getScreenshotData(im, metadata = None):
     
     #Active Champion Information
     if(im.getpixel((6, 848))[0:3] == (40, 36, 40) and im.getpixel((309, 849))[0:3] == (178, 184, 186)):
-        def greenthreshold(img):
+        def greenthreshold(img): 
             width, _ = img.size
             for i, px in enumerate(img.getdata()):
                 y = i // width
@@ -236,6 +236,11 @@ def getScreenshotData(im, metadata = None):
         
         results['active_champion'] = {}
         results['active_champion']['champion'] = getChampionFromIcon(im.crop((16, 856, 49, 889)))
+        results['active_champion']['skills'] = [ocr.imagetostring(im.crop((81, 955, 92, 969))),
+                                                ocr.imagetostring(im.crop((130, 955, 139, 969))),
+                                                ocr.imagetostring(im.crop((177, 955, 186, 969))),
+                                                ocr.imagetostring(im.crop((225, 955, 234, 969)))
+                                                ]
         champion_overlay_active = (im.getpixel((647, 401))[0:3] == (8, 8, 8) and im.getpixel((1272, 401))[0:3] == (41, 40, 41))
         results['active_champion']['hitpoints'] = ocr.imagetostring(greenthreshold(im.crop((851, 458, 953, 472)))) if champion_overlay_active else None
         results['active_champion']['attack_damage'] = ocr.imagetostring(greenthreshold(im.crop((910, 505, 953, 520)))) if champion_overlay_active else None
