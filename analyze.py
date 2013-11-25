@@ -65,19 +65,22 @@ class LOLGameData:
         while(self.data['history'][goldAvailableIndex]['gold_data_available'] == False):
             goldAvailableIndex -= 1
         
-        for i in range (0, 10):
-            game_data['players'][i//5].append({"summoner" : self.data['lrf_meta']['players'][i]['summoner'], 
-                                               "champion" : self.data['history'][0]['players'][i//5][i%5]['champion'],
-                                               "summoner_spells" : self.data['summoner_spells'][i//5][i%5],
-                                               "items" : self.__removeActivatedItems(self.data['history'][itemAvaliableIndex]['players'][i//5][i%5]['items']),
-                                               "total_gold" : self.data['history'][goldAvailableIndex]['players'][i//5][i%5]['total_gold'],
-                                               "kills" : self.data['history'][-1]['players'][i//5][i%5]['kills'],
-                                               "deaths" : self.data['history'][-1]['players'][i//5][i%5]['deaths'],
-                                               "assists" : self.data['history'][-1]['players'][i//5][i%5]['assists'],
-                                               "kda" : self.data['history'][-1]['players'][i//5][i%5]['kda'],
-                                               "minions" : cint(self.data['history'][-1]['players'][i//5][i%5]['minions']),
-                                               "level" : self.data['history'][-1]['players'][i//5][i%5]['level']})
-        
+        for team in range (0, 2):
+            for player in range(0, 5):
+                game_data['players'][team].append({"summoner" : self.data['lrf_meta']['players'][team*5 + player]['summoner'], 
+                                                   "champion" : self.data['history'][0]['players'][team][player]['champion'],
+                                                   "summoner_spells" : self.data['summoner_spells'][team][player],
+                                                   "items" : self.__removeActivatedItems(self.data['history'][itemAvaliableIndex]['players'][team][player]['items']),
+                                                   "total_gold" : self.data['history'][goldAvailableIndex]['players'][team][player]['total_gold'],
+                                                   "kills" : self.data['history'][-1]['players'][team][player]['kills'],
+                                                   "deaths" : self.data['history'][-1]['players'][team][player]['deaths'],
+                                                   "assists" : self.data['history'][-1]['players'][team][player]['assists'],
+                                                   "kda" : self.data['history'][-1]['players'][team][player]['kda'],
+                                                   "minions" : cint(self.data['history'][-1]['players'][team][player]['minions']),
+                                                   "level" : self.data['history'][-1]['players'][team][player]['level']})
+                if team == 0:
+                    game_data['players'][team][player]['items'].reverse()
+                    
         for team in [0, 1]:
             game_data['teams'][team]['gold'] = 0
             game_data['teams'][team]['kills'] = 0
@@ -268,15 +271,14 @@ class LOLGameData:
         
         for team in [0, 1]:
             for player in range(0, 5):
-                print self.data['history'][0]
-                for time in self.data['history']:
-                    print time
-                    if not self.data['history'][time]['item_data_available']:
+                for entry in self.data['history']:
+                    if not entry['item_data_available']:
                         continue
                     
-                    if(sorted(last_seen_build[team][player]) != sorted(self.data['history'][time]['players'][team][player]['items'])):
-                        item_builds[team][player][time] = self.data['history'][time]['players'][team][player]['items']
-                    last_seen_build[team][player] = self.data['history'][time]['players'][team][player]['items']
+                    time = entry['time']
+                    if(sorted(last_seen_build[team][player]) != sorted(entry['players'][team][player]['items'])):
+                        item_builds[team][player][time] = self.__removeActivatedItems(entry['players'][team][player]['items'])
+                    last_seen_build[team][player] = self.__removeActivatedItems(entry['players'][team][player]['items'])
                     
         
         return item_builds
@@ -295,9 +297,8 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("sample.lra")
+    data = LOLGameData("output/Gentium - Leona (5) - Spec.lra")
     print str(len(data.data['history'])) + " data points loaded."
-    print data.data['history']
     print "Generating analysis json file..."
     data.generateAnalysisFile()
     print "Done."

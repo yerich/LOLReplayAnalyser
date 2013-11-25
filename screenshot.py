@@ -11,6 +11,8 @@ last = False
 def cint(s):
     if s == '' or s == None:
         return 0
+    if type(s) is int:
+        return s
     
     s = re.sub(r'[^\d.]+', '', s)
     if s == '' or s == None:

@@ -129,7 +129,7 @@ function printableChampionName(name) {
 
 $(document).ready(function() {
     if(QueryString.file)
-        baseurl = QueryString.file+"/"
+        baseurl = QueryString.file+"/";
     else
         baseurl = "sample/";
     
