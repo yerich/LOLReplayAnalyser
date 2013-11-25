@@ -136,6 +136,7 @@ def client_capture(metadata = None):
             # Move the mouse to a location where we can see the purple team nexus
             sendmouseclick((window_coords[0] + 1886, window_coords[1] + 803))
             time.sleep(3)
+            im = ImageGrab.grab(bbox)
             winner = grabScreenshotWinner(im)
             if(winner == 0):
                 print "Blue team wins."

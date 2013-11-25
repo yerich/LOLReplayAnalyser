@@ -76,10 +76,12 @@ def getEvent(im, tr):
 # and the pixel (1886, 803) MUST be clicked on the minimap. This function will then check if the purple nexus
 # is destroyed or not. If it is, blue team won and return 0. Otherwise purple team won so return 1.
 def getGameWinner(im):
-    if(pixelDiff(im.getpixel((1181, 711)), (33, 32, 33)) < 150):
-        return 0
-    else:
+    pixel = im.crop((1170, 700, 1180, 710)).resize((1, 1), Image.ANTIALIAS).getpixel((0, 0))
+    print pixel[0:3]
+    if(pixel[2] - pixel[1] > 80 and pixel[0] - pixel[1] > 40):   # Check that the color is some sort of purple
         return 1
+    else:
+        return 0
 
 # Returns a dict of data retrieved from a screenshot
 def getScreenshotData(im, metadata = None):
