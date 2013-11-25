@@ -433,12 +433,6 @@ $(document).ready(function() {
                 enabled: false
             },
             
-            plotOptions: {
-                series : {
-                    dataGrouping: {"enabled" : false}
-                }
-            },
-            
             tooltip: {
                 formatter: function() {
                     var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';

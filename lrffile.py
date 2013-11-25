@@ -13,6 +13,7 @@ import json
 import zlib
 import win32con
 import gzip
+from analyze import LOLGameData
 
 def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
@@ -79,6 +80,13 @@ def analyseLRFFile(filename = None, savefile = None):
         
         savefileh = open(savefile+".txt", "w")
         print >> savefileh, jsonstring
+        savefileh.close()
+    
+    data = LOLGameData(savefile)
+    print str(len(data.data['history'])) + " data points loaded."
+    print "Generating analysis json file..."
+    data.generateAnalysisFile()
+    print "Done."
     
     return output
 

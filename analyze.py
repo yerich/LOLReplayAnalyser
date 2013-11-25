@@ -276,7 +276,7 @@ class LOLGameData:
                         continue
                     
                     time = entry['time']
-                    if(sorted(last_seen_build[team][player]) != sorted(entry['players'][team][player]['items'])):
+                    if(sorted(last_seen_build[team][player]) != sorted(self.__removeActivatedItems(entry['players'][team][player]['items']))):
                         item_builds[team][player][time] = self.__removeActivatedItems(entry['players'][team][player]['items'])
                     last_seen_build[team][player] = self.__removeActivatedItems(entry['players'][team][player]['items'])
                     
@@ -297,7 +297,7 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/Gentium - Leona (5) - Spec.lra")
+    data = LOLGameData("output/Gentium - Taric - Spec.lra")
     print str(len(data.data['history'])) + " data points loaded."
     print "Generating analysis json file..."
     data.generateAnalysisFile()
