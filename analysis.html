@@ -29,9 +29,11 @@
         #main_scoreboard_0 div { float: left; padding-right: 20px;}
         #main_scoreboard_1 { float: right; background: #EDE2FF;}
         #main_scoreboard_1 div { float: right; text-align: right; padding-left: 20px;}
-        #main_scoreboard_0 .main_scoreboard_kda { color: #002763;}
-        #main_scoreboard_1 .main_scoreboard_kda { color: #3D0060;}
+        #main_scoreboard_0 .main_scoreboard_kda, #main_scoreboard_0 .main_scoreboard_gold { color: #002763;}
+        #main_scoreboard_1 .main_scoreboard_kda, #main_scoreboard_1 .main_scoreboard_gold { color: #3D0060;}
         .main_scoreboard_team div { display: inline-block;}
+        .main_scoreboard_gold { font-size: 30px; font-weight: bold; float: right !important; padding: 10px 0;}
+        #main_scoreboard_1 .main_scoreboard_gold { float: left !important;}
         .main_scoreboard_kda { font-size: 30px; font-weight: bold; float: none !important; display: block !important; text-align: center !important; padding: 10px 0;}
         .main_scoreboard_dragons { clear: both; padding: 0 13px;}
         #main_scoreboard_0 .main_scoreboard_towers { float: right;}
@@ -120,10 +122,12 @@
     <div id="main_chart_selector">
         <div style="display: none;"><input type="checkbox" id="main_chart_selector_goldHistory" value="goldHistory" checked="checked"><label for="main_chart_selector_goldHistory">Gold History</label></div>
         <div style="display: none;"><input type="checkbox" id="main_chart_selector_goldDifference" value="goldDifference" checked="checked"><label for="main_chart_selector_goldDifference">Gold Difference</label></div>
+        <div><input type="checkbox" id="main_chart_selector_effectiveGold" value="effectiveGold"><label for="main_chart_selector_effectiveGold">Effective Gold</label></div><br />
+        
         <div><input type="checkbox" id="main_chart_selector_towers" value="towers"><label for="main_chart_selector_towers">Number of Towers</label></div>
         <div><input type="checkbox" id="main_chart_selector_dragons" value="dragons"><label for="main_chart_selector_dragons">Number of Barons</label></div>
         <div><input type="checkbox" id="main_chart_selector_barons" value="barons"><label for="main_chart_selector_barons">Number of Dragons</label></div>
-        <div><input type="checkbox" id="main_chart_selector_inhibitors" value="inhibitors"><label for="main_chart_selector_inhibitors">Number of Inhibitors</label></div>
+        <div><input type="checkbox" id="main_chart_selector_inhibitors" value="inhibitors"><label for="main_chart_selector_inhibitors">Number of Inhibitors</label></div><br />
         <div><input type="checkbox" id="main_chart_selector_kills" value="kills"><label for="main_chart_selector_kills">Kills</label></div>
         <div><input type="checkbox" id="main_chart_selector_deaths" value="deaths"><label for="main_chart_selector_deaths">Deaths</label></div>
         <div><input type="checkbox" id="main_chart_selector_assists" value="assists"><label for="main_chart_selector_assists">Assists</label></div>

@@ -44,12 +44,13 @@ class LOLGameData:
         gold_data = { 'teams' : [{}, {}], 'players' : [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]], 'difference' : {}}
         for i in self.data['history']:
             if("gold_data_available" in i and i['gold_data_available'] == True):
-                gold_data['teams'][0][i['time']] = i['teams'][0]['gold']
-                gold_data['teams'][1][i['time']] = i['teams'][1]['gold']
+                gold_data['teams'][0][i['time']] = { "total" : i['teams'][0]['gold'], "effective" : i['teams'][0]['gold'] }
+                gold_data['teams'][1][i['time']] = { "total" : i['teams'][1]['gold'], "effective" : i['teams'][1]['gold'] }
                 gold_data['difference'][i['time']] = i['teams'][0]['gold'] - i['teams'][1]['gold']
                 for team in [0, 1]:
                     for player in range(0, 5):
                         gold_data['players'][team][player][i['time']] = i['players'][team][player]['gold']
+                        gold_data['teams'][team][i['time']]['effective'] -= i['players'][team][player]['current_gold']
         
         return gold_data
     

@@ -129,7 +129,6 @@ function printableChampionName(name) {
 }
 
 function drawMainChart(chartData) {
-
     // Create the main chart
     main_chart = { series: [], yAxis: []};
     plots = [];
@@ -293,6 +292,7 @@ $(document).ready(function() {
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['total_gold']+"</span></td>");
             }
             
+            $("#main_scoreboard_"+i).append("<div class='main_scoreboard_gold'>"+Math.floor(data['game']['teams'][i]['gold'] / 100)/10+"k</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_kda'>"+data['game']['teams'][i]['kda'].join(" / ")+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_dragons'>Dragons: "+data['objectives']['teams'][i][last_objective_entry]['num_dragons']+"</div>");
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_barons'>Barons: "+data['objectives']['teams'][i][last_objective_entry]['num_barons']+"</div>");
@@ -310,12 +310,14 @@ $(document).ready(function() {
         }
         
         //Calculate the chart data for each chart
+        var gold_by_time = convertTeamStatsToSingle(data['gold']['teams']);
+        
         var chartData = {
             'goldHistory': {
                 series : [
                     {
                         name : 'Blue Team Gold',
-                        data : convertDataTime(convertHashToArray(data['gold']['teams'][0])),
+                        data : convertDataTime(convertHashToArray(gold_by_time[0]['total'])),
                         tooltip: {
                             valueDecimals: 0
                         },
@@ -324,7 +326,7 @@ $(document).ready(function() {
                     },
                     {
                         name : 'Purple Team Gold',
-                        data : convertDataTime(convertHashToArray(data['gold']['teams'][1])),
+                        data : convertDataTime(convertHashToArray(gold_by_time[1]['total'])),
                         tooltip: {
                             valueDecimals: 0
                         },
@@ -444,33 +446,36 @@ $(document).ready(function() {
         
         var objectives_by_time = convertTeamStatsToSingle(data['objectives']['teams']);
         var team_kda_by_time = convertTeamStatsToSingle(data['kda']['teams']);
-        var objectivePlots = {
-            "towers" : {title: "Towers", data : 
+        var timePlots = {
+            "towers" : {title: "Towers", height: 100, data : 
                 [convertDataTime(convertHashToArray(objectives_by_time[0]['num_towers'])), 
                 convertDataTime(convertHashToArray(objectives_by_time[1]['num_towers']))]}, 
-            "dragons" : {title: "Dragons", data : 
+            "dragons" : {title: "Dragons", height: 60, data : 
                 [convertDataTime(convertHashToArray(objectives_by_time[0]['num_dragons'])), 
                 convertDataTime(convertHashToArray(objectives_by_time[1]['num_dragons']))]}, 
-            "barons" : {title: "Barons", data : 
+            "barons" : {title: "Barons", height: 60, data : 
                 [convertDataTime(convertHashToArray(objectives_by_time[0]['num_barons'])), 
                 convertDataTime(convertHashToArray(objectives_by_time[1]['num_barons']))]},
-            "kills" : {title: "Kills", data : 
+            "kills" : {title: "Kills", height: 100, data : 
                 [convertDataTime(convertHashToArray(team_kda_by_time[0]['kills'])), 
                 convertDataTime(convertHashToArray(team_kda_by_time[1]['kills']))]},
-            "deaths" : {title: "Deaths", data : 
+            "deaths" : {title: "Deaths", height: 100, data : 
                 [convertDataTime(convertHashToArray(team_kda_by_time[0]['deaths'])), 
                 convertDataTime(convertHashToArray(team_kda_by_time[1]['deaths']))]},
-            "assists" : {title: "Assists", data : 
+            "assists" : {title: "Assists", height: 100, data : 
                 [convertDataTime(convertHashToArray(team_kda_by_time[0]['assists'])), 
-                convertDataTime(convertHashToArray(team_kda_by_time[1]['assists']))]}};
+                convertDataTime(convertHashToArray(team_kda_by_time[1]['assists']))]},
+            "effectiveGold" : {title: "Effective Gold", height: 100, type : "line", data : 
+                [convertDataTime(convertHashToArray(gold_by_time[0]['effective'])), 
+                convertDataTime(convertHashToArray(gold_by_time[1]['effective']))]}};
         
-        for(i in objectivePlots) {
+        for(i in timePlots) {
             chartData[i] = {
                 series : [
                     {
-                        name : 'Blue Team '+objectivePlots[i]['title'],
-                        type : 'area',
-                        data : objectivePlots[i]['data'][0],
+                        name : 'Blue Team '+timePlots[i]['title'],
+                        type : (timePlots[i]['type'] ? timePlots[i]['type'] : "area"),
+                        data : timePlots[i]['data'][0],
                         tooltip: {
                             valueDecimals: 0
                         },
@@ -480,9 +485,9 @@ $(document).ready(function() {
                         step: true
                     },
                     {
-                        name : 'Purple Team '+objectivePlots[i]['title'],
-                        type : 'area',
-                        data : objectivePlots[i]['data'][1],
+                        name : 'Purple Team '+timePlots[i]['title'],
+                        type : (timePlots[i]['type'] ? timePlots[i]['type'] : "area"),
+                        data : timePlots[i]['data'][1],
                         tooltip: {
                             valueDecimals: 0
                         },
@@ -494,13 +499,13 @@ $(document).ready(function() {
                 ],
                 yAxis : [
                     {
-                        title : { text: objectivePlots[i]['title'] },
+                        title : { text: timePlots[i]['title'] },
                         min : 0,
                         lineWidth: 2,
                         minTickInterval: 1,
                         minorTickInterval: null,
                         offset: 0,
-                        height: 80,
+                        height: timePlots[i]['height'],
                         minRange: 1
                     }
                 ]
