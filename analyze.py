@@ -169,6 +169,7 @@ class LOLGameData:
             unknown_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
             up_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
             down_inhibitors = [{"top" : 0, "middle" : 0, "bottom" : 0}, {"top" : 0, "middle" : 0, "bottom" : 0}]
+            cs = [0, 0]
             for team in [0, 1]:
                 for lane in i['inhibitors'][team]:
                     if i['inhibitors'][team][lane] == False:
@@ -178,6 +179,9 @@ class LOLGameData:
                         unknown_inhibitors[-(team-1)][lane] = 1
                     elif i['inhibitors'][team][lane] == True:
                         up_inhibitors[-(team-1)][lane] = 1
+                
+                for player in range(0, 5):
+                    cs[team] += i['players'][team][player]['minions']
                                 
             # Conpile data into our list for this data point
             for team in [0, 1]:
@@ -189,6 +193,7 @@ class LOLGameData:
                                                              "up_inhibitors" : up_inhibitors[team].copy(),
                                                              "down_inhibitors" : down_inhibitors[team].copy(),
                                                              "unknown_inhibitors" : unknown_inhibitors[team].copy(),
+                                                             "cs" : cs[team],
                                                              }
 
                 last_data['teams'][team] = objective_data['teams'][team][i['time']]

@@ -235,7 +235,7 @@ function drawMainChart(chartData) {
             fillColor: "#FFF",
             negativeColor: "#000",
             negativeFillColor: "#FFF",
-            labels: { formatter: function () {
+            xAxis: { labels: { formatter: function () {
                 var seconds = (this.value / 1000);
                 var dispseconds = seconds % 60;
                 if(dispseconds < 10) {
@@ -243,7 +243,7 @@ function drawMainChart(chartData) {
                 }
                 var dispminutes = Math.floor(seconds / 60);
                 return dispminutes+":"+dispseconds;
-            }}
+            }}}
         }
     });
 }
@@ -450,6 +450,9 @@ $(document).ready(function() {
         var objectives_by_time = convertTeamStatsToSingle(data['objectives']['teams']);
         var team_kda_by_time = convertTeamStatsToSingle(data['kda']['teams']);
         var timePlots = {
+            "cs" : {title: "Creep Score", height: 150, type: 'line', data : 
+                [convertDataTime(convertHashToArray(objectives_by_time[0]['cs'])), 
+                convertDataTime(convertHashToArray(objectives_by_time[1]['cs']))]},
             "towers" : {title: "Towers", height: 100, data : 
                 [convertDataTime(convertHashToArray(objectives_by_time[0]['num_towers'])), 
                 convertDataTime(convertHashToArray(objectives_by_time[1]['num_towers']))]}, 
