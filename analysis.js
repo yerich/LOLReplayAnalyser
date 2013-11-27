@@ -221,6 +221,9 @@ function drawMainChart(chartData) {
             line : {
                 dataGrouping: {"units" : [['second', [1, 5]]], "approximation": "open"}
             },
+            area : {
+                dataGrouping: {"units" : [['second', [1, 5]]], "approximation": "open"}
+            },
         },
         
         yAxis: main_chart['yAxis'],
@@ -465,9 +468,15 @@ $(document).ready(function() {
             "assists" : {title: "Assists", height: 100, data : 
                 [convertDataTime(convertHashToArray(team_kda_by_time[0]['assists'])), 
                 convertDataTime(convertHashToArray(team_kda_by_time[1]['assists']))]},
+            "currentlyDead" : {title: "# Currently Dead", height: 100, max : 5, data : 
+                [convertDataTime(convertHashToArray(team_kda_by_time[0]['currently_dead'])), 
+                convertDataTime(convertHashToArray(team_kda_by_time[1]['currently_dead']))]},
             "effectiveGold" : {title: "Effective Gold", height: 100, type : "line", data : 
                 [convertDataTime(convertHashToArray(gold_by_time[0]['effective'])), 
-                convertDataTime(convertHashToArray(gold_by_time[1]['effective']))]}};
+                convertDataTime(convertHashToArray(gold_by_time[1]['effective']))]},
+            "heldGold" : {title: "Held Gold", height: 100, type : "line", data : 
+                [convertDataTime(convertHashToArray(gold_by_time[0]['held'])), 
+                convertDataTime(convertHashToArray(gold_by_time[1]['held']))]}};
         
         for(i in timePlots) {
             chartData[i] = {
@@ -501,6 +510,7 @@ $(document).ready(function() {
                     {
                         title : { text: timePlots[i]['title'] },
                         min : 0,
+                        max: (timePlots[i]['max'] ? timePlots[i]['max'] : undefined),
                         lineWidth: 2,
                         minTickInterval: 1,
                         minorTickInterval: null,
