@@ -128,187 +128,8 @@ function printableChampionName(name) {
     }
 }
 
-function drawMainChart(data) {
-    objectives_by_time = convertTeamStatsToSingle(data['objectives']['teams']);
-    
-    //Calculate the chart data for each chart
-    var chartData = {
-        'goldHistory': {
-            series : [
-                {
-                    name : 'Blue Team Gold',
-                    data : convertDataTime(convertHashToArray(data['gold']['teams'][0])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#0046AF",
-                    color: "#0046AF"
-                },
-                {
-                    name : 'Purple Team Gold',
-                    data : convertDataTime(convertHashToArray(data['gold']['teams'][1])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#7000AD",
-                    color: "#7000AD"
-                }
-            ],
-            yAxis : [
-                {
-                    title : { text: "Gold Total" },
-                    min : 0,
-                    height: 220,
-                    lineWidth: 2
-                }
-            ]
-        },
-        'goldDifference': {
-            series : [
-                {
-                    name : 'Difference',
-                    type : 'area',
-                    data : convertDataTime(convertHashToArray(data['gold']['difference'])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    color: "rgba(0, 0, 0, 0.3)",
-                    fillColor: "rgba(0, 0, 0, 0.3)",
-                    yAxis: 0,
-                },
-                {
-                    name : 'Difference2',
-                    type : 'area',
-                    fillColor : "#BFE3FF",
-                    data : convertDataTime(convertHashToArray(data['gold']['difference'])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    color: "#0046AF",
-                    yAxis: 0,
-                    negativeColor: "#7000AD",
-                    negativeFillColor: "#D6BFFF"
-                },
-            ],
-            yAxis: [
-                {
-                    title : { text: "Gold Difference" },
-                    height: 120,
-                    top: 295,
-                    offset: 0,
-                    lineWidth: 2,
-                    plotBands: [{
-                      from: 0,
-                      to: 10000000,
-                      color: '#EFF8FF'
-                    },
-                    {
-                      from: -10000000,
-                      to: 0,
-                      color: '#F5EFFF'
-                    }]
-                }
-            ]
-        },
-        'inhibitors' : {
-            series: [
-                {
-                    name : 'Blue Team Inhibitors Taken',
-                    data : convertDataTime(convertHashArrayToArray(objectives_by_time[0]['num_inhibitors_range'])),
-                    type : "arearange",
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#0046AF",
-                    color: "#0046AF",
-                    step: true
-                },
-                {
-                    name : 'Purple Team Inhibitors Taken',
-                    data : convertDataTime(convertHashArrayToArray(objectives_by_time[1]['num_inhibitors_range'])),
-                    type : "arearange",
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#7000AD",
-                    color: "#7000AD",
-                    step: true,
-                    yAxis: 1
-                }
-            ],
-            yAxis: [
-                {
-                    title : { text: "Blue Inhibs" },
-                    min: 0,
-                    max: 3,
-                    offset: 0,
-                    height: 80,
-                    lineWidth: 2,
-                    tickInterval: 1,
-                    minorTickInterval: null,
-                    fillColor: "#BFE3FF"
-                },
-                {
-                    title : { text: "Purple Inhibs" },
-                    min : 0,
-                    max: 3,
-                    offset: 0,
-                    height: 80,
-                    top: 120,
-                    lineWidth: 2,
-                    tickInterval: 1,
-                    minorTickInterval: null,
-                    fillColor: "#D6BFFF"
-                }
-            ]
-        }
-    };
-    
-    console.log(convertDataTime(convertHashArrayToArray(objectives_by_time[1]['num_inhibitors_range'])));
-    
-    objectivePlots = {"towers" : {title: "Towers"}, "dragons" : {title: "Dragons"}, "barons" : {title: "Barons"}};
-    for(i in objectivePlots) {
-        chartData[i] = {
-            series : [
-                {
-                    name : 'Blue Team '+objectivePlots[i]['title'],
-                    type : 'area',
-                    data : convertDataTime(convertHashToArray(objectives_by_time[0]['num_'+i])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#0046AF",
-                    color: "#0046AF",
-                    fillColor : "rgba(147, 208, 255, 0.5)",
-                    step: true
-                },
-                {
-                    name : 'Purple Team '+objectivePlots[i]['title'],
-                    type : 'area',
-                    data : convertDataTime(convertHashToArray(objectives_by_time[1]['num_'+i])),
-                    tooltip: {
-                        valueDecimals: 0
-                    },
-                    lineColor: "#7000AD",
-                    color: "#7000AD",
-                    fillColor: "rgba(183, 147, 255, 0.5)",
-                    step: true
-                }
-            ],
-            yAxis : [
-                {
-                    title : { text: objectivePlots[i]['title'] },
-                    min : 0,
-                    lineWidth: 2,
-                    minTickInterval: 1,
-                    minorTickInterval: null,
-                    offset: 0,
-                    height: 80,
-                    minRange: 1
-                }
-            ]
-        };
-    }
+function drawMainChart(chartData) {
+
     // Create the main chart
     main_chart = { series: [], yAxis: []};
     plots = [];
@@ -317,13 +138,13 @@ function drawMainChart(data) {
         if($(v).is(':checked'))
             plots.push($(v).val());
     });
-    yAxiscount = 0;
+    var yAxiscount = 0;
     chartHeight = 120;
     for(plot in plots) {
         p = plots[plot];
         for(j in chartData[p]['series']) {
-            if(chartData[p]['series'][j].yAxis)
-                chartData[p]['series'][j].yAxis += parseInt(yAxiscount);
+            if(chartData[p]['series'][j].yAxisOffset)
+                chartData[p]['series'][j].yAxis = parseInt(chartData[p]['series'][j].yAxisOffset) + parseInt(yAxiscount);
             else
                 chartData[p]['series'][j].yAxis = parseInt(yAxiscount);
             main_chart['series'].push(chartData[p]['series'][j]);
@@ -336,6 +157,7 @@ function drawMainChart(data) {
             yAxiscount += 1;
         }
     }
+    console.log(yAxiscount);
     
     $("#main_chart").height(chartHeight);
     
@@ -352,6 +174,7 @@ function drawMainChart(data) {
         xAxis: {
             type : 'datetime',
             ordinal : false,
+            gridLineWidth: 0,
             labels: { formatter: function () {
                 var seconds = (this.value / 1000);
                 var dispseconds = seconds % 60;
@@ -486,7 +309,205 @@ $(document).ready(function() {
             $("#winner").html("Purple Team Wins");
         }
         
-        lol_replay_data = data;
+        //Calculate the chart data for each chart
+        var chartData = {
+            'goldHistory': {
+                series : [
+                    {
+                        name : 'Blue Team Gold',
+                        data : convertDataTime(convertHashToArray(data['gold']['teams'][0])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#0046AF",
+                        color: "#0046AF"
+                    },
+                    {
+                        name : 'Purple Team Gold',
+                        data : convertDataTime(convertHashToArray(data['gold']['teams'][1])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#7000AD",
+                        color: "#7000AD"
+                    }
+                ],
+                yAxis : [
+                    {
+                        title : { text: "Gold Total" },
+                        min : 0,
+                        height: 220,
+                        lineWidth: 2
+                    }
+                ]
+            },
+            'goldDifference': {
+                series : [
+                    {
+                        name : 'Difference',
+                        type : 'area',
+                        data : convertDataTime(convertHashToArray(data['gold']['difference'])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        color: "rgba(0, 0, 0, 0.3)",
+                        fillColor: "rgba(0, 0, 0, 0.3)",
+                        yAxisOffset: 0,
+                    },
+                    {
+                        name : 'Difference2',
+                        type : 'area',
+                        fillColor : "#BFE3FF",
+                        data : convertDataTime(convertHashToArray(data['gold']['difference'])),
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        color: "#0046AF",
+                        yAxisOffset: 0,
+                        negativeColor: "#7000AD",
+                        negativeFillColor: "#D6BFFF"
+                    },
+                ],
+                yAxis: [
+                    {
+                        title : { text: "Gold Difference" },
+                        height: 120,
+                        top: 295,
+                        offset: 0,
+                        lineWidth: 2,
+                        plotBands: [{
+                          from: 0,
+                          to: 10000000,
+                          color: '#EFF8FF'
+                        },
+                        {
+                          from: -10000000,
+                          to: 0,
+                          color: '#F5EFFF'
+                        }]
+                    }
+                ]
+            },
+            'inhibitors' : {
+                series: [
+                    {
+                        name : 'Blue Team Inhibitors Taken',
+                        data : convertDataTime(convertHashArrayToArray(objectives_by_time[0]['num_inhibitors_range'])),
+                        type : "arearange",
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#0046AF",
+                        color: "#0046AF",
+                        step: true
+                    },
+                    {
+                        name : 'Purple Team Inhibitors Taken',
+                        data : convertDataTime(convertHashArrayToArray(objectives_by_time[1]['num_inhibitors_range'])),
+                        type : "arearange",
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#7000AD",
+                        color: "#7000AD",
+                        step: true,
+                        yAxisOffset: 1
+                    }
+                ],
+                yAxis: [
+                    {
+                        title : { text: "Blue Inhibs" },
+                        min: 0,
+                        max: 3,
+                        offset: 0,
+                        height: 80,
+                        lineWidth: 2,
+                        tickInterval: 1,
+                        minorTickInterval: null,
+                        fillColor: "#BFE3FF"
+                    },
+                    {
+                        title : { text: "Purple Inhibs" },
+                        min : 0,
+                        max: 3,
+                        offset: 0,
+                        height: 80,
+                        top: 120,
+                        lineWidth: 2,
+                        tickInterval: 1,
+                        minorTickInterval: null,
+                        fillColor: "#D6BFFF"
+                    }
+                ]
+            }
+        };
+        
+        var objectives_by_time = convertTeamStatsToSingle(data['objectives']['teams']);
+        var team_kda_by_time = convertTeamStatsToSingle(data['kda']['teams']);
+        var objectivePlots = {
+            "towers" : {title: "Towers", data : 
+                [convertDataTime(convertHashToArray(objectives_by_time[0]['num_towers'])), 
+                convertDataTime(convertHashToArray(objectives_by_time[1]['num_towers']))]}, 
+            "dragons" : {title: "Dragons", data : 
+                [convertDataTime(convertHashToArray(objectives_by_time[0]['num_dragons'])), 
+                convertDataTime(convertHashToArray(objectives_by_time[1]['num_dragons']))]}, 
+            "barons" : {title: "Barons", data : 
+                [convertDataTime(convertHashToArray(objectives_by_time[0]['num_barons'])), 
+                convertDataTime(convertHashToArray(objectives_by_time[1]['num_barons']))]},
+            "kills" : {title: "Kills", data : 
+                [convertDataTime(convertHashToArray(team_kda_by_time[0]['kills'])), 
+                convertDataTime(convertHashToArray(team_kda_by_time[1]['kills']))]},
+            "deaths" : {title: "Deaths", data : 
+                [convertDataTime(convertHashToArray(team_kda_by_time[0]['deaths'])), 
+                convertDataTime(convertHashToArray(team_kda_by_time[1]['deaths']))]},
+            "assists" : {title: "Assists", data : 
+                [convertDataTime(convertHashToArray(team_kda_by_time[0]['assists'])), 
+                convertDataTime(convertHashToArray(team_kda_by_time[1]['assists']))]}};
+        
+        for(i in objectivePlots) {
+            chartData[i] = {
+                series : [
+                    {
+                        name : 'Blue Team '+objectivePlots[i]['title'],
+                        type : 'area',
+                        data : objectivePlots[i]['data'][0],
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#0046AF",
+                        color: "#0046AF",
+                        fillColor : "rgba(147, 208, 255, 0.5)",
+                        step: true
+                    },
+                    {
+                        name : 'Purple Team '+objectivePlots[i]['title'],
+                        type : 'area',
+                        data : objectivePlots[i]['data'][1],
+                        tooltip: {
+                            valueDecimals: 0
+                        },
+                        lineColor: "#7000AD",
+                        color: "#7000AD",
+                        fillColor: "rgba(183, 147, 255, 0.5)",
+                        step: true
+                    }
+                ],
+                yAxis : [
+                    {
+                        title : { text: objectivePlots[i]['title'] },
+                        min : 0,
+                        lineWidth: 2,
+                        minTickInterval: 1,
+                        minorTickInterval: null,
+                        offset: 0,
+                        height: 80,
+                        minRange: 1
+                    }
+                ]
+            };
+        }
+        
+        lol_replay_data = chartData;
         drawMainChart(lol_replay_data);
         
         //Calculate accuracy of gold plots

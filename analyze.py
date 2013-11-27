@@ -53,6 +53,24 @@ class LOLGameData:
         
         return gold_data
     
+    def getTotalKDAOverTime(self):
+        kda_data = { 'teams' : [{}, {}], 'players' : [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]], 'difference' : {}}
+        for i in self.data['history']:
+            if("gold_data_available" in i and i['gold_data_available'] == True):
+                kda_data['teams'][0][i['time']] = {'kills' : 0, 'deaths' : 0, 'assists' : 0, 'kda' : [0, 0, 0]}
+                kda_data['teams'][1][i['time']] = {'kills' : 0, 'deaths' : 0, 'assists' : 0, 'kda' : [0, 0, 0]}
+                kda_data['difference'][i['time']] = i['teams'][0]['kills'] - i['teams'][1]['kills']
+                for team in [0, 1]:
+                    for player in range(0, 5):
+                        kda_data['players'][team][player][i['time']] = i['players'][team][player]['kda']
+                        kda_data['teams'][team][i['time']]['kills'] += cint(i['players'][team][player]['kills'])
+                        kda_data['teams'][team][i['time']]['deaths'] += cint(i['players'][team][player]['deaths'])
+                        kda_data['teams'][team][i['time']]['assists'] += cint(i['players'][team][player]['assists'])
+                        for val in range(0, 3):
+                            kda_data['teams'][team][i['time']]['kda'][val] += cint(i['players'][team][player]['kda'][val])
+        
+        return kda_data
+    
     # Get final scoreboard, summoner names, etc.
     def getGameData(self):
         game_data = { 'players' : [[], []], 'teams' : [{}, {}], "clientVersion" : "0.0" }
@@ -290,6 +308,7 @@ class LOLGameData:
         
         jsondata = { 
                     "gold" : self.getTotalGoldOverTime(),
+                    "kda" : self.getTotalKDAOverTime(),
                     "game" : self.getGameData(),
                     "objectives" : self.getObjectiveData(),
                     "item_builds" : self.getItemBuildData()
@@ -297,7 +316,7 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/Gentium - Leona (5) - Spec.lra")
+    data = LOLGameData("output/Gentium - Taric - Spec.lra")
     print str(len(data.data['history'])) + " data points loaded."
     print "Generating analysis json file..."
     data.generateAnalysisFile()
