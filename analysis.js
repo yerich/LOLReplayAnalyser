@@ -158,7 +158,7 @@ function drawMainChart(data) {
                 {
                     title : { text: "Gold Total" },
                     min : 0,
-                    height: 250,
+                    height: 220,
                     lineWidth: 2
                 }
             ]
@@ -193,7 +193,7 @@ function drawMainChart(data) {
             yAxis: [
                 {
                     title : { text: "Gold Difference" },
-                    height: 150,
+                    height: 120,
                     top: 295,
                     offset: 0,
                     lineWidth: 2,
@@ -409,7 +409,16 @@ function drawMainChart(data) {
             color: "#000",
             fillColor: "#FFF",
             negativeColor: "#000",
-            negativeFillColor: "#FFF"
+            negativeFillColor: "#FFF",
+            labels: { formatter: function () {
+                var seconds = (this.value / 1000);
+                var dispseconds = seconds % 60;
+                if(dispseconds < 10) {
+                    dispseconds = "0"+dispseconds;
+                }
+                var dispminutes = Math.floor(seconds / 60);
+                return dispminutes+":"+dispseconds;
+            }}
         }
     });
 }
