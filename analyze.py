@@ -99,7 +99,7 @@ class LOLGameData:
                 game_data['teams'][team]['kills'] += self.data['history'][-1]['players'][team][player]['kills']
                 game_data['teams'][team]['deaths'] += self.data['history'][-1]['players'][team][player]['deaths']
                 game_data['teams'][team]['assists'] += self.data['history'][-1]['players'][team][player]['assists']
-                game_data['teams'][team]['gold'] += self.data['history'][-1]['players'][team][player]['total_gold']
+                game_data['teams'][team]['gold'] += self.data['history'][goldAvailableIndex]['players'][team][player]['total_gold']
                 game_data['teams'][team]['minions'] += cint(self.data['history'][-1]['players'][team][player]['minions'])
             
             game_data['teams'][team]['kda'] = [game_data['teams'][team]['kills'], game_data['teams'][team]['deaths'], game_data['teams'][team]['assists']]
@@ -297,7 +297,7 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/Gentium - Taric - Spec.lra")
+    data = LOLGameData("output/Gentium - Leona (5) - Spec.lra")
     print str(len(data.data['history'])) + " data points loaded."
     print "Generating analysis json file..."
     data.generateAnalysisFile()

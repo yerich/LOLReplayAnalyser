@@ -52,9 +52,18 @@
         .detailed_scoreboard_champion_purple .detailed_scoreboard_champion_name { color: #3D0060; }
         
         .full_chart { margin: 15px 0 5px 0;}
+        
+        .etabs { margin: 0; padding: 0; }
+        .tab { display: inline-block; zoom:1; *display:inline; background: #eee; border: solid 1px #EEE; border-bottom: none; -moz-border-radius: 4px 4px 0 0; -webkit-border-radius: 4px 4px 0 0; }
+        .tab a { font-size: 14px; line-height: 2em; display: block; padding: 0 10px; outline: none; }
+        .tab a:hover { text-decoration: underline; }
+        .tab.ui-state-active { background: #fff; padding-top: 6px; position: relative; top: 1px; border-color: #AAA; }
+        .tab a.active { font-weight: bold; }
+        .tab_container > div { background: #fff; border: solid #AAA 1px; padding: 10px; -moz-border-radius: 0 4px 4px 4px; -webkit-border-radius: 0 4px 4px 4px; }
     </style>
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script src="http://code.highcharts.com/stock/highstock.js"></script>
     <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
     <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
@@ -67,9 +76,6 @@
 
 <div id="wrapper">
     <h1>League of Legends Replay Analysis</h1>
-    <div id="analysis_nav">
-        <a href="#gold_history">Gold History</a> | <a href="#objective_history">Objective History</a>
-    </div>
     
     <div id="main_scoreboard">
         <div id="main_scoreboard_0" class="main_scoreboard_team">
@@ -106,17 +112,31 @@
         </table>
     </div>
     
-    <h2 id="gold_history">Gold History</h2>
-    <div id="team_gold_chart" style="height: 540px" class="full_chart"></div>
-    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="gold_history_accuracy"></span> seconds.</p>
-    
-    <h2 id="objective_history">Objective History</h2>
-    <div id="team_towers_chart" style="height: 200px;" class="full_chart"></div>
-    <div id="team_dragons_chart" style="height: 100px;" class="full_chart"></div>
-    <div id="team_barons_chart" style="height: 100px;" class="full_chart"></div>
-    <div id="team_inhibitors_chart" style="height: 250px;" class="full_chart"></div>
-    <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.
-        Solid areas represent periods of uncertainty.</p>
+    <div id="tabs1_container" class="tab_container">
+        <ul class='etabs'>
+            <li class='tab' class="default_tab"><a href="#tabs1_gold_history">Gold History</a></li>
+            <li class='tab'><a href="#tabs1_objective_history">Objectives History</a></li>
+            <li class='tab'><a href="#tabs1_inhibitors_history">Inhibitors History</a></li>
+        </ul>
+        
+        <div id="tabs1_gold_history">
+            <div id="team_gold_chart" style="height: 540px" class="full_chart"></div>
+            <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="gold_history_accuracy"></span> seconds.</p>
+        </div>
+        
+        <div id="tabs1_objective_history">
+            <div id="team_towers_chart" style="height: 200px;" class="full_chart"></div>
+            <div id="team_dragons_chart" style="height: 100px;" class="full_chart"></div>
+            <div id="team_barons_chart" style="height: 100px;" class="full_chart"></div>
+            <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.</p>
+        </div>
+        
+        <div id="tabs1_inhibitors_history">
+            <p><strong>Note: </strong> Due to technical limitations, exact times for down inhibitors cannot be accurately determined. Solid areas
+                represent periods of uncertainty.</p>
+            <div id="team_inhibitors_chart" style="height: 250px;" class="full_chart"></div>
+        </div>
+    </div>
 </div>
 
 </body>

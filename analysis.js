@@ -502,5 +502,8 @@ $(document).ready(function() {
                enabled: false
             }
         });
+        
+        //Initalize Tabs
+        $('.tab_container').tabs({ active: 0 });
     });
 });
