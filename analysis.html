@@ -51,6 +51,10 @@
         .detailed_scoreboard_champion_blue .detailed_scoreboard_champion_name { color: #002763; }
         .detailed_scoreboard_champion_purple .detailed_scoreboard_champion_name { color: #3D0060; }
         
+        #main_chart_selector div { display: inline-block; margin-right: 10px;}
+        #main_chart_selector div input { padding-right: 4px;}
+        #main_chart { margin-top: 20px; margin-bottom: 4px;}
+        
         .full_chart { margin: 15px 0 5px 0;}
         
         .etabs { margin: 0; padding: 0; }
@@ -112,31 +116,23 @@
         </table>
     </div>
     
-    <div id="tabs1_container" class="tab_container">
-        <ul class='etabs'>
-            <li class='tab' class="default_tab"><a href="#tabs1_gold_history">Gold History</a></li>
-            <li class='tab'><a href="#tabs1_objective_history">Objectives History</a></li>
-            <li class='tab'><a href="#tabs1_inhibitors_history">Inhibitors History</a></li>
-        </ul>
-        
-        <div id="tabs1_gold_history">
-            <div id="team_gold_chart" style="height: 540px" class="full_chart"></div>
-            <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="gold_history_accuracy"></span> seconds.</p>
-        </div>
-        
-        <div id="tabs1_objective_history">
-            <div id="team_towers_chart" style="height: 200px;" class="full_chart"></div>
-            <div id="team_dragons_chart" style="height: 100px;" class="full_chart"></div>
-            <div id="team_barons_chart" style="height: 100px;" class="full_chart"></div>
-            <p class="analysis_note" style="text-align: right;">Times are accurate to within <span id="objective_history_accuracy"></span> seconds.</p>
-        </div>
-        
-        <div id="tabs1_inhibitors_history">
-            <p><strong>Note: </strong> Due to technical limitations, exact times for down inhibitors cannot be accurately determined. Solid areas
-                represent periods of uncertainty.</p>
-            <div id="team_inhibitors_chart" style="height: 250px;" class="full_chart"></div>
-        </div>
+    <h2>Game History</h2>
+    <div id="main_chart_selector">
+        <div><input type="checkbox" id="main_chart_selector_goldHistory" value="goldHistory" checked="checked"><label for="main_chart_selector_goldHistory">Gold History</label></div>
+        <div><input type="checkbox" id="main_chart_selector_goldDifference" value="goldDifference" checked="checked"><label for="main_chart_selector_goldDifference">Gold Difference</label></div>
+        <div><input type="checkbox" id="main_chart_selector_towers" value="towers"><label for="main_chart_selector_towers">Number of Towers</label></div>
+        <div><input type="checkbox" id="main_chart_selector_dragons" value="dragons"><label for="main_chart_selector_dragons">Number of Barons</label></div>
+        <div><input type="checkbox" id="main_chart_selector_barons" value="barons"><label for="main_chart_selector_barons">Number of Dragons</label></div>
+        <div><input type="checkbox" id="main_chart_selector_inhibitors" value="inhibitors"><label for="main_chart_selector_inhibitors">Number of Inhibitors</label></div>
     </div>
+    <button id="main_chart_redraw">Redraw Graph</button>
+    <div id="main_chart"></div>
+    <p class="analysis_note" style="text-align: right;">
+        Gold history is accurate to within <span id="gold_history_accuracy"></span> seconds.
+        Objective history is accurate to within <span id="objective_history_accuracy"></span> seconds.<br />
+        <strong>Note: </strong> Due to technical limitations, exact times for down inhibitors cannot be accurately determined. Solid areas
+        represent periods of uncertainty.
+    </p>
 </div>
 
 </body>
