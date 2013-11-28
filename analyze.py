@@ -42,14 +42,39 @@ class LOLGameData:
     
     def getTotalGoldOverTime(self):
         gold_data = { 'teams' : [{}, {}], 'players' : [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]], 'difference' : {}}
+        # Queue for last 1 and 5 minutes of current gold value, per player
+        gold_history_queue_1 = [[[], [], [], [], []], [[], [], [], [], []]]
+        gold_history_queue_5 = [[[], [], [], [], []], [[], [], [], [], []]]
         for i in self.data['history']:
             if("gold_data_available" in i and i['gold_data_available'] == True):
                 gold_data['teams'][0][i['time']] = { "total" : i['teams'][0]['gold'], "effective" : i['teams'][0]['gold'], "held" : 0 }
                 gold_data['teams'][1][i['time']] = { "total" : i['teams'][1]['gold'], "effective" : i['teams'][1]['gold'], "held" : 0 }
                 gold_data['difference'][i['time']] = i['teams'][0]['gold'] - i['teams'][1]['gold']
+                
                 for team in [0, 1]:
                     for player in range(0, 5):
-                        gold_data['players'][team][player][i['time']] = i['players'][team][player]['gold']
+                        gold_history_queue_5[team][player].append([i['time'], i['players'][team][player]['total_gold']])
+                        gold_history_queue_1[team][player].append([i['time'], i['players'][team][player]['total_gold']])
+                        five_minutes_ago_gold = 0
+                        while(len(gold_history_queue_5[team][player]) > 1 and gold_history_queue_5[team][player][1][0] < i['time'] - 300):
+                            gold_history_queue_5[team][player].pop(0)
+                        if(gold_history_queue_5[team][player][0][0] < i['time'] - 300):
+                            five_minutes_ago_gold = gold_history_queue_5[team][player][0]
+                            
+                        one_minute_ago_gold = 0
+                        while(i['time'] >= 180 and gold_history_queue_1[team][player][1][0] < i['time'] - 60):
+                            gold_history_queue_1[team][player].pop(0)
+                        if(gold_history_queue_1[team][player][0][0] < i['time'] - 60):
+                            one_minute_ago_gold = gold_history_queue_1[team][player][0]
+                        
+                        gold_data['players'][team][player][i['time']] = { 
+                                                                         "total" : i['players'][team][player]['total_gold'], 
+                                                                         "current" : i['players'][team][player]['current_gold'],
+                                                                         "gpm" : i['players'][team][player]['total_gold'] * 60 / i['time'] if (i['time'] >= 120) else None,
+                                                                         "gpm5" : ((i['players'][team][player]['total_gold'] - five_minutes_ago_gold[1]) * 60 / (i['time'] - five_minutes_ago_gold[0])) if five_minutes_ago_gold else None,
+                                                                         "gpm1" : ((i['players'][team][player]['total_gold'] - one_minute_ago_gold[1]) * 60 / (i['time'] - one_minute_ago_gold[0])) if one_minute_ago_gold else None
+                                                                         }
+                        
                         gold_data['teams'][team][i['time']]['effective'] -= i['players'][team][player]['current_gold']
                         gold_data['teams'][team][i['time']]['held'] += i['players'][team][player]['current_gold']
         
@@ -64,7 +89,10 @@ class LOLGameData:
                 kda_data['difference'][i['time']] = i['teams'][0]['kills'] - i['teams'][1]['kills']
                 for team in [0, 1]:
                     for player in range(0, 5):
-                        kda_data['players'][team][player][i['time']] = i['players'][team][player]['kda']
+                        kda_data['players'][team][player][i['time']] = {"kills" : cint(i['players'][team][player]['kills']),
+                                                                        "deaths" : cint(i['players'][team][player]['deaths']),
+                                                                        "assists" : cint(i['players'][team][player]['assists']),
+                                                                        "is_dead" : 1 if (i['players'][team][player]['dead']) else 0 }
                         kda_data['teams'][team][i['time']]['kills'] += cint(i['players'][team][player]['kills'])
                         kda_data['teams'][team][i['time']]['deaths'] += cint(i['players'][team][player]['deaths'])
                         kda_data['teams'][team][i['time']]['assists'] += cint(i['players'][team][player]['assists'])
@@ -132,11 +160,12 @@ class LOLGameData:
                 game_data['teams'][team]['winner'] = False
         
         game_data['clientVersion'] = self.data['lrf_meta']['clientVersion']
+        game_data['gameLength'] = self.data['history'][-1]['time']
         return game_data
     
     # Gets data on towers, inhibitors, dragons, barons
     def getObjectiveData(self):
-        objective_data = { 'teams' : [{}, {}]}
+        objective_data = { 'teams' : [{}, {}], 'players' : [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]]}
         last_dragon = -1000
         last_baron = -1000
         num_dragons = { 'teams' : [0, 0]}
@@ -182,6 +211,7 @@ class LOLGameData:
                 
                 for player in range(0, 5):
                     cs[team] += i['players'][team][player]['minions']
+                    objective_data['players'][team][player][i['time']] = { "minions" : i['players'][team][player]['minions']}
                                 
             # Conpile data into our list for this data point
             for team in [0, 1]:

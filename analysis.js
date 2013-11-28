@@ -1,5 +1,6 @@
 iconFolder = "icons/";
 lol_replay_data = 0;
+lol_champion_data = 0;
 
 function convertDataTime(data) {
     for(datum in data) {
@@ -61,12 +62,16 @@ var QueryString = function () {
  */
 function convertTeamStatsToSingle(teamsData) {
     statList = [];
-    splitStats = [{}, {}];
+    splitStats = [];
+    for(team in teamsData) {
+        splitStats.push({});
+    }
     for (time in teamsData[0]) {
         for (stat in teamsData[0][time]) {
             statList.push(stat);
-            splitStats[0][stat] = {};
-            splitStats[1][stat] = {};
+            for(team in teamsData) {
+                splitStats[team][stat] = {};
+            }
         }
         break;
     }
@@ -79,6 +84,10 @@ function convertTeamStatsToSingle(teamsData) {
         }
     }
     return splitStats;
+}
+
+function convertPlayerStatsToSingle(playersData) {
+    return [convertTeamStatsToSingle(playersData[0]), convertTeamStatsToSingle(playersData[1])];
 }
 
 //Get the time interval for which percent% of the time intervals are within
@@ -126,127 +135,7 @@ function printableChampionName(name) {
         name = name.replace("-", " ");
         return name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     }
-}
-
-function drawMainChart(chartData) {
-    // Create the main chart
-    main_chart = { series: [], yAxis: []};
-    plots = [];
-    
-    $("#main_chart_selector input").each(function(k, v) {
-        if($(v).is(':checked'))
-            plots.push($(v).val());
-    });
-    var yAxiscount = 0;
-    chartHeight = 120;
-    for(plot in plots) {
-        p = plots[plot];
-        for(j in chartData[p]['series']) {
-            if(chartData[p]['series'][j].yAxisOffset)
-                chartData[p]['series'][j].yAxis = parseInt(chartData[p]['series'][j].yAxisOffset) + parseInt(yAxiscount);
-            else
-                chartData[p]['series'][j].yAxis = parseInt(yAxiscount);
-            main_chart['series'].push(chartData[p]['series'][j]);
-        }
-        
-        for(j in chartData[p]['yAxis']) {
-            chartData[p]['yAxis'][j].top = chartHeight - 85;
-            main_chart['yAxis'].push(chartData[p]['yAxis'][j]);
-            chartHeight += chartData[p]['yAxis'][j]['height'] + 10;
-            yAxiscount += 1;
-        }
-    }
-    console.log(yAxiscount);
-    
-    $("#main_chart").height(chartHeight);
-    
-    $('#main_chart').highcharts('StockChart', {
-        rangeSelector : {
-            buttons: [{ type: 'minute', count: '3', text: '3m'}, { type: 'minute', count: '10', text: '10m'}, {type : 'all', text : "All"}],
-            inputEnabled: false
-        },
-
-        title : {
-            enabled: 'false'
-        },
-        
-        xAxis: {
-            type : 'datetime',
-            ordinal : false,
-            gridLineWidth: 0,
-            labels: { formatter: function () {
-                var seconds = (this.value / 1000);
-                var dispseconds = seconds % 60;
-                if(dispseconds < 10) {
-                    dispseconds = "0"+dispseconds;
-                }
-                var dispminutes = Math.floor(seconds / 60);
-                return dispminutes+":"+dispseconds;
-            }}
-        },
-        
-        tooltip: {
-            formatter: function() {
-                var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';
-
-                $.each(this.points, function(i, point) {
-                    if(this.series.name == "Difference") {
-                        if(point.y == 0)
-                            s += '<br/>Tied';
-                        else if(point.y > 0)
-                            s += '<br/><span style="color: #0046AF;"><strong>Blue team leads</strong></span> by ' + Math.round(point.y);
-                        else
-                            s += '<br/><span style="color: #7000AD;"><strong>Purple team leads</strong></span> by ' + Math.round(-point.y);
-                    }
-                    else if(this.series.name.substring(0, "Blue Team".length) == "Blue Team") {
-                        s += "<br/>" + this.series.name.substring("Blue Team".length) + ': <span style="color: #0046AF;"><strong>'+Math.round(point.y)+"</strong></span>";
-                    }
-                    else if(this.series.name.substring(0, "Purple Team".length) == "Purple Team") {
-                        s += ' | <span style="color: #7000AD;"><strong>'+Math.round(point.y)+"</strong></span>";
-                    }
-                    else if(this.series.name == "Difference2") {
-                        return;
-                    }
-                    else {
-                        s += '<br/>'+ this.series.name + ": " + Math.round(point.y);
-                    }
-                });
-            
-                return s;
-            },
-            useHTML: true
-        },
-        
-        plotOptions: {
-            line : {
-                dataGrouping: {"units" : [['second', [1, 5]]], "approximation": "open"}
-            },
-            area : {
-                dataGrouping: {"units" : [['second', [1, 5]]], "approximation": "open"}
-            },
-        },
-        
-        yAxis: main_chart['yAxis'],
-        series : main_chart['series'],
-        
-        navigator : {
-            baseSeries: 2,
-            color: "#000",
-            fillColor: "#FFF",
-            negativeColor: "#000",
-            negativeFillColor: "#FFF",
-            xAxis: { labels: { formatter: function () {
-                var seconds = (this.value / 1000);
-                var dispseconds = seconds % 60;
-                if(dispseconds < 10) {
-                    dispseconds = "0"+dispseconds;
-                }
-                var dispminutes = Math.floor(seconds / 60);
-                return dispminutes+":"+dispseconds;
-            }}}
-        }
-    });
-}
+} 
 
 $(document).ready(function() {
     if(QueryString.file)
@@ -293,6 +182,9 @@ $(document).ready(function() {
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['minions']+"</span></td>");
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append(
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['total_gold']+"</span></td>");
+                
+                $("#champion_chart_selector").append("<option value='"+i+"_"+j+"' class='champion_chart_selector_team_"+i+"'>"+
+                printableChampionName(data['game']['players'][i][j]['champion'])+" ("+data['game']['players'][i][j]['summoner']+")</option>");
             }
             
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_gold'>"+Math.floor(data['game']['teams'][i]['gold'] / 100)/10+"k</div>");
@@ -527,6 +419,16 @@ $(document).ready(function() {
         
         lol_replay_data = chartData;
         drawMainChart(lol_replay_data);
+        console.log(convertPlayerStatsToSingle(data['objectives']['players']));
+        
+        lol_champion_data = {
+            "gold" : convertPlayerStatsToSingle(data['gold']['players']),
+            "kda" : convertPlayerStatsToSingle(data['kda']['players']),
+            "objectives" : convertPlayerStatsToSingle(data['objectives']['players']),
+            "playerData" : data['game']['players'],
+            "item_builds" : data['item_builds']
+        };
+        printChampionDetails(lol_champion_data);
         
         //Calculate accuracy of gold plots
         $("#gold_history_accuracy").text(getPercentTimeInterval(data['gold']['teams'][0], 0.99) / 2);
@@ -540,6 +442,10 @@ $(document).ready(function() {
         
         $("#main_chart_redraw").on("click", function(e) {
             drawMainChart(lol_replay_data);
+        });
+        
+        $("#champion_chart_redraw").on("click", function(e) {
+            printChampionDetails(lol_champion_data);
         });
     });
 });
