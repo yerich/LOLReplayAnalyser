@@ -62,6 +62,10 @@
         option.champion_chart_selector_team_0 { background: #DDF0FF !important; }
         option.champion_chart_selector_team_1 { background: #EDE2FF !important; }
         
+        #champion_item_history_wrapper { max-height: 250px; overflow: auto;}
+        #champion_item_history td:first-child { width: 65px;}
+        .champion_item_history_items img { width: 25px; border-radius: 5px; margin-right: 1px; display: inline-block;}
+        
         .etabs { margin: 0; padding: 0; }
         .tab { display: inline-block; zoom:1; *display:inline; background: #eee; border: solid 1px #EEE; border-bottom: none; -moz-border-radius: 4px 4px 0 0; -webkit-border-radius: 4px 4px 0 0; }
         .tab a { font-size: 14px; line-height: 2em; display: block; padding: 0 10px; outline: none; }
@@ -78,6 +82,7 @@
     <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
     
     <script src="highcharts.theme.js"></script>
+    <script src="helpers.js"></script>
     <script src="charts.js"></script>
     <script src="analysis.js"></script>
 </head>
@@ -154,7 +159,22 @@
     
     <div id="champion_chart"></div>
     
-    
+    <div id="champion_details">
+        <div id="champion_build_order">
+            <h3>Item History</h3>
+            <div id="champion_item_history_wrapper">
+                <table id="champion_item_history">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Items</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

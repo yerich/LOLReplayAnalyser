@@ -1,3 +1,12 @@
+function secondsToMinSeconds(seconds) {
+    var dispseconds = seconds % 60;
+    if(dispseconds < 10) {
+        dispseconds = "0"+dispseconds;
+    }
+    var dispminutes = Math.floor(seconds / 60);
+    return dispminutes+":"+dispseconds;
+}
+
 function drawMainChart(chartData) {
     // Create the main chart
     main_chart = { series: [], yAxis: []};
@@ -45,13 +54,7 @@ function drawMainChart(chartData) {
             ordinal : false,
             gridLineWidth: 0,
             labels: { formatter: function () {
-                var seconds = (this.value / 1000);
-                var dispseconds = seconds % 60;
-                if(dispseconds < 10) {
-                    dispseconds = "0"+dispseconds;
-                }
-                var dispminutes = Math.floor(seconds / 60);
-                return dispminutes+":"+dispseconds;
+                return secondsToMinSeconds(this.value/1000);
             }}
         },
         
@@ -123,7 +126,17 @@ function printChampionDetails(data) {
     selectedChampionName = data['playerData'][selectedChampion[0]][selectedChampion[1]]['champion'];
 
     //Output champion details
-    
+    $("#champion_item_history tbody").html("");
+    for(time in data['item_builds'][selectedChampion[0]][selectedChampion[1]]) {
+        if(selectedChampion[0] == 1)
+            var entry = data['item_builds'][selectedChampion[0]][selectedChampion[1]][time];
+        else
+            var entry = data['item_builds'][selectedChampion[0]][selectedChampion[1]][time].reverse();
+        $("#champion_item_history tbody").append("<tr><td>"+secondsToMinSeconds(time)+"</td><td class='champion_item_history_items'></td></tr>");
+        for(k = 0; k < entry.length; k++) {
+            $("#champion_item_history tbody tr:last-child .champion_item_history_items").append(itemIconTag(entry[k]));
+        }
+    }
     
     //Draw history chart
     chartData = {
