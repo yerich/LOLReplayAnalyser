@@ -173,6 +173,9 @@ class LOLGameData:
         num_barons = { 'teams' : [0, 0]}
         last_data = { 'teams' : [{}, {}]}
         for i in self.data['history']:  # Loop through data points
+            if(i['gold_data_available'] == False):
+                continue
+            
             for j in i['events']:
                 # Detect dragon and baron based on the event notifications
                 if(j['victim'] == "monster-dragon" and i['time'] > last_dragon + 200):

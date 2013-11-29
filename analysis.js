@@ -417,5 +417,7 @@ $(document).ready(function() {
         $("#champion_chart_redraw").on("click", function(e) {
             printChampionDetails(lol_champion_data);
         });
+        
+        $("#loading").fadeOut();
     });
 });

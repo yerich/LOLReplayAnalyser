@@ -21,6 +21,7 @@
         table, td, th { border-collapse: collapse; padding: 2px 4px;}
         th { border-bottom: 1px solid #CCC; text-align: left;}
         
+        #loading { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: #FFF; font-size: 30px; line-height: 400px; text-align: center;}
         #wrapper { width: 900px; margin: 0 auto; padding: 30px; background: #FFF;}
         #analysis_nav { margin-bottom: 20px;}
         
@@ -106,8 +107,12 @@
 
 <body>
 
+<div id="loading">Loading...</div>
+
 <div id="wrapper">
     <h1>League of Legends Replay Analysis</h1>
+    
+    <p>Experimental version. Showing sample data. For source code visit <a href="http://github.com/yerich/LOLReplayAnalyser">github</a>.</p>
     
     <div id="main_scoreboard">
         <div id="main_scoreboard_0" class="main_scoreboard_team">
@@ -153,8 +158,8 @@
         
         <div><input type="checkbox" id="main_chart_selector_cs" value="cs"><label for="main_chart_selector_cs">CS</label></div>
         <div><input type="checkbox" id="main_chart_selector_towers" value="towers"><label for="main_chart_selector_towers">Number of Towers</label></div>
-        <div><input type="checkbox" id="main_chart_selector_dragons" value="dragons"><label for="main_chart_selector_dragons">Number of Barons</label></div>
-        <div><input type="checkbox" id="main_chart_selector_barons" value="barons"><label for="main_chart_selector_barons">Number of Dragons</label></div>
+        <div><input type="checkbox" id="main_chart_selector_dragons" value="dragons"><label for="main_chart_selector_dragons">Number of Dragons</label></div>
+        <div><input type="checkbox" id="main_chart_selector_barons" value="barons"><label for="main_chart_selector_barons">Number of Barons</label></div>
         <div><input type="checkbox" id="main_chart_selector_inhibitors" value="inhibitors"><label for="main_chart_selector_inhibitors">Number of Inhibitors</label></div><br />
         
         <div><input type="checkbox" id="main_chart_selector_kills" value="kills"><label for="main_chart_selector_kills">Kills</label></div>
