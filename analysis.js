@@ -135,7 +135,7 @@ $(document).ready(function() {
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['level']+"</span></td>");
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append(
                     "<td><span class='detailed_scoreboard_champion_name'>"+
-                    printableChampionName(data['game']['players'][i][j]['champion'])+"</span><br />"+
+                    printableName(data['game']['players'][i][j]['champion'])+"</span><br />"+
                     "<span class='detailed_scoreboard_summoner_name'>"+quickfindLink(data['game']['players'][i][j]['summoner'])+"</span></td>");
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append("<td class='detailed_scoreboard_summoner_spells'></td>");
                 for(k = 0; k < 2; k++) {
@@ -153,7 +153,7 @@ $(document).ready(function() {
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['total_gold']+"</span></td>");
                 
                 $("#champion_chart_selector").append("<option value='"+i+"_"+j+"' class='champion_chart_selector_team_"+i+"'>"+
-                printableChampionName(data['game']['players'][i][j]['champion'])+" ("+data['game']['players'][i][j]['summoner']+")</option>");
+                printableName(data['game']['players'][i][j]['champion'])+" ("+data['game']['players'][i][j]['summoner']+")</option>");
             }
             
             $("#main_scoreboard_"+i).append("<div class='main_scoreboard_gold'>"+Math.floor(data['game']['teams'][i]['gold'] / 100)/10+"k</div>");

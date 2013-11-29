@@ -328,6 +328,7 @@ class LOLGameData:
                        "builds" : [[[], [], [], [], []], [[], [], [], [], []]], 
                        "finished_build_items" : [[[], [], [], [], []], [[], [], [], [], []]]}
         last_seen_build = [[[], [], [], [], []], [[], [], [], [], []]]
+        is_level_9 = [[False, False, False, False, False], [False, False, False, False, False]]
         
         for team in [0, 1]:
             for player in range(0, 5):
@@ -337,6 +338,15 @@ class LOLGameData:
                     
                     time = entry['time']
                     curritems = self.__removeActivatedItems(entry['players'][team][player]['items'])
+                    
+                    if((entry['players'][team][player]['level'] >= 9 or is_level_9[team][player]) and "warding-totem" in curritems):
+                        is_level_9[team][player] = True
+                        print curritems
+                        curritems = ["greater-totem" if x == "warding-totem" else x for x in curritems]
+                        print curritems
+                    elif(entry['players'][team][player]['level'] >= 9):
+                        is_level_9[team][player] = True
+                    
                     if(sorted(last_seen_build[team][player]) != sorted(curritems)):
                         item_builds['history'][team][player][time] = curritems
                     last_seen_build[team][player] = curritems
@@ -356,6 +366,18 @@ class LOLGameData:
         
         return item_builds
     
+    def getSkillsData(self):
+        skills = {"order" : [[[], [], [], [], []], [[], [], [], [], []]], 
+                  "totals" : [[[], [], [], [], []], [[], [], [], [], []]]}
+        
+        for team in [0, 1]:
+            for player in range(0, 5):
+                for skill in range(0, 4):
+                    skills['totals'][team][player].append(0);
+        
+        
+        return skills
+    
     def generateAnalysisFile(self):
         basename = ".".join(self.filename.split(".")[0:-1])
         if not os.path.exists(basename):
@@ -366,7 +388,8 @@ class LOLGameData:
                     "kda" : self.getTotalKDAOverTime(),
                     "game" : self.getGameData(),
                     "objectives" : self.getObjectiveData(),
-                    "item_builds" : self.getItemBuildData()
+                    "item_builds" : self.getItemBuildData(),
+                    "skills" : self.getSkillsData()
                     }
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
