@@ -167,6 +167,7 @@ def client_capture(metadata = None):
             turns_too_many_events = 7
         
         #switch between active champions, center camera
+        
         if(data['active_champion']):
             if(data['active_champion']['champion'] != data['players'][currchamp // 5][currchamp % 5]['champion']):
                 print "Error: active champion not expected value. Disregarding."

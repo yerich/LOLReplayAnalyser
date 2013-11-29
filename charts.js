@@ -124,14 +124,41 @@ function drawMainChart(chartData) {
 function printChampionDetails(data) {
     selectedChampion = $("#champion_chart_selector").val().split("_");
     selectedChampionName = data['playerData'][selectedChampion[0]][selectedChampion[1]]['champion'];
-
-    //Output champion details
+    
+    //Output champion build order
+    $("#champion_build_order").html("");
+    var counter = 0;
+    for(index in data['item_builds']['builds'][selectedChampion[0]][selectedChampion[1]]) {
+        var entry = data['item_builds']['builds'][selectedChampion[0]][selectedChampion[1]][index];
+        if(selectedChampion[0] == 0)
+            entry[1] = entry[1].reverse();
+        if(counter == 0) {
+            $("#champion_build_order").append("<div><span class='champion_build_order_time'>Start</span><span class='champion_build_order_items'></span></div>");
+        }
+        else {
+            $("#champion_build_order").append("<div><span class='champion_build_order_time'>"+secondsToMinSeconds(entry[0])+
+                "</span><span class='champion_build_order_raquo'>&raquo;</span><span class='champion_build_order_items'></span></div>");
+        }
+        
+        for(k = 0; k < entry[1].length; k++) {
+            $("#champion_build_order div:last-child .champion_build_order_items").append(itemIconTag(entry[1][k]));
+        }
+        if(entry[2].length > 0 && entry[1].length == 0) {
+            for(k = 0; k < entry[2].length; k++) {
+                $("#champion_build_order div:last-child .champion_build_order_items").append("<span class='champion_build_order_item_sold'><span></span>"+
+                    itemIconTag(entry[2][k]))+"</span>";
+            }
+        }
+        counter ++;
+    }
+    
+    //Output champion build history
     $("#champion_item_history tbody").html("");
-    for(time in data['item_builds'][selectedChampion[0]][selectedChampion[1]]) {
+    for(time in data['item_builds']['history'][selectedChampion[0]][selectedChampion[1]]) {
         if(selectedChampion[0] == 1)
-            var entry = data['item_builds'][selectedChampion[0]][selectedChampion[1]][time];
+            var entry = data['item_builds']['history'][selectedChampion[0]][selectedChampion[1]][time];
         else
-            var entry = data['item_builds'][selectedChampion[0]][selectedChampion[1]][time].reverse();
+            var entry = data['item_builds']['history'][selectedChampion[0]][selectedChampion[1]][time].reverse();
         $("#champion_item_history tbody").append("<tr><td>"+secondsToMinSeconds(time)+"</td><td class='champion_item_history_items'></td></tr>");
         for(k = 0; k < entry.length; k++) {
             $("#champion_item_history tbody tr:last-child .champion_item_history_items").append(itemIconTag(entry[k]));

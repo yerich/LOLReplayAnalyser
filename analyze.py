@@ -323,7 +323,10 @@ class LOLGameData:
     
     
     def getItemBuildData(self):
-        item_builds = [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]]
+        item_builds = {
+                       "history" : [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]], 
+                       "builds" : [[[], [], [], [], []], [[], [], [], [], []]], 
+                       "finished_build_items" : [[[], [], [], [], []], [[], [], [], [], []]]}
         last_seen_build = [[[], [], [], [], []], [[], [], [], [], []]]
         
         for team in [0, 1]:
@@ -333,10 +336,23 @@ class LOLGameData:
                         continue
                     
                     time = entry['time']
-                    if(sorted(last_seen_build[team][player]) != sorted(self.__removeActivatedItems(entry['players'][team][player]['items']))):
-                        item_builds[team][player][time] = self.__removeActivatedItems(entry['players'][team][player]['items'])
-                    last_seen_build[team][player] = self.__removeActivatedItems(entry['players'][team][player]['items'])
+                    curritems = self.__removeActivatedItems(entry['players'][team][player]['items'])
+                    if(sorted(last_seen_build[team][player]) != sorted(curritems)):
+                        item_builds['history'][team][player][time] = curritems
+                    last_seen_build[team][player] = curritems
                     
+                    if(entry['time'] > 90 and len(curritems) > 0 and len(item_builds['builds'][team][player]) == 0):
+                        item_builds['builds'][team][player].append([time, curritems, []])
+                        item_builds['finished_build_items'][team][player].append(curritems)
+                    elif(len(item_builds['builds'][team][player]) > 0):
+                        prev_build_items = [item for item in item_builds['finished_build_items'][team][player][-1] if item in config.BUILD_ITEMS]
+                        curr_build_items = [item for item in curritems if item in config.BUILD_ITEMS]
+                        new_build_items = [item for item in curr_build_items if item not in prev_build_items]
+                        old_build_items = [item for item in prev_build_items if item not in curr_build_items]
+                        if(len(new_build_items) > 0 or len(old_build_items) > 0):
+                            item_builds['finished_build_items'][team][player].append(curr_build_items)
+                            item_builds['builds'][team][player].append([time, new_build_items, old_build_items])
+                        
         
         return item_builds
     
@@ -355,7 +371,7 @@ class LOLGameData:
         json.dump(jsondata, open(basename+"/data.json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/Gentium - Taric - Spec.lra")
+    data = LOLGameData("output/Gentium - Lux (9) - Spec.lra")
     print str(len(data.data['history'])) + " data points loaded."
     print "Generating analysis json file..."
     data.generateAnalysisFile()

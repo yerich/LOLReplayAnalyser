@@ -1,13 +1,13 @@
 function championIconTag(name) {
-    return "<img src='"+iconFolder+"champion-"+name+".png' />";
+    return "<img src='"+iconFolder+"champion-"+name+".png' class='icon champion_icon' />";
 }
 
 function itemIconTag(name) {
-    return "<img src='"+iconFolder+"item-"+name+".png' />";
+    return "<img src='"+iconFolder+"item-"+name+".png' class='icon item_icon' />";
 }
 
 function summonerSpellIconTag(name) {
-    return "<img src='"+iconFolder+"summoner-"+name+".png' />";
+    return "<img src='"+iconFolder+"summoner-"+name+".png' class='icon summoner_spell_icon' />";
 }
 
 function quickfindLink(summoner) {

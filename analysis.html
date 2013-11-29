@@ -15,6 +15,7 @@
         
         h1 { padding-bottom: 0; margin-bottom: 0;}
         h2 { border-bottom: 1px solid #999; height: 29px; padding: 0; margin: 25px 0 20px 0;}
+        h3 { padding: 0; margin: 25px 0 3px 0;}
         
         table { width: 100%;}
         table, td, th { border-collapse: collapse; padding: 2px 4px;}
@@ -61,6 +62,15 @@
         
         option.champion_chart_selector_team_0 { background: #DDF0FF !important; }
         option.champion_chart_selector_team_1 { background: #EDE2FF !important; }
+        
+        #champion_build_order { white-space: nowrap; overflow: auto; padding-bottom: 2px;}
+        #champion_build_order div { display: inline-block; margin-right: 10px;}
+        #champion_build_order div span.champion_build_order_raquo { font-size: 30px; display: inline-block; margin: 0 10px 0 0; color: #999; height: 40px; line-height: 36px; vertical-align: top;}
+        #champion_build_order div span.champion_build_order_time { display: block; margin-bottom: 2px; font-size: 12px; padding-left: 27px;}
+        #champion_build_order div:first-child span.champion_build_order_time { padding-left: 4px;}
+        #champion_build_order .champion_build_order_item_sold { position: relative;}
+        #champion_build_order .champion_build_order_item_sold span { position: absolute; top: -22px; left: 0px; width: 40px; height: 40px; background: rgba(155, 0, 0, 0.6); z-index: 3; border-radius: 5px;}
+        #champion_build_order div img { width: 40px; margin-right: 1px; border-radius: 5px;}
         
         #champion_item_history_wrapper { max-height: 250px; overflow: auto;}
         #champion_item_history td:first-child { width: 65px;}
@@ -160,7 +170,16 @@
     <div id="champion_chart"></div>
     
     <div id="champion_details">
-        <div id="champion_build_order">
+        <div id="champion_build">
+            <h3>Build Order</h3>
+            <p class="analysis_note" style="text-align: left;"><strong>Note:</strong> Items are only fetched every ~20 seconds, so times are approximate.</p>
+            
+            <div id="champion_build_order_wrapper">
+                <div id="champion_build_order">
+                    
+                </div>
+            </div>
+            
             <h3>Item History</h3>
             <div id="champion_item_history_wrapper">
                 <table id="champion_item_history">

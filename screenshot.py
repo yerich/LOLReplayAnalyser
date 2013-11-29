@@ -237,7 +237,7 @@ def getScreenshotData(im, metadata = None):
             return img
         
         results['active_champion'] = {}
-        results['active_champion']['champion'] = getChampionFromIcon(im.crop((16, 856, 49, 889)))
+        results['active_champion']['champion'] = getChampionFromIcon(im.crop((10, 853, 47, 889)))
         results['active_champion']['skills'] = [ocr.imagetostring(im.crop((81, 955, 92, 969))),
                                                 ocr.imagetostring(im.crop((130, 955, 139, 969))),
                                                 ocr.imagetostring(im.crop((177, 955, 186, 969))),
