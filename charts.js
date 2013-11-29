@@ -30,6 +30,7 @@ function drawMainChart(chartData) {
         
         for(j in chartData[p]['yAxis']) {
             chartData[p]['yAxis'][j].top = chartHeight - 85;
+            chartData[p]['yAxis'][j].plotLines = [{ color: '#333', value: 0, width: 1, zIndex: 5}];
             main_chart['yAxis'].push(chartData[p]['yAxis'][j]);
             chartHeight += chartData[p]['yAxis'][j]['height'] + 10;
             yAxiscount += 1;
@@ -124,6 +125,38 @@ function drawMainChart(chartData) {
 function printChampionDetails(data) {
     selectedChampion = $("#champion_chart_selector").val().split("_");
     selectedChampionName = data['playerData'][selectedChampion[0]][selectedChampion[1]]['champion'];
+    
+    //Output champion skill order
+    $("#champion_skill_order_table").html("");
+    $("#champion_skill_order_table").append("<tr><th></th></tr>");
+    for(var i = 1; i <= 18; i++) {
+        $("#champion_skill_order_table tr:last-child").append("<th>"+i+"</th>");
+    }
+    var skill_names = ["Q", "W", "E", "R"];
+    for(var i = 0; i < 4; i++) {
+        $("#champion_skill_order_table").append("<tr><td>"+skill_names[i]+"</td></tr>");
+        for(var j = 0; j < 18; j++) {
+            if(data['skills']['order'][selectedChampion[0]][selectedChampion[1]].length > j) {
+                var leveledSkills = data['skills']['order'][selectedChampion[0]][selectedChampion[1]][j];
+                var skillLeveled = false;
+                for(skill in leveledSkills) {
+                    if(leveledSkills[skill] == i) {
+                        if(skillLeveled == true)
+                            $("#champion_skill_order_table tr:last-child td:last-child").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;");
+                        else
+                            $("#champion_skill_order_table tr:last-child").append("<td class='champion_skill_order_table_selected' colspan='"+leveledSkills.length+"'>&bull;</td>");
+                        skillLeveled = true;
+                    }
+                }
+                if(skillLeveled == false) {
+                    $("#champion_skill_order_table tr:last-child").append("<td colspan='"+leveledSkills.length+"'></td>");
+                }
+                j += leveledSkills.length - 1;
+            }
+            else
+                $("#champion_skill_order_table tr:last-child").append("<td></td>");
+        }
+    }
     
     //Output champion build order
     $("#champion_build_order").html("");
@@ -298,6 +331,7 @@ function printChampionDetails(data) {
         
         for(j in chartData[p]['yAxis']) {
             chartData[p]['yAxis'][j].top = chartHeight - 85;
+            chartData[p]['yAxis'][j].plotLines = [{ color: '#333', value: 0, width: 1, zIndex: 5}];
             champion_chart['yAxis'].push(chartData[p]['yAxis'][j]);
             chartHeight += chartData[p]['yAxis'][j]['height'] + 10;
             yAxiscount += 1;

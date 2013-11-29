@@ -238,10 +238,10 @@ def getScreenshotData(im, metadata = None):
         
         results['active_champion'] = {}
         results['active_champion']['champion'] = getChampionFromIcon(im.crop((10, 853, 47, 889)))
-        results['active_champion']['skills'] = [ocr.imagetostring(im.crop((81, 955, 92, 969))),
-                                                ocr.imagetostring(im.crop((130, 955, 139, 969))),
-                                                ocr.imagetostring(im.crop((177, 955, 186, 969))),
-                                                ocr.imagetostring(im.crop((225, 955, 234, 969)))
+        results['active_champion']['skills'] = [cint(ocr.imagetostring(im.crop((81, 955, 92, 969)))),
+                                                cint(ocr.imagetostring(im.crop((130, 955, 139, 969)))),
+                                                cint(ocr.imagetostring(im.crop((177, 955, 186, 969)))),
+                                                cint(ocr.imagetostring(im.crop((225, 955, 234, 969))))
                                                 ]
         champion_overlay_active = (im.getpixel((647, 401))[0:3] == (8, 8, 8) and im.getpixel((1272, 401))[0:3] == (41, 40, 41))
         results['active_champion']['hitpoints'] = ocr.imagetostring(greenthreshold(im.crop((851, 458, 953, 472)))) if champion_overlay_active else None
@@ -250,6 +250,7 @@ def getScreenshotData(im, metadata = None):
         results['active_champion']['ability_power'] = ocr.imagetostring(greenthreshold(im.crop((1225, 505, 1265, 520)))) if champion_overlay_active else None
         results['active_champion']['armor'] = ocr.imagetostring(greenthreshold(im.crop((1225, 627, 1265, 642)))) if champion_overlay_active else None
         results['active_champion']['magic_resist'] = ocr.imagetostring(greenthreshold(im.crop((1225, 651, 1265, 666)))) if champion_overlay_active else None
+        results['active_champion']['level'] = ocr.imagetostring(im.crop((1231, 415, 1250, 435))) if champion_overlay_active else None
         results['active_champion']['overlay_active'] = True if champion_overlay_active else False
     else:
         results['active_champion'] = None
@@ -302,7 +303,7 @@ def getScreenshotData(im, metadata = None):
     
     #Information on each of the ten champions
     results['players'][0].append(
-        {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 238))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((74, 218, 85, 228))) if im.getpixel((86, 229))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((785, 931, 880, 946))),
          "minions" : ocr.imagetostring(im.crop((884, 930, 927, 946))),
          "dead" : True if im.getpixel((86, 238))[0] == 0 else False,
@@ -311,7 +312,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (590, 925)) if results['item_data_available'] else None
          })
     results['players'][0].append(
-        {"level" : ocr.imagetostring(im.crop((74, 324, 85, 334))) if im.getpixel((86, 348))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((74, 324, 85, 334))) if im.getpixel((86, 324))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((785, 958, 880, 981))),
          "minions" : ocr.imagetostring(im.crop((884, 958, 927, 981))),
          "dead" : True if im.getpixel((86, 348))[0] == 0 else False,
@@ -320,7 +321,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (590, 956)) if results['item_data_available'] else None
          })
     results['players'][0].append(
-        {"level" : ocr.imagetostring(im.crop((74, 430, 85, 440))) if im.getpixel((86, 448))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((74, 430, 85, 440))) if im.getpixel((86, 441))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((785, 992, 880, 1012))),
          "minions" : ocr.imagetostring(im.crop((884, 992, 927, 1012))),
          "dead" : True if im.getpixel((86, 448))[0] == 0 else False,
@@ -329,7 +330,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (590, 986)) if results['item_data_available'] else None
          })
     results['players'][0].append(
-        {"level" : ocr.imagetostring(im.crop((74, 536, 85, 546))) if im.getpixel((86, 560))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((74, 536, 85, 546))) if im.getpixel((86, 546))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((785, 1023, 880, 1043))),
          "minions" : ocr.imagetostring(im.crop((884, 1023, 927, 1043))),
          "dead" : True if im.getpixel((86, 560))[0] == 0 else False,
@@ -338,7 +339,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (590, 1017)) if results['item_data_available'] else None
          })
     results['players'][0].append(
-        {"level" : ocr.imagetostring(im.crop((74, 642, 85, 652))) if im.getpixel((86, 666))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((74, 642, 85, 652))) if im.getpixel((86, 653))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((785, 1053, 880, 1073))),
          "minions" : ocr.imagetostring(im.crop((884, 1053, 927, 1073))),
          "dead" : True if im.getpixel((86, 666))[0] == 0 else False,
@@ -348,7 +349,7 @@ def getScreenshotData(im, metadata = None):
          })
     
     results['players'][1].append(
-        {"level" : ocr.imagetostring(im.crop((1865, 218, 1879, 228))) if im.getpixel((1879, 238))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((1865, 218, 1879, 228))) if im.getpixel((1879, 229))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1045, 931, 1140, 946))),
          "minions" : ocr.imagetostring(im.crop((992, 930, 1033, 946))),
          "dead" : True if im.getpixel((1879, 238))[0] == 0 else False,
@@ -357,7 +358,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (1145, 925)) if results['item_data_available'] else None
          })
     results['players'][1].append(
-        {"level" : ocr.imagetostring(im.crop((1865, 324, 1879, 334))) if im.getpixel((1879, 344))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((1865, 324, 1879, 334))) if im.getpixel((1879, 324))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1045, 958, 1140, 981))),
          "minions" : ocr.imagetostring(im.crop((992, 958, 1033, 981))),
          "dead" : True if im.getpixel((1879, 344))[0] == 0 else False,
@@ -366,7 +367,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (1145, 956)) if results['item_data_available'] else None
          })
     results['players'][1].append(
-        {"level" : ocr.imagetostring(im.crop((1865, 430, 1879, 440))) if im.getpixel((1879, 450))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((1865, 430, 1879, 440))) if im.getpixel((1879, 441))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1045, 992, 1140, 1012))),
          "minions" : ocr.imagetostring(im.crop((992, 992, 1033, 1012))),
          "dead" : True if im.getpixel((1879, 450))[0] == 0 else False,
@@ -375,7 +376,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (1145, 986)) if results['item_data_available'] else None
          })
     results['players'][1].append(
-        {"level" : ocr.imagetostring(im.crop((1865, 536, 1879, 546))) if im.getpixel((1879, 560))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((1865, 536, 1879, 546))) if im.getpixel((1879, 546))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1045, 1023, 1140, 1043))),
          "minions" : ocr.imagetostring(im.crop((992, 1023, 1033, 1043))),
          "dead" : True if im.getpixel((1879, 560))[0] == 0 else False,
@@ -384,7 +385,7 @@ def getScreenshotData(im, metadata = None):
          "items" : getItems(im, (1145, 1017)) if results['item_data_available'] else None
          })
     results['players'][1].append(
-        {"level" : ocr.imagetostring(im.crop((1865, 642, 1879, 652))) if im.getpixel((1879, 666))[0] < 50 else None,
+        {"level" : ocr.imagetostring(im.crop((1865, 642, 1879, 652))) if im.getpixel((1879, 653))[0] < 50 else None,
          "kda" : ocr.imagetostring(im.crop((1045, 1053, 1140, 1073))),
          "minions" : ocr.imagetostring(im.crop((992, 1053, 1033, 1073))),
          "dead" : True if im.getpixel((1879, 666))[0] == 0 else False,

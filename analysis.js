@@ -395,7 +395,8 @@ $(document).ready(function() {
             "kda" : convertPlayerStatsToSingle(data['kda']['players']),
             "objectives" : convertPlayerStatsToSingle(data['objectives']['players']),
             "playerData" : data['game']['players'],
-            "item_builds" : data['item_builds']
+            "item_builds" : data['item_builds'],
+            "skills" : data['skills']
         };
         printChampionDetails(lol_champion_data);
         

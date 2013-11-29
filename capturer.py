@@ -173,6 +173,14 @@ def client_capture(metadata = None):
                 print "Error: active champion not expected value. Disregarding."
             else:
                 data['active_champion']['champion_id'] = currchamp
+                    
+                # Write active champ info back into results, if available
+                if(data['active_champion']['overlay_active']):
+                    team = data['active_champion']['champion_id'] // 5
+                    player = data['active_champion']['champion_id'] % 5
+                    if(not data['players'][team][player]['level']):
+                        data['players'][team][player]['level'] = data['active_champion']['level']
+                
                 currchamp = (currchamp + 1) % 10
         
         if(currchamp < 0):

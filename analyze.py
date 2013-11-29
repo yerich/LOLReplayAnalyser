@@ -130,13 +130,14 @@ class LOLGameData:
                                                    "level" : self.data['history'][-1]['players'][team][player]['level']})
                 if team == 0:
                     game_data['players'][team][player]['items'].reverse()
-                    
+        
         for team in [0, 1]:
             game_data['teams'][team]['gold'] = 0
             game_data['teams'][team]['kills'] = 0
             game_data['teams'][team]['deaths'] = 0
             game_data['teams'][team]['assists'] = 0
             game_data['teams'][team]['minions'] = 0
+            
             
             for player in range(0, 5):
                 # Get player level from history, discarding invalid entries
@@ -341,9 +342,7 @@ class LOLGameData:
                     
                     if((entry['players'][team][player]['level'] >= 9 or is_level_9[team][player]) and "warding-totem" in curritems):
                         is_level_9[team][player] = True
-                        print curritems
                         curritems = ["greater-totem" if x == "warding-totem" else x for x in curritems]
-                        print curritems
                     elif(entry['players'][team][player]['level'] >= 9):
                         is_level_9[team][player] = True
                     
@@ -372,9 +371,28 @@ class LOLGameData:
         
         for team in [0, 1]:
             for player in range(0, 5):
-                for skill in range(0, 4):
+                for _ in range(0, 4):
                     skills['totals'][team][player].append(0);
         
+        for entry in self.data['history']:
+            if "active_champion" not in entry or not entry['active_champion'] or 'champion_id' not in entry['active_champion']:
+                continue
+            
+            champ_data = entry['active_champion']
+            
+            team = champ_data['champion_id'] // 5
+            player = champ_data['champion_id'] % 5
+            champ_data['skills'] = [cint(x) for x in champ_data['skills']]
+            
+            if(skills['totals'][team][player] != champ_data['skills']):
+                increasedSkills = []
+                for skill in range(0, 4):
+                    while(skills['totals'][team][player][skill] < champ_data['skills'][skill]):
+                        increasedSkills.append(skill)
+                        skills['order'][team][player].append([])
+                        skills['order'][team][player][-len(increasedSkills)] = increasedSkills
+                        skills['totals'][team][player][skill] += 1
+                
         
         return skills
     

@@ -63,6 +63,13 @@
         option.champion_chart_selector_team_0 { background: #DDF0FF !important; }
         option.champion_chart_selector_team_1 { background: #EDE2FF !important; }
         
+        #champion_skill_order_table { border: 0;}
+        #champion_skill_order_table th:first-child { width: 10%; }
+        #champion_skill_order_table th { width: 5%; text-align: center; }
+        #champion_skill_order_table td:first-child { text-align: left; font-size: 16px;}
+        #champion_skill_order_table td { text-align: center; border: 1px solid #EEE; font-size: 20px; font-weight: bold; border-bottom: 1px solid #CCC;}
+        #champion_skill_order_table td.champion_skill_order_table_selected { background: #EEE;}
+        
         #champion_build_order { white-space: nowrap; overflow: auto; padding-bottom: 2px;}
         #champion_build_order div { display: inline-block; margin-right: 10px;}
         #champion_build_order div span.champion_build_order_raquo { font-size: 30px; display: inline-block; margin: 0 10px 0 0; color: #999; height: 40px; line-height: 36px; vertical-align: top;}
@@ -170,6 +177,11 @@
     <div id="champion_chart"></div>
     
     <div id="champion_details">
+        <div id="champion_skills">
+            <h3>Skill Order</h3>
+            <table id="champion_skill_order_table">
+            </table>
+        </div>
         <div id="champion_build">
             <h3>Build Order</h3>
             <p class="analysis_note" style="text-align: left;"><strong>Note:</strong> Items are only fetched every ~20 seconds, so times are approximate.</p>
