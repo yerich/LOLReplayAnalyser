@@ -399,7 +399,8 @@ $(document).ready(function() {
             "objectives" : convertPlayerStatsToSingle(data['objectives']['players']),
             "playerData" : data['game']['players'],
             "item_builds" : data['item_builds'],
-            "skills" : data['skills']
+            "skills" : data['skills'],
+            "game" : data['game']['players']
         };
         printChampionDetails(lol_champion_data);
         
