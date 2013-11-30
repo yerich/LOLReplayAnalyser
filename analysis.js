@@ -152,7 +152,11 @@ $(document).ready(function() {
                 $("#detailed_scoreboard_champion_"+i+"_"+j).append(
                     "<td><span class='detailed_scoreboard_level'>"+data['game']['players'][i][j]['total_gold']+"</span></td>");
                 
+                //Append champion names to each the select box for champion details
                 $("#champion_chart_selector").append("<option value='"+i+"_"+j+"' class='champion_chart_selector_team_"+i+"'>"+
+                printableName(data['game']['players'][i][j]['champion'])+" ("+data['game']['players'][i][j]['summoner']+")</option>");
+                
+                $(".champion_chart_compare").append("<option value='"+i+"_"+j+"' class='champion_chart_selector_team_"+i+"'>"+
                 printableName(data['game']['players'][i][j]['champion'])+" ("+data['game']['players'][i][j]['summoner']+")</option>");
             }
             
@@ -388,7 +392,6 @@ $(document).ready(function() {
         
         lol_replay_data = chartData;
         drawMainChart(lol_replay_data);
-        console.log(convertPlayerStatsToSingle(data['objectives']['players']));
         
         lol_champion_data = {
             "gold" : convertPlayerStatsToSingle(data['gold']['players']),
@@ -416,6 +419,19 @@ $(document).ready(function() {
         
         $("#champion_chart_redraw").on("click", function(e) {
             printChampionDetails(lol_champion_data);
+        });
+        
+        $(".champion_chart_compare").on("change", function(e) {
+            var compareNum = parseInt($(this).attr("id").split("_").slice(-1)[0]);
+            if($(this).val() == "") {
+                for(var i = compareNum+1; i < 5; i++) {
+                    $("#champion_chart_compare_"+i).val("");
+                    $("#champion_chart_selector_"+(i+1)).hide();
+                }
+            }
+            else {
+                $("#champion_chart_selector_"+(compareNum+2)).show();
+            }
         });
         
         $("#loading").fadeOut();

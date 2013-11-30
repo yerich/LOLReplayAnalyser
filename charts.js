@@ -123,8 +123,26 @@ function drawMainChart(chartData) {
 }
 
 function printChampionDetails(data) {
-    selectedChampion = $("#champion_chart_selector").val().split("_");
-    selectedChampionName = data['playerData'][selectedChampion[0]][selectedChampion[1]]['champion'];
+    var selectedChampion = $("#champion_chart_selector").val().split("_");
+    var selectedChampionName = data['playerData'][selectedChampion[0]][selectedChampion[1]]['champion'];
+    var selectedChampionLineColor = "#DD2A00";
+    var selectedChampionFillColor = "rgba(221, 42, 0, 0.4)";
+    
+    var compareChampions = [];
+    
+    for(var i = 0; i < 5; i++) {
+        var compareChampion = $("#champion_chart_compare_"+i).val();
+        if(!compareChampion)
+            break;
+        compareChampions.push(compareChampion.split("_"));
+    }
+    
+    var compareChampionsNames = [];
+    var compareChampionsLineColors = ["#E2A600", "#3ADB00", "#00D8D8", "#0011D6"];
+    var compareChampionsFillColors = ["rgba(143, 105, 0, 0.4)", "rgba(58, 219, 0, 0.4)", "rgba(0, 216, 216, 0.4)", "rgba(0, 17, 214, 0.4)"];
+    for(var champion in compareChampions) {
+        compareChampionsNames[champion] = data['playerData'][compareChampions[champion][0]][compareChampions[champion][1]]['champion'];
+    }
     
     //Output champion skill order
     $("#champion_skill_order_table").html("");
@@ -134,8 +152,11 @@ function printChampionDetails(data) {
     }
     var skill_names = ["Q", "W", "E", "R"];
     for(var i = 0; i < 4; i++) {
+        //First (legend) cell in the table
         $("#champion_skill_order_table").append("<tr><td>"+skill_names[i]+"</td></tr>");
-        for(var j = 0; j < 18; j++) {
+        for(var j = 0; j < 18; j++) {   //18 cells, one for each skill point
+            //Occasionally, someone may assign skill points rapidly, so we don't catch which one came first
+            //In this case we have to combine the cells into one
             if(data['skills']['order'][selectedChampion[0]][selectedChampion[1]].length > j) {
                 var leveledSkills = data['skills']['order'][selectedChampion[0]][selectedChampion[1]][j];
                 var skillLeveled = false;
@@ -203,13 +224,15 @@ function printChampionDetails(data) {
         "championGoldHistory" : {
             series : [
                 {
-                    name : selectedChampionName + " gold",
-                    data : convertDataTime(convertHashToArray(data['gold'][selectedChampion[0]][selectedChampion[1]]['total'])),
+                    name : "gold",
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['gold'][team][player]['total']));
+                    },
                     tooltip: {
                         valueDecimals: 0
                     },
-                    lineColor: "#333",
-                    color: "#333"
+                    lineColor: selectedChampionLineColor,
+                    color: selectedChampionLineColor
                 }
             ],
             yAxis : [
@@ -225,31 +248,39 @@ function printChampionDetails(data) {
         "gpm" : {
             series : [
                 {
-                    name : selectedChampionName + " gpm (last 1 min.)",
-                    data : convertDataTime(convertHashToArray(data['gold'][selectedChampion[0]][selectedChampion[1]]['gpm1'])),
+                    name : "gpm (last 1 min.)",
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['gold'][team][player]['gpm1']));
+                    },
                     tooltip: {
                         valueDecimals: 2
                     },
-                    lineColor: "#DDD",
-                    color: "#DDD"
+                    lineColor: "#FFC0B5",
+                    color: "#FFC0B5",
+                    skipComparison: true
                 },
                 {
-                    name : selectedChampionName + " gpm (last 5 min.)",
-                    data : convertDataTime(convertHashToArray(data['gold'][selectedChampion[0]][selectedChampion[1]]['gpm5'])),
+                    name : "gpm (last 5 min.)",
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['gold'][team][player]['gpm5']));
+                    },
                     tooltip: {
                         valueDecimals: 2
                     },
-                    lineColor: "#888",
-                    color: "#888"
+                    lineColor: "#E07D67",
+                    color: "#E07D67",
+                    skipComparison: true
                 },
                 {
-                    name : selectedChampionName + " gpm (cumulative)",
-                    data : convertDataTime(convertHashToArray(data['gold'][selectedChampion[0]][selectedChampion[1]]['gpm'])),
+                    name : "gpm (cumulative)",
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['gold'][team][player]['gpm']));
+                    },
                     tooltip: {
                         valueDecimals: 2
                     },
-                    lineColor: "#333",
-                    color: "#333"
+                    lineColor: selectedChampionLineColor,
+                    color: selectedChampionLineColor
                 },
             ],
             yAxis : [
@@ -265,13 +296,15 @@ function printChampionDetails(data) {
         "championCSHistory" : {
             series : [
                 {
-                    name : selectedChampionName + " creep score",
-                    data : convertDataTime(convertHashToArray(data['objectives'][selectedChampion[0]][selectedChampion[1]]['minions'])),
+                    name : "creep score",
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['objectives'][team][player]['minions']));
+                    },
                     tooltip: {
                         valueDecimals: 0
                     },
-                    lineColor: "#333",
-                    color: "#333"
+                    lineColor: selectedChampionLineColor,
+                    color: selectedChampionLineColor
                 }
             ],
             yAxis : [
@@ -287,17 +320,19 @@ function printChampionDetails(data) {
         "championIsDead" : {
             series : [
                 {
-                    name : selectedChampionName + " is dead",
+                    name : "is dead",
                     type : 'area',
                     step : 'true',
-                    data : convertDataTime(convertHashToArray(data['kda'][selectedChampion[0]][selectedChampion[1]]['is_dead'])),
+                    dataFunction : function(champData, team, player) {
+                        return convertDataTime(convertHashToArray(champData['kda'][team][player]['is_dead']));
+                    },
                     tooltip: {
                         valueDecimals: 0
                     },
-                    lineColor: "#333",
+                    lineColor: selectedChampionLineColor,
                     lineWidth: 0,
-                    fillColor: "#999",
-                    color: "#333"
+                    fillColor: selectedChampionFillColor,
+                    color: selectedChampionLineColor
                 }
             ],
             yAxis : [
@@ -322,11 +357,20 @@ function printChampionDetails(data) {
     for(plot in plots) {
         p = plots[plot];
         for(j in chartData[p]['series']) {
+            if(compareChampions.length > 0 && chartData[p]['series'][j].skipComparison)
+                continue;
+            
             if(chartData[p]['series'][j].yAxisOffset)
                 chartData[p]['series'][j].yAxis = parseInt(chartData[p]['series'][j].yAxisOffset) + parseInt(yAxiscount);
             else
                 chartData[p]['series'][j].yAxis = parseInt(yAxiscount);
-            champion_chart['series'].push(chartData[p]['series'][j]);
+            chartData[p]['series'][j].data = chartData[p]['series'][j].dataFunction(data, selectedChampion[0], selectedChampion[1]);
+            chartData[p]['series'][j].origName = chartData[p]['series'][j].name;
+            chartData[p]['series'][j].name = printableName(selectedChampionName) + " " + chartData[p]['series'][j].origName;
+            chartData[p]['series'][j].primarySeries = true;
+            chartData[p]['series'][j].championName = printableName(selectedChampionName);
+            var newseries = $.extend(new chartData[p]['series'][j].constructor, chartData[p]['series'][j]);
+            champion_chart['series'].push(newseries);
         }
         
         for(j in chartData[p]['yAxis']) {
@@ -337,6 +381,41 @@ function printChampionDetails(data) {
             yAxiscount += 1;
         }
     }
+    
+    compareChampionsMode = false;
+    for(champion in compareChampions) {
+        champion = parseInt(champion);
+        var yAxiscount = 0;
+        var seriesCount = 0;
+        compareChampionsMode = true;
+        for(plot in plots) {
+            p = plots[plot];
+            for(j in chartData[p]['series']) {
+                if(chartData[p]['series'][j].skipComparison)
+                    continue;
+                
+                if(chartData[p]['series'][j].yAxisOffset)
+                    chartData[p]['series'][j].yAxis = parseInt(chartData[p]['series'][j].yAxisOffset) + parseInt(yAxiscount);
+                else
+                    chartData[p]['series'][j].yAxis = parseInt(yAxiscount);
+                chartData[p]['series'][j].data = chartData[p]['series'][j].dataFunction(data, compareChampions[champion][0], compareChampions[champion][1]);
+                chartData[p]['series'][j].name = printableName(compareChampionsNames[champion]) + " " + chartData[p]['series'][j].origName;
+                chartData[p]['series'][j].color = compareChampionsLineColors[champion];
+                chartData[p]['series'][j].lineColor = compareChampionsLineColors[champion];
+                chartData[p]['series'][j].fillColor = compareChampionsFillColors[champion];
+                chartData[p]['series'][j].primarySeries = false;
+                chartData[p]['series'][j].championName = printableName(compareChampionsNames[champion]);
+                var newseries = $.extend(new chartData[p]['series'][j].constructor, chartData[p]['series'][j]);
+                champion_chart['series'].splice((seriesCount)*(champion+2) + 1 + champion, 0, newseries);
+                seriesCount += 1;
+            }
+            for(j in chartData[p]['yAxis']) {
+                yAxiscount += 1;
+            }
+        }
+    }
+    
+    console.log(champion_chart['series']);
     
     $("#champion_chart").height(chartHeight);
     
@@ -370,12 +449,55 @@ function printChampionDetails(data) {
                 var s = '<b>'+ Highcharts.dateFormat('%H:%M:%S', this.x) +'</b>';
 
                 $.each(this.points, function(i, point) {
-                    var dispVal = Math.round(point.y);
-                    if(this.series.tooltipOptions.valueDecimals > 0) {
-                        var roundingFactor = Math.pow(10, this.series.tooltipOptions.valueDecimals);
-                        dispVal = Math.round(point.y * roundingFactor) / roundingFactor;
+                    if(compareChampionsMode == true) {
+                        var dispVal = Math.round(point.y);
+                        if(this.series.tooltipOptions.valueDecimals > 0) {
+                            var roundingFactor = Math.pow(10, this.series.tooltipOptions.valueDecimals);
+                            dispVal = Math.round(point.y * roundingFactor) / roundingFactor;
+                        }
+                        dispVal = "<span style='color: "+this.series.options.color+"'>"+dispVal+"</span>";
+                        if(this.series.options.primarySeries == true) {
+
+                            
+                            if(this.series.name.indexOf("is dead") > 0) {
+                                s += '<br/><div class="chart_legend_series">Currently Dead:</div>&zwnj;';
+                                if (point.y == 1) {
+                                    s += dispVal.replace(">1<", ">"+printableName(this.series.options.championName)+"<");
+                                }
+                            }
+                            else
+                                s += '<br/><div class="chart_legend_series">'+ printableName(this.series.options.origName) + ":</div>" + this.series.options.championName + ": " + dispVal;
+                        }
+                        else {
+                            if(this.series.name.indexOf("is dead") > 0) {
+                                if (point.y == 1) {
+                                    if(s.substr(-1) != ";")
+                                        s += ", ";
+                                    s += dispVal.replace(">1<", ">"+printableName(this.series.options.championName)+"<");
+                                }
+                            }
+                            else
+                                s += " | " + this.series.options.championName + ": " + dispVal;
+                        }
                     }
-                    s += '<br/>'+ this.series.name + ": " + dispVal;
+                    else {
+                        if(this.series.name.indexOf("is dead") > 0) {
+                            if (point.y == 1) {
+                                s += '<br/><strong style="color: #F33;">'+this.series.name+"</strong>";
+                            }
+                            else {
+                                s += '<br/>'+this.series.name.replace("is dead", "is not dead");
+                            }
+                        }
+                        else {
+                            var dispVal = Math.round(point.y);
+                            if(this.series.tooltipOptions.valueDecimals > 0) {
+                                var roundingFactor = Math.pow(10, this.series.tooltipOptions.valueDecimals);
+                                dispVal = Math.round(point.y * roundingFactor) / roundingFactor;
+                            }
+                            s += '<br/>'+ this.series.name + ": " + dispVal;
+                        }
+                    }
                 });
             
                 return s;

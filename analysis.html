@@ -5,7 +5,7 @@
     
     <style type="text/css">
         @import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
-        body { font-family: "Open Sans", "Tahoma", sans-serif; background: #F0F0F0; }
+        body { font-family: "Open Sans", "Tahoma", sans-serif; background: #F0F0F0; font-size: 14px; }
         a { text-decoration: none; color: #0042AE;}
         a:hover { text-decoration: underline;}
         a:visited { color: #2E00AD;}
@@ -20,6 +20,8 @@
         table { width: 100%;}
         table, td, th { border-collapse: collapse; padding: 2px 4px;}
         th { border-bottom: 1px solid #CCC; text-align: left;}
+        
+        button { margin-left: 0;}
         
         #loading { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: #FFF; font-size: 30px; line-height: 400px; text-align: center;}
         #wrapper { width: 900px; margin: 0 auto; padding: 30px; background: #FFF;}
@@ -45,7 +47,7 @@
         .winner_blue_team { color: #002763; }
         .winner_purple_team { color: #3D0060; }
         
-        #detailed_scoreboard { clear: both; padding: 30px 0;}
+        #detailed_scoreboard { clear: both; padding: 30px 0; font-size: 16px;}
         #detailed_scoreboard td { padding: 2px 4px;}
         #detailed_scoreboard img { width: 40px; border-radius: 5px; margin-right: 1px; display: inline-block;}
         
@@ -61,8 +63,21 @@
         
         .full_chart { margin: 15px 0 5px 0;}
         
+        #champion_detail_selectors { margin-bottom: 4px; font-weight: bold;}
+        #champion_detail_selectors td { padding: 0 5px 0 0;}
+        #champion_detail_selectors td:first-child { padding-right: 20px; width: 170px;}
+        #champion_detail_selectors div { display: inline-block;}
+        #champion_detail_selectors select { width: 150px;}
+        #champion_chart_selector_0 { border-bottom: 2px solid #DD2A00;}
+        #champion_chart_selector_1 { border-bottom: 2px solid #E2A600;}
+        #champion_chart_selector_2 { border-bottom: 2px solid #3ADB00;}
+        #champion_chart_selector_3 { border-bottom: 2px solid #00D8D8;}
+        #champion_chart_selector_4 { border-bottom: 2px solid #0011D6;}
+        
         option.champion_chart_selector_team_0 { background: #DDF0FF !important; }
         option.champion_chart_selector_team_1 { background: #EDE2FF !important; }
+        
+        #champion_chart { margin-top: 10px;}
         
         #champion_skill_order_table { border: 0;}
         #champion_skill_order_table th:first-child { width: 10%; }
@@ -83,6 +98,8 @@
         #champion_item_history_wrapper { max-height: 250px; overflow: auto;}
         #champion_item_history td:first-child { width: 65px;}
         .champion_item_history_items img { width: 25px; border-radius: 5px; margin-right: 1px; display: inline-block;}
+        
+        .chart_legend_series { width: 120px; display: inline-block;}
         
         .etabs { margin: 0; padding: 0; }
         .tab { display: inline-block; zoom:1; *display:inline; background: #eee; border: solid 1px #EEE; border-bottom: none; -moz-border-radius: 4px 4px 0 0; -webkit-border-radius: 4px 4px 0 0; }
@@ -176,7 +193,34 @@
     </p>
     
     <h2>Champion Detail</h2>
-    <select id="champion_chart_selector"></select>
+    <table id="champion_detail_selectors">
+        <tr>
+            <td>Select Champion:</td>
+            <td>Compare With:</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="champion_chart_selector_0">
+                    <select id="champion_chart_selector"></select>
+                </div>
+            </td>
+            <td>
+                <div id="champion_chart_selector_1">
+                    <select id="champion_chart_compare_0" class="champion_chart_compare"><option value=""></option></select>
+                </div>
+                <div id="champion_chart_selector_2" style="display: none;">
+                    <select id="champion_chart_compare_1" class="champion_chart_compare"><option value=""></option></select>
+                </div>
+                <div id="champion_chart_selector_3" style="display: none;">
+                    <select id="champion_chart_compare_2" class="champion_chart_compare"><option value=""></option></select>
+                </div>
+                <div id="champion_chart_selector_4" style="display: none;">
+                    <select id="champion_chart_compare_3" class="champion_chart_compare"><option value=""></option></select>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
     <button id="champion_chart_redraw">Load Details</button>
     
     <div id="champion_chart"></div>
