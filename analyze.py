@@ -359,11 +359,35 @@ class LOLGameData:
                     elif(len(item_builds['builds'][team][player]) > 0):
                         prev_build_items = [item for item in item_builds['finished_build_items'][team][player][-1] if item in config.BUILD_ITEMS]
                         curr_build_items = [item for item in curritems if item in config.BUILD_ITEMS]
-                        new_build_items = [item for item in curr_build_items if item not in prev_build_items]
-                        old_build_items = [item for item in prev_build_items if item not in curr_build_items]
+                        new_build_items = []
+                        for item in curr_build_items:
+                            if curr_build_items.count(item) > prev_build_items.count(item) + new_build_items.count(item):
+                                new_build_items.append(item)
+                        old_build_items = []
+                        for item in prev_build_items:
+                            if prev_build_items.count(item) + old_build_items.count(item) > curr_build_items.count(item):
+                                old_build_items.append(item)
                         if(len(new_build_items) > 0 or len(old_build_items) > 0):
                             item_builds['finished_build_items'][team][player].append(curr_build_items)
                             item_builds['builds'][team][player].append([time, new_build_items, old_build_items])
+                        
+                        # Add all items (excluding potions and wards) purchased if no mjaor item has been completed yet
+                        if(len(curr_build_items) == 0):
+                            def not_ward_or_potion(item):
+                                return (("-ward" not in item) and ("potion" not in item) and ("-totem" not in item) and ("-lens" not in item) and ("-orb" not in item) and ("total-biscuit" not in item))
+                            partial_build_items = [item for item in curritems if not_ward_or_potion(item)]
+                            prev_build_items = [item for item in item_builds['finished_build_items'][team][player][-1] if not_ward_or_potion(item)]
+                            new_build_items = []
+                            for item in partial_build_items:
+                                if partial_build_items.count(item) > prev_build_items.count(item) + new_build_items.count(item):
+                                    new_build_items.append(item)
+                            old_build_items = []
+                            for item in prev_build_items:
+                                if prev_build_items.count(item) + old_build_items.count(item) > partial_build_items.count(item):
+                                    old_build_items.append(item)
+                            if(len(new_build_items) > 0 or len(old_build_items) > 0):
+                                item_builds['finished_build_items'][team][player].append(partial_build_items)
+                                item_builds['builds'][team][player].append([time, new_build_items, old_build_items])
                         
         
         return item_builds
