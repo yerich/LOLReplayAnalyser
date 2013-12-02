@@ -149,6 +149,18 @@ function printChampionDetails(data) {
     else
         var compareChampionsMode = false;
 
+    //Output champion scoreboard
+    $("#champion_scoreboard_wrapper").html("");
+    $("#champion_scoreboard_wrapper").append("<div class='champion_scoreboard' style='border-left: 2px solid "+selectedChampionLineColor+"'></div>");
+    var scoreboard = $("#champion_scoreboard_wrapper .champion_scoreboard:last-child");
+    var team = selectedChampion[0];
+    var player = selectedChampion[1];
+    scoreboard.append(championIconTag(selectedChampionName));
+    scoreboard.append("<div style='font-size: 20px; font-weight: bold; border-right: 0;'>"+printableName(selectedChampionName)+"</div><br />");
+    scoreboard.append("<div class='champion_scoreboard_gold' style='margin-left: 1px;'>Gold: "+data['game'][team][player]['total_gold']+"</div>");
+    scoreboard.append("<div>Level "+data['game'][team][player]['level']+"</div>");
+    scoreboard.append("<div class='clearfix'></div>");
+
     //Output champion skill order
     $("#champion_skill_order_table").html("");
     $("#champion_skill_order_table").append("<tr><th></th></tr>");

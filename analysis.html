@@ -78,14 +78,22 @@
         option.champion_chart_selector_team_0 { background: #DDF0FF !important; }
         option.champion_chart_selector_team_1 { background: #EDE2FF !important; }
         
+        #champion_scoreboard_wrapper { margin: 20px 0;}
+        .champion_scoreboard { padding: 5px; clear: both;}
+        .champion_scoreboard .champion_icon { width: 50px; float: left;}
+        .champion_scoreboard > div { display: inline-block; padding-left: 8px; border-right: 1px solid #000; padding-right: 8px;
+            line-height: 14px; margin-top: 5px;}
+        .champion_scoreboard > div.clearfix { margin: 0; padding: 0;}
+        .champion_scoreboard > div:last-child { border-right: 0;}
+        
         #champion_chart { margin-top: 10px;}
         
         #champion_skill_order_table { border: 0;}
         #champion_skill_order_table th:first-child { width: 10%; }
         #champion_skill_order_table th { width: 5%; text-align: center; }
         #champion_skill_order_table td:first-child { text-align: left; font-size: 16px;}
-        #champion_skill_order_table td { text-align: center; border: 1px solid #EEE; font-size: 20px; font-weight: bold; border-bottom: 1px solid #CCC;}
-        #champion_skill_order_table td.champion_skill_order_table_selected { background: #EEE;}
+        #champion_skill_order_table td { text-align: center; border: 1px solid #CCC; font-size: 20px; font-weight: bold;}
+        #champion_skill_order_table td.champion_skill_order_table_selected { background: #CCC;}
         
         #champion_build_order { white-space: nowrap; overflow: auto; padding-bottom: 2px;}
         #champion_build_order div { display: inline-block; margin-right: 10px;}
@@ -223,6 +231,8 @@
     </table>
     
     <button id="champion_chart_redraw">Load Details</button>
+    
+    <div id="champion_scoreboard_wrapper"></div>
     
     <div id="champion_chart"></div>
     
