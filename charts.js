@@ -159,6 +159,7 @@ function printChampionDetails(data) {
     scoreboard.append("<div style='font-size: 20px; font-weight: bold; border-right: 0;'>"+printableName(selectedChampionName)+"</div><br />");
     scoreboard.append("<div class='champion_scoreboard_gold' style='margin-left: 1px;'>Gold: "+data['game'][team][player]['total_gold']+"</div>");
     scoreboard.append("<div>Level "+data['game'][team][player]['level']+"</div>");
+    scoreboard.append("<div>CS: "+data['game'][team][player]['minions']+"</div>");
     scoreboard.append("<div class='clearfix'></div>");
 
     //Output champion skill order
