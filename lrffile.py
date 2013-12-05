@@ -19,7 +19,6 @@ def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
     jsonstr = re.search("(\{.*\})", str(head)).group(1)
     data = json.loads(jsonstr)
-    print dict(data)
     return data
 
 def analyseLRFFile(filename = None, savefile = None):
@@ -41,6 +40,11 @@ def analyseLRFFile(filename = None, savefile = None):
                 print "Aborting."
                 return
         
+        lrfmeta = getLRFMetadata(open(filename))
+        if(lrfmeta['clientVersion'] not in config.LOL_VALID_CLIENT_VERSIONS):
+            print "Invalid client version of replay. Replay client version is "+lrfmeta['clientVersion']+". Acceptable versions: "+", ".join(config.LOL_VALID_CLIENT_VERSIONS)
+            return 
+        
         subprocess.Popen([config.LOLREPLAY_PATH, filename])
             
         while(1):
@@ -52,8 +56,6 @@ def analyseLRFFile(filename = None, savefile = None):
         
         print "League of Legends client window detected. Waiting 10 seconds for loading screen to appear..."
         time.sleep(10)
-    
-        lrfmeta = getLRFMetadata(open(filename))
     else:
         lrfmeta = {}
     
@@ -95,7 +97,7 @@ def promptOpenFile():
     root.withdraw()
     
     file_path = tkFileDialog.askopenfilename()
-    print file_path
+    print "Opening "+file_path
     return file_path
 
 if __name__ == "__main__":

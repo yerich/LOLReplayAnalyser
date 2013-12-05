@@ -12,6 +12,7 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 
 INHIB_RESPAWN_TIME = 240
 
+# "Big items" that are relevant to build order. Includes all finished items and some notable non-finished items (sightstone, aegis, tier 2 boots)
 BUILD_ITEMS = ["abyssal-scepter", "aegis-of-the-legion", "archangels-staff", "athenes-unholy-grail", "atmas-impaler", "augment-death", "augment-gravity", 
                "augment-power", "banner-of-command", "banshees-veil", "berserkers-greaves", "blade-of-the-ruined-king", 
                "deathfire-grasp", "executioners-calling", "face-of-the-mountain", "frost-queens-charm", "frozen-heart",
@@ -35,3 +36,7 @@ BUILD_ITEMS = ["abyssal-scepter", "aegis-of-the-legion", "archangels-staff", "at
                'mercurys-treads', 'ninja-tabi-alacrity', 'ninja-tabi-captain', 'ninja-tabi-distortion', 'ninja-tabi-furor', 'ninja-tabi-homeguard', 'ninja-tabi',
                'sorcerers-shoes-alacrity', 'sorcerers-shoes-captain', 'sorcerers-shoes-distortion', 'sorcerers-shoes-furor', 'sorcerers-shoes-homeguard', 
                'sorcerers-shoes']
+
+# Acceptable cleint versions for .lrf files
+# Update this when client is updated
+LOL_VALID_CLIENT_VERSIONS = ["3.14.0.738"];
