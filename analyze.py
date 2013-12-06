@@ -436,7 +436,7 @@ class LOLGameData:
                     "item_builds" : self.getItemBuildData(),
                     "skills" : self.getSkillsData()
                     }
-        json.dump(jsondata, open(basename+"/data.json", "w+"))
+        json.dump(jsondata, open(basename+"_data.json", "w+"))
 
 if __name__ == "__main__":
     data = LOLGameData("output/Gentium - Lux (9) - Spec.lra")

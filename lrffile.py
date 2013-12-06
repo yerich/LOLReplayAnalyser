@@ -13,6 +13,7 @@ import json
 import zlib
 import win32con
 import gzip
+import sys
 from analyze import LOLGameData
 
 def getLRFMetadata(fileh):
@@ -20,6 +21,10 @@ def getLRFMetadata(fileh):
     jsonstr = re.search("(\{.*\})", str(head)).group(1)
     data = json.loads(jsonstr)
     return data
+
+def flushPrint(str):
+    print str
+    sys.stdout.flush()
 
 def analyseLRFFile(filename = None, savefile = None):
     window_title = config.LOL_WINDOW_TITLE
@@ -54,7 +59,7 @@ def analyseLRFFile(filename = None, savefile = None):
             else:
                 break
         
-        print "League of Legends client window detected. Waiting 10 seconds for loading screen to appear..."
+        flushPrint("League of Legends client window detected. Waiting 10 seconds for loading screen to appear...")
         time.sleep(10)
     else:
         lrfmeta = {}
@@ -63,15 +68,16 @@ def analyseLRFFile(filename = None, savefile = None):
         filename = "tmp.lrf"
     print "Analysis will be saved to output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     
-    print "Beginning client capture."
+    flushPrint("Beginning client capture.")
     output = client_capture(lrfmeta)
-    print "Client capture completed."
+    flushPrint("Client capture completed.")
     
     hwnd = find_windows_with_name(window_title)[0][0]
     # Close the LOL Client Window
     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
     
-    savefile = "output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
+    if(not savefile):
+        savefile = "output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     output['lra_version'] = "0.1"
     output['lrf_meta'] = lrfmeta
     
@@ -86,9 +92,9 @@ def analyseLRFFile(filename = None, savefile = None):
     
     data = LOLGameData(savefile)
     print str(len(data.data['history'])) + " data points loaded."
-    print "Generating analysis json file..."
+    flushPrint("Generating analysis json file...")
     data.generateAnalysisFile()
-    print "Done."
+    flushPrint("Done.")
     
     return output
 
@@ -101,4 +107,9 @@ def promptOpenFile():
     return file_path
 
 if __name__ == "__main__":
-    analyseLRFFile()
+    if(len(sys.argv) == 2):
+        analyseLRFFile(sys.argv[1])
+    elif(len(sys.argv) > 2):
+        analyseLRFFile(sys.argv[1], sys.argv[2])
+    else:
+        analyseLRFFile()

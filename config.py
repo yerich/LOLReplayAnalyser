@@ -40,3 +40,5 @@ BUILD_ITEMS = ["abyssal-scepter", "aegis-of-the-legion", "archangels-staff", "at
 # Acceptable cleint versions for .lrf files
 # Update this when client is updated
 LOL_VALID_CLIENT_VERSIONS = ["3.14.0.738"];
+
+LOL_ANALYSIS_SERVER = "http://lol.yerich.net/"

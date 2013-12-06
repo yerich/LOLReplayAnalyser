@@ -7,6 +7,7 @@ import json
 import zlib
 from config import MOUSEEVENTF_MOVEABS, MOUSEEVENTF_CLICK
 import screenshot
+import sys
 
 keypressdelay = {}
 def sendkey(keychar, delay = 0.2):
@@ -96,6 +97,7 @@ def client_capture(metadata = None):
     currchamp = -1  # Active champion
     
     while True:
+        sys.stdout.flush()
         
         start = time.clock()
         im = ImageGrab.grab(bbox)
@@ -221,5 +223,6 @@ def client_capture(metadata = None):
         
         logfile.write(str(data['time']) + ": " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])+"\n")
         print "Capture successful (" + str(round((time.clock() - start)*1000))+"ms). "+str(data['time']//60)+":"+str(data['time'] % 60)+" - " + str(data['teams'][0]['kills']) + "|" + str(data['teams'][1]['kills']) + ". Gold: " + str(data['teams'][0]['gold']) + "|" + str(data['teams'][1]['gold'])
-        
+    
+    sys.stdout.flush()
     return { 'history' : history, 'summoner_spells': summoner_spells, 'winner' : winner }

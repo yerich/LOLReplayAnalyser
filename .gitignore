@@ -45,5 +45,6 @@ wtf.png
 icons/icons.dat
 dev/*
 icons_activated/*
+lrf/*
 
 server/config.php

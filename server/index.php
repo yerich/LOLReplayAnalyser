@@ -68,16 +68,20 @@ if($_GET['action'] == "upload") {
         
         if (move_uploaded_file($_FILES["lrffile"]["tmp_name"], "lrf/$id.lrf")) {
             chmod("lrf/$id.lrf", 0777);
-            $filesuccess = ".lrf file uploaded sucessfully.";
+            header("Location: ?upload_done=true");
+            die();
         }
         else
             $fileerror = "Internal server error.";
     }
 }
 
+if($_GET['action'] == "get_unanalyzed_lrf") {
+    
+}
 
 if(!$_GET['replay_id'])
-include("header.php");
+    include("header.php");
 ?>
 <h1>League of Legends Replay Analysis Service</h1>
 <br />
@@ -86,7 +90,7 @@ include("header.php");
         <legend>Upload a .lrf file (Max 30MB)</legend>
         <p>Please upload a .lrf file created on the 3.14.0.738 patch. You must upload the spectator version of the .lrf file.</p>
         <?php if($fileerror) echo "<p style='color: #F00'>$fileerror</p>"; ?>
-        <?php if($filesuccess) echo "<p style='color: #0A0'>$filesuccess</p>"; ?>
+        <?php if($_GET['upload_done']) echo "<p style='color: #0A0'>Your file has been uploaded sucessfully.</p>"; ?>
         <input type="file" name="lrffile" /><br />
         <input type="submit" value="Upload" />
     </fieldset>

@@ -5,6 +5,7 @@ import pprint
 import cProfile
 from screenshot import getScreenshotData
 import icon
+import sys
 
 KEYNOTFOUND = '<KEYNOTFOUND>'       # KeyNotFound for dictDiff
 
@@ -94,14 +95,14 @@ def runScreenshotTests():
     print "Running Screenshot tests..."
     fopentime = 0
     
-    for i in range(1, 2):
+    for i in range(1, 3):
         fopenstart = time.clock()
         im= Image.open("tests/screenshot"+str(i)+".png")
         fopentime += (time.clock() - fopenstart) * 1000
         data = (getScreenshotData(im, {"clientVersion" : "3.14"}))
         #print data['events'] if data and 'events' in data else None
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(data)
+        #pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(data)
         
         #if len(correct) < i:
         #    print "Test "+str(i)+" has no expected value. Returned value: '"+str(data)+"'."
@@ -114,11 +115,14 @@ def runScreenshotTests():
 start = time.clock()
 runOCRTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
+sys.stdout.flush()
 
 start = time.clock()
 runIconTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
+sys.stdout.flush()
 
 start = time.clock()
 runScreenshotTests()
 print "Finished in " + str((time.clock() - start)*1000)+"ms ("+str(fopentime)+"ms spent opening files)"
+sys.stdout.flush()
