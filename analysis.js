@@ -108,11 +108,11 @@ function getPercentTimeInterval(data, percent) {
 
 $(document).ready(function() {
     if(QueryString.file)
-        baseurl = QueryString.file+"/";
+        baseurl = QueryString.file;
     else
-        baseurl = "sample/";
+        baseurl = "sample";
     
-    $.getJSON(baseurl+"data.json", function(data) {
+    $.getJSON(baseurl+".json", function(data) {
         console.log(data);
         if(data['game']['clientVersion'] < "3.14")
             iconFolder = "icons/3.13/";

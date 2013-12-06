@@ -92,6 +92,7 @@ def client_capture(metadata = None):
     turns_too_many_events = 0
     winner = -1
     exception_count = 0
+    failure_count = 0
     
     logfile.write("============================================================\n")
     currchamp = -1  # Active champion
@@ -108,36 +109,49 @@ def client_capture(metadata = None):
             exception_count += 1
             if(exception_count % 10 == 0):
                 sendkey('p')
+            if(exception_count > 50):
+                print "Fatal Error: Too many exceptions"
+                return False
             continue
         
         exception_count = 0
         
+        if(failure_count > 30):
+            print "Fatal Error: Too many failures."
+            return False
+        
         if(data == -1):
             print "OCR Error. Skipping this screenshot"
+            failure_count += 1
             continue
         
         if(not data):
             print "Could not load screenshot. Waiting 2 seconds to try again..."
+            failure_count += 1
             time.sleep(2)
             continue
         
         if('loading' in data and data['loading'] == True):
             print "In loading screen. Continuing..."
             summoner_spells = data['summoner_spells']
+            failure_count += 1
             time.sleep(3)
             continue
         
         if('teamfight' in data and data['teamfight'] == True):
             print "In teamfight mode (not supported). Disabling..."
+            failure_count += 1
             sendkey('a', 0.1)
             time.sleep(1)
             continue
+        
+        failure_count = 0
         
         if(data['game_finished'] == True):
             print "Game Finished. Getting game winner..."
             # Move the mouse to a location where we can see the purple team nexus
             sendmouseclick((window_coords[0] + 1886, window_coords[1] + 803))
-            time.sleep(3)
+            time.sleep(10)
             im = ImageGrab.grab(bbox)
             winner = grabScreenshotWinner(im)
             if(winner == 0):

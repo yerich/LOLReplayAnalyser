@@ -70,6 +70,10 @@ def analyseLRFFile(filename = None, savefile = None):
     
     flushPrint("Beginning client capture.")
     output = client_capture(lrfmeta)
+    if(output == False):
+        flushPrint("Client capture failed.")
+        return False
+    
     flushPrint("Client capture completed.")
     
     hwnd = find_windows_with_name(window_title)[0][0]

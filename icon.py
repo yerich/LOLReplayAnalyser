@@ -12,7 +12,7 @@ import os
 import ImageDraw
 
 iconData = None
-iconFolder = "icons/"
+iconFolder = "icon/"
 
 # Get the difference i color between two pixels. The difference is calculated by adding
 # the sum of differences for each layer (RGB)
@@ -142,7 +142,7 @@ def generateActivatedItemIcons():
         newim = Image.composite(line_layer, newim, alpha_mask)
         newim.save("icons_activated/"+filename+"-activated-half.png")
         
-def setIconFolder(folder = "icons/"):
+def setIconFolder(folder = "icon/"):
     global iconFolder
     iconFolder = folder
         

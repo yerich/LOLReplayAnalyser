@@ -425,8 +425,6 @@ class LOLGameData:
     
     def generateAnalysisFile(self):
         basename = ".".join(self.filename.split(".")[0:-1])
-        if not os.path.exists(basename):
-            os.makedirs(basename)
         
         jsondata = { 
                     "gold" : self.getTotalGoldOverTime(),
@@ -436,10 +434,10 @@ class LOLGameData:
                     "item_builds" : self.getItemBuildData(),
                     "skills" : self.getSkillsData()
                     }
-        json.dump(jsondata, open(basename+"_data.json", "w+"))
+        json.dump(jsondata, open(basename+".json", "w+"))
 
 if __name__ == "__main__":
-    data = LOLGameData("output/Gentium - Lux (9) - Spec.lra")
+    data = LOLGameData("output/4.lra")
     print str(len(data.data['history'])) + " data points loaded."
     print "Generating analysis json file..."
     data.generateAnalysisFile()
