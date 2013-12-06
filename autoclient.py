@@ -27,8 +27,8 @@ def monitorAnalysis(filename, savefile):
             break
     
         sys.stdout.write(buff)
-        if(buff != ""):
-            lastline = buff
+        if(buff.strip() != ""):
+            lastline = buff.strip()
     
     p.wait()
     return lastline
@@ -62,6 +62,8 @@ def runAutoAnalysis():
         print "Beginning analysis on "+os.path.abspath(filename)+"..."
         analysis_status = monitorAnalysis(os.path.abspath(filename), "output/"+fid+".lra")
         
+        print analysis_status
+        print "=============================================="
         if(analysis_status == "Done."):
             print "Analysis complete."
             
