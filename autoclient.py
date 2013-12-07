@@ -11,6 +11,7 @@ import os
 import httplib, mimetypes
 import urlparse
 import requests
+import keys
 
 def monitorAnalysis(filename, savefile):
     p = subprocess.Popen(["python", "lrffile.py", filename, savefile], stdout=subprocess.PIPE)
@@ -35,7 +36,7 @@ def monitorAnalysis(filename, savefile):
 
 def uploadAnalysisFile(fid):
     fid = str(fid)
-    url = config.LOL_ANALYSIS_SERVER+"?action=upload_lrf_data"
+    url = config.LOL_ANALYSIS_SERVER+"?action=upload_lrf_data&auth_token="+keys.SERVER_AUTH_TOKEN
     files = {'lrafile': open("output/"+fid+".lra", 'rb'), 'datafile': open("output/"+fid+".json", 'rb')}
     r = requests.post(url, files=files, data={"id" : fid})
     return r.text
@@ -43,7 +44,7 @@ def uploadAnalysisFile(fid):
 def runAutoAnalysis():
     print "Connecting to server using URL "+config.LOL_ANALYSIS_SERVER+"."
     while(1):
-        response = urllib.urlopen(config.LOL_ANALYSIS_SERVER+"?action=get_unanalyzed_lrf")
+        response = urllib.urlopen(config.LOL_ANALYSIS_SERVER+"?action=get_unanalyzed_lrf&auth_token="+keys.SERVER_AUTH_TOKEN)
         if(response.getcode() == 404):
             time.sleep(60)
             continue
@@ -72,7 +73,9 @@ def runAutoAnalysis():
                 print "Upload Completed."
             else:
                 print "Upload Failed."
-        
+        else:
+            response = urllib.urlopen(config.LOL_ANALYSIS_SERVER+"?action=lrf_analysis_failed&lrf_id="+str(fid)+"&auth_token="+keys.SERVER_AUTH_TOKEN)
+            
         time.sleep(10)
         print "Moving on to next replay..."
         
