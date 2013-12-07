@@ -58,34 +58,6 @@ def FindControl( Window, CName = 'OK', CType = 'Button' ):
     """
     return FindWindowEx( Window, None, CType, CName )
 
-
-def ConfirmDialog( Window, BName = None, Delay = 0.5 ):
-    """
-    Find button with name BName in Window and simulate a button
-    activation.
-    
-    @arg WName: Window Name
-    @type WName: string
-    @arg BName: Button Name
-    @type BName: string
-    @return: Button in case of success, negative error code else
-    @rtype: PyCWnd
-    """
-    
-    # Find Button
-    Button = FindControl( Window, BName )  
-    Button.SendMessage( BM_SETSTATE,  1, 0 )
-    sleep( Delay )  # Window should show up at least for half a second.
-    
-    # Simulate button press to confirm window
-    idButton = Button.GetDlgCtrlID()
-    hButton = Button.GetSafeHwnd()
-    Caption = Window.GetWindowText()
-    Window.SendMessage( WM_COMMAND, MAKELONG( idButton, BN_CLICKED ), hButton )
-    
-    print ctime( time() ), "Confirmed '%s'" %Caption
-    return Button
-
 def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
     jsonstr = re.search("(\{.*\})", str(head)).group(1)

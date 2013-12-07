@@ -1,6 +1,6 @@
 function printableName(name) {
     special_map = {};
-    special_map['khazix'] = "Kha'Zix";
+    special_map['khazik'] = "Kha'Zik";
     special_map['kogmaw'] = "Kog'Maw";
     special_map['chogath'] = "Cho'gath";
     
@@ -14,15 +14,15 @@ function printableName(name) {
 } 
 
 function championIconTag(name) {
-    return "<img src='"+iconFolder+"champion-"+name+".png' class='icon champion_icon' title='"+printableName(name)+"' alt='"+name+"' />";
+    return "<img src='"+iconFolder+"champion-"+name+".png' class='icon champion_icon' title=\""+printableName(name)+"\" alt=\""+printableName(name)+"\" />";
 }
 
 function itemIconTag(name) {
-    return "<img src='"+iconFolder+"item-"+name+".png' class='icon item_icon' title='"+printableName(name)+"' alt='"+name+"' />";
+    return "<img src='"+iconFolder+"item-"+name+".png' class='icon item_icon' title=\""+printableName(name)+"\" alt=\""+printableName(name)+"\" />";
 }
 
 function summonerSpellIconTag(name) {
-    return "<img src='"+iconFolder+"summoner-"+name+".png' class='icon summoner_spell_icon' title='"+printableName(name)+"' alt='"+name+"' />";
+    return "<img src='"+iconFolder+"summoner-"+name+".png' class='icon summoner_spell_icon' title=\""+printableName(name)+"\" alt=\""+printableName(name)+"\" />";
 }
 
 function quickfindLink(summoner) {
