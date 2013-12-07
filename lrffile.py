@@ -15,6 +15,76 @@ import win32con
 import gzip
 import sys
 from analyze import LOLGameData
+from win32con import *
+from win32api import *
+from win32ui import *
+from win32gui import GetClassName
+from win32event import *
+import sys
+import capturer
+
+# Captions (titles) of popup windows to confirm
+# EDIT THIS
+PopupNames = (
+  'Close Exisitng Match?',
+  'Newer Version',
+  "Fix Exe?"
+)
+
+def GetWindowText( Window ):
+    """
+    Get text of all 'Static' elements of windows and return
+    concatenated.
+    """
+    Child, Text = None, ''
+    while 1:
+        try: Child = FindWindowEx( Window, Child, 'Static', None )
+        except: break
+    Text += '\n\t'.join( Child.GetWindowText().split( '\r' ) )
+    return Text
+
+def FindControl( Window, CName = 'OK', CType = 'Button' ):
+    """
+    Find control with name CName in Window
+    
+    @arg Window: Top level window
+    @type Window: PyCWnd
+    @arg CName: Control Name
+    @type CName: string
+    @arg CType: Control class
+    @type CType: string
+    @return Control
+    @rtype: PyCwnd 
+    """
+    return FindWindowEx( Window, None, CType, CName )
+
+
+def ConfirmDialog( Window, BName = None, Delay = 0.5 ):
+    """
+    Find button with name BName in Window and simulate a button
+    activation.
+    
+    @arg WName: Window Name
+    @type WName: string
+    @arg BName: Button Name
+    @type BName: string
+    @return: Button in case of success, negative error code else
+    @rtype: PyCWnd
+    """
+    
+    # Find Button
+    Button = FindControl( Window, BName )  
+    Button.SendMessage( BM_SETSTATE,  1, 0 )
+    sleep( Delay )  # Window should show up at least for half a second.
+    
+    # Simulate button press to confirm window
+    idButton = Button.GetDlgCtrlID()
+    hButton = Button.GetSafeHwnd()
+    Caption = Window.GetWindowText()
+    Window.SendMessage( WM_COMMAND, MAKELONG( idButton, BN_CLICKED ), hButton )
+    
+    print ctime( time() ), "Confirmed '%s'" %Caption
+    return Button
 
 def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
@@ -29,13 +99,12 @@ def flushPrint(str):
 def analyseLRFFile(filename = None, savefile = None):
     window_title = config.LOL_WINDOW_TITLE
     
-    toplist, winlist = [], []
+    toplist, winlist, childlist = [], [], []
     def enum_cb(hwnd, results):
         winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
     
     def find_windows_with_name(window_title):
         win32gui.EnumWindows(enum_cb, toplist)
-        
         return [(hwnd, title) for hwnd, title in winlist if window_title in title.lower()]
     
     if(len(find_windows_with_name(window_title)) == 0):
@@ -53,6 +122,24 @@ def analyseLRFFile(filename = None, savefile = None):
         subprocess.Popen([config.LOLREPLAY_PATH, filename])
             
         while(1):
+            for name in PopupNames:
+                try: window = FindWindow(None, name)
+                except: continue
+                
+                # Extract text information from Popup (for logging).
+                message = GetWindowText(window)  # Get message text before window disappears
+                window.SetFocus()
+                
+                if(name == "Newer Version"):
+                    print "Newer version dialog box. Clicking 'No'. "
+                    capturer.sendmouseclick((1034, 606))
+                elif(name == "Fix Exe?"):
+                    print "Fix exe dialog box detected. Clicking 'No'."
+                    capturer.sendmouseclick((987, 596))
+                elif(name == 'Close Exisitng Match?'):
+                    print "Close Exisitng Match dialog box"
+                    capturer.sendmouseclick((945, 601))
+            
             if(len(find_windows_with_name(window_title)) == 0):
                 time.sleep(1)
                 continue
