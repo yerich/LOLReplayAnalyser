@@ -44,8 +44,7 @@ def runAutoAnalysis():
     print "Connecting to server using URL "+config.LOL_ANALYSIS_SERVER+"."
     while(1):
         response = urllib.urlopen(config.LOL_ANALYSIS_SERVER+"?action=get_unanalyzed_lrf")
-        if(response.getcode() == 404 and response.read() == "No results"):
-            print "No replays available. Will try again in 60 seconds."
+        if(response.getcode() == 404):
             time.sleep(60)
             continue
         
@@ -69,7 +68,7 @@ def runAutoAnalysis():
             
             print "Uploading data to server..."
             text = uploadAnalysisFile(fid)
-            if(text == "Upload Sucessfu l."):
+            if(text == "Upload Sucessful."):
                 print "Upload Completed."
             else:
                 print "Upload Failed."
@@ -78,4 +77,5 @@ def runAutoAnalysis():
         print "Moving on to next replay..."
         
 if __name__ == "__main__":
+    #uploadAnalysisFile(5)
     runAutoAnalysis()
