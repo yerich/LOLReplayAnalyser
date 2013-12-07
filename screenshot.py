@@ -122,7 +122,8 @@ def getScreenshotData(im, metadata = None):
     if(im.getpixel((945, 945))[0:3] == (148, 150, 156)):
         return {'teamfight' : True, "valid" : True}
     
-    if(im.getpixel((615, 38))[0:3] != (247, 235, 215) or im.getpixel((672, 38))[0:3] != (201, 37, 38)):
+    if(pixelDiff(im.getpixel((615, 38))[0:3], (247, 235, 215)) > 5 or pixelDiff(im.getpixel((672, 38))[0:3], (201, 37, 38)) > 5):
+        print "Error: screenshot not valid."
         return False
     
     results = {};
