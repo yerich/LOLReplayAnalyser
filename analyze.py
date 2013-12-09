@@ -336,6 +336,7 @@ class LOLGameData:
         
         for team in [0, 1]:
             for player in range(0, 5):
+                mobility_boots_upgraded = False
                 for entry in self.data['history']:
                     if not entry['item_data_available']:
                         continue
@@ -348,10 +349,6 @@ class LOLGameData:
                         curritems = ["greater-totem" if x == "warding-totem" else x for x in curritems]
                     elif(entry['players'][team][player]['level'] >= 9):
                         is_level_9[team][player] = True
-                    
-                    if(sorted(last_seen_build[team][player]) != sorted(curritems)):
-                        item_builds['history'][team][player][time] = curritems
-                    last_seen_build[team][player] = curritems
                     
                     if(entry['time'] > 90 and len(curritems) > 0 and len(item_builds['builds'][team][player]) == 0):
                         item_builds['builds'][team][player].append([time, curritems, []])
@@ -367,6 +364,20 @@ class LOLGameData:
                         for item in prev_build_items:
                             if prev_build_items.count(item) + old_build_items.count(item) > curr_build_items.count(item):
                                 old_build_items.append(item)
+                                
+                        #Fix bug with boots of mobility
+                        if (any(e[0:len("boots-of-mobility")] == "boots-of-mobility" for e in new_build_items) and mobility_boots_upgraded != False):
+                            new_boots = [e for e in new_build_items if e[0:len("boots-of-mobility")] == "boots-of-mobility"][0]
+                            old_build_items = [e for e in old_build_items if e[0:len("boots-of-mobility")] != "boots-of-mobility"]
+                            new_build_items = [e for e in new_build_items if e[0:len("boots-of-mobility")] != "boots-of-mobility"]
+                            
+                            curr_build_items = [mobility_boots_upgraded if x == new_boots else x for x in curr_build_items]
+                            curritems = [mobility_boots_upgraded if x == new_boots else x for x in curritems]
+                        
+                        if any(e[0:len("boots-of-mobility-")] == "boots-of-mobility-" for e in new_build_items):
+                            mobility_boots_upgraded = [e for e in new_build_items if e[0:len("boots-of-mobility-")] == "boots-of-mobility-"][0]
+                            print "Old: " + mobility_boots_upgraded
+                        
                         if(len(new_build_items) > 0 or len(old_build_items) > 0):
                             item_builds['finished_build_items'][team][player].append(curr_build_items)
                             item_builds['builds'][team][player].append([time, new_build_items, old_build_items])
@@ -388,7 +399,10 @@ class LOLGameData:
                             if(len(new_build_items) > 0 or len(old_build_items) > 0):
                                 item_builds['finished_build_items'][team][player].append(partial_build_items)
                                 item_builds['builds'][team][player].append([time, new_build_items, old_build_items])
-                        
+                    
+                    if(sorted(last_seen_build[team][player]) != sorted(curritems)):
+                        item_builds['history'][team][player][time] = curritems
+                    last_seen_build[team][player] = curritems
         
         return item_builds
     

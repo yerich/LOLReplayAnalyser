@@ -22,14 +22,16 @@ from win32gui import GetClassName
 from win32event import *
 import sys
 import capturer
+import webbrowser
 
 # Captions (titles) of popup windows to confirm
-# EDIT THIS
 PopupNames = (
   'Close Exisitng Match?',
   'Newer Version',
   "Fix Exe?"
 )
+
+_called_directly = False
 
 def GetWindowText( Window ):
     """
@@ -155,9 +157,26 @@ def analyseLRFFile(filename = None, savefile = None):
     
     data = LOLGameData(savefile)
     print str(len(data.data['history'])) + " data points loaded."
-    flushPrint("Generating analysis json file...")
+    flushPrint("Generating analysis files...")
     data.generateAnalysisFile()
+    
+    # Save html file
+    basename = (".".join(savefile.split(".")[0:-1])).split("/")[-1]
+    fh = open("analysis/analysis.html", "rb")
+    analysis_raw = fh.read()
+    jsonh = open("output/"+basename+".json", "rb");
+    new_html = analysis_raw.replace("<!-- DATA_555 -->", "<script type='text/javascript'>_data_defined = true; data="+jsonh.read()+"</script>");
+    jsonh.close()
+    fh.close()
+    
+    analysis_fh = open("analysis/"+basename+".html", "wb")
+    analysis_fh.write(new_html)
+    analysis_fh.close()
+    
     flushPrint("Done.")
+    
+    if(_called_directly == True):
+        webbrowser.open(os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html",new=2)
     
     return output
 
@@ -170,6 +189,7 @@ def promptOpenFile():
     return file_path
 
 if __name__ == "__main__":
+    _called_directly = True
     if(len(sys.argv) == 2):
         analyseLRFFile(sys.argv[1])
     elif(len(sys.argv) > 2):

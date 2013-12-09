@@ -58,7 +58,16 @@ def iconDataDiff(icon, data):
         pixelDiff(icon[12], data[12]) + \
         pixelDiff(icon[13], data[13]) + \
         pixelDiff(icon[14], data[14]) + \
-        pixelDiff(icon[15], data[15])
+        pixelDiff(icon[15], data[15]) + \
+        pixelDiff(icon[16], data[16]) + \
+        pixelDiff(icon[17], data[17]) + \
+        pixelDiff(icon[18], data[18]) + \
+        pixelDiff(icon[19], data[19]) + \
+        pixelDiff(icon[20], data[20]) + \
+        pixelDiff(icon[21], data[21]) + \
+        pixelDiff(icon[22], data[22]) + \
+        pixelDiff(icon[23], data[23]) + \
+        pixelDiff(icon[24], data[24])
 
 def generateIconDataFile():
     icons = [ f for f in listdir(iconFolder) if isfile(join(iconFolder,f)) and f.split(".")[-1] == "png" ]
@@ -84,12 +93,12 @@ def getIconData():
     return iconData
 
 def imageToIconData(im):
-    imdat = im.resize((4, 4), Image.ANTIALIAS).getdata()
+    imdat = im.resize((5, 5), Image.ANTIALIAS).getdata()
     
     dat = []
-    for i in range(0, 4):
-        for j in range(0, 4):
-            dat.append(imdat[i*4 + j][0:3])
+    for i in range(0, 5):
+        for j in range(0, 5):
+            dat.append(imdat[i*5 + j][0:3])
     
     return dat
 
