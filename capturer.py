@@ -190,7 +190,8 @@ def client_capture(metadata = None):
         
         if(data['active_champion']):
             if(data['active_champion']['champion'] != data['players'][currchamp // 5][currchamp % 5]['champion']):
-                print "Error: active champion not expected value. Disregarding."
+                print "Error: active champion not expected value. Disregarding. Was " + data['active_champion']['champion'] + \
+                    ", expected " + data['players'][currchamp // 5][currchamp % 5]['champion']
             else:
                 data['active_champion']['champion_id'] = currchamp
                     

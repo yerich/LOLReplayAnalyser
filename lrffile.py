@@ -64,6 +64,7 @@ def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
     jsonstr = re.search("(\{.*\})", str(head)).group(1)
     data = json.loads(jsonstr)
+    print data
     return data
 
 def flushPrint(str):
@@ -130,7 +131,8 @@ def analyseLRFFile(filename = None, savefile = None):
     print "Analysis will be saved to output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     
     flushPrint("Beginning client capture.")
-    output = client_capture(lrfmeta)
+    #output = client_capture(lrfmeta)
+    output = False
     if(output == False):
         flushPrint("Client capture failed.")
         return False
