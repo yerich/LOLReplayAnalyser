@@ -131,8 +131,7 @@ def analyseLRFFile(filename = None, savefile = None):
     print "Analysis will be saved to output/"+os.path.splitext(os.path.basename(filename))[0]+".lra"
     
     flushPrint("Beginning client capture.")
-    #output = client_capture(lrfmeta)
-    output = False
+    output = client_capture(lrfmeta)
     if(output == False):
         flushPrint("Client capture failed.")
         return False
