@@ -2,7 +2,10 @@ from __future__ import division
 import Image
 import sys
 import time
+import os
 
+if not os.path.exists("output"):
+    os.makedirs("output")
 ocrlog = open("output/ocrlog.txt", "a")
 ocrerr = open("output/ocrerr.txt", "a")
 numerrors_str = 0

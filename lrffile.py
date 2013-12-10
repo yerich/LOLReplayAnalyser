@@ -174,7 +174,7 @@ def analyseLRFFile(filename = None, savefile = None):
     analysis_fh.write(new_html)
     analysis_fh.close()
     
-    flushPrint("Done.")
+    flushPrint("Done. View analysis page at "+os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html")
     
     if(_called_directly == True):
         webbrowser.open(os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html",new=2)

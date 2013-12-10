@@ -59,9 +59,6 @@ def grabScreenshotData(im, metadata = None):
 logfile = open("output/capturelog.txt", "a")
 
 def client_capture(metadata = None):
-    if not os.path.exists("output"):
-        os.makedirs("output")
-    
     window_title = 'league of legends (tm) client'
     #window_title = 'notepad'
     champ_key_map = ['1', '2', '3', '4', '5', 'q', 'w', 'e', 'r', 't']
