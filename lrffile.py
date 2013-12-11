@@ -64,7 +64,6 @@ def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
     jsonstr = re.search("(\{.*\})", str(head)).group(1)
     data = json.loads(jsonstr)
-    print data
     return data
 
 def flushPrint(str):
