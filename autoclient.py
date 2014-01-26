@@ -12,6 +12,8 @@ import httplib, mimetypes
 import urlparse
 import requests
 import keys
+import shutil
+
 
 def monitorAnalysis(filename, savefile):
     p = subprocess.Popen(["python", "lrffile.py", filename, savefile], stdout=subprocess.PIPE)
@@ -21,7 +23,7 @@ def monitorAnalysis(filename, savefile):
     while True:
         buff = p.stdout.readline()
     
-        if buff == '':    
+        if buff == '':
             count += 1
     
         if buff == '' and p.poll() != None: 
@@ -78,7 +80,35 @@ def runAutoAnalysis():
             
         time.sleep(10)
         print "Moving on to next replay..."
+
+def runLocalAutoAnalysis():
+    print "Beginning batch analysis"
+    files = [ f for f in os.listdir("lrf/") if os.path.isfile(os.path.join("lrf/",f)) and f.split(".")[-1] == "lrf" ]
+    print str(len(files)) + " files found"
+    for f in files:
+        filename = "lrf/"+f
+        savefilename = str(int(time.time()))
+        print "Beginning analysis on "+os.path.abspath(filename)+" (saving to output/"+savefilename+".lra)..."
+        analysis_status = monitorAnalysis(os.path.abspath(filename), "output/"+savefilename+".lra")
         
+        print analysis_status
+        print "=============================================="
+        if(analysis_status == "Done."):
+            print "Analysis complete."
+            print "Saved to output/"+savefilename+".lra"
+        else:
+            print "Analysis Failed."
+        print "=============================================="
+
+
+
+        
+        shutil.move(filename, "lrf/done/"+f)
+            
+        time.sleep(10)
+        print "Moving on to next replay..."
+
 if __name__ == "__main__":
     #uploadAnalysisFile(5)
-    runAutoAnalysis()
+    #runAutoAnalysis()
+    runLocalAutoAnalysis()

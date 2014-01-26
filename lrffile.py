@@ -104,15 +104,24 @@ def analyseLRFFile(filename = None, savefile = None):
                 message = GetWindowText(window)  # Get message text before window disappears
                 window.SetFocus()
                 
+                
                 if(name == "Newer Version"):
                     print "Newer version dialog box. Clicking 'No'. "
-                    capturer.sendmouseclick((1034, 606))
+                    win32gui.SetForegroundWindow(window)
+                    capturer.sendkey(39, 0.5)
+                    time.sleep(1)
+                    capturer.sendkey(13, 0.5)
                 elif(name == "Fix Exe?"):
                     print "Fix exe dialog box detected. Clicking 'No'."
-                    capturer.sendmouseclick((987, 596))
+                    win32gui.SetForegroundWindow(window)
+                    capturer.sendkey(39, 0.5)
+                    time.sleep(1)
+                    capturer.sendkey(13, 0.5)
                 elif(name == 'Close Exisitng Match?'):
                     print "Close Exisitng Match dialog box"
-                    capturer.sendmouseclick((945, 601))
+                    win32gui.SetForegroundWindow(window)
+                    time.sleep(1)
+                    capturer.sendkey(13, 0.5)
             
             if(len(find_windows_with_name(window_title)) == 0):
                 time.sleep(1)
@@ -173,7 +182,8 @@ def analyseLRFFile(filename = None, savefile = None):
     analysis_fh.write(new_html)
     analysis_fh.close()
     
-    flushPrint("Done. View analysis page at "+os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html")
+    flushPrint("Analysis complete. View analysis page at "+os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html")
+    flushPrint("Done.")
     
     if(_called_directly == True):
         webbrowser.open(os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html",new=2)
