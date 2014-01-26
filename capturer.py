@@ -174,7 +174,7 @@ def client_capture(metadata = None):
         
         # Control game speed with numpad + and - keys
         # Virtual key codes from here: http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-        if(data['speed'] != 8 and len(data['events']) == 0):
+        if(data['speed'] != 8 and len(data['events']) == 4):
             if(turns_too_many_events <= 0):
                 sendkey(0x6B)
             else:
@@ -192,7 +192,7 @@ def client_capture(metadata = None):
                                 break
         
         # Slow game down if too many events on screen
-        if(len(data['events']) > 0):
+        if(len(data['events']) == 4):
             sendkey('0')
             turns_too_many_events = 7
         
@@ -217,6 +217,7 @@ def client_capture(metadata = None):
                     for player in range(0, 5):
                         if(currchamp_death_switcher[team][player] == 10):
                             currchamp = team * 5 + player
+                            sendkey('0')
                         currchamp_death_switcher[team][player] -= 1
         
         if(currchamp < 0):

@@ -104,22 +104,18 @@ def analyseLRFFile(filename = None, savefile = None):
                 message = GetWindowText(window)  # Get message text before window disappears
                 window.SetFocus()
                 
-                
                 if(name == "Newer Version"):
                     print "Newer version dialog box. Clicking 'No'. "
-                    win32gui.SetForegroundWindow(window)
                     capturer.sendkey(39, 0.5)
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
                 elif(name == "Fix Exe?"):
                     print "Fix exe dialog box detected. Clicking 'No'."
-                    win32gui.SetForegroundWindow(window)
                     capturer.sendkey(39, 0.5)
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
                 elif(name == 'Close Exisitng Match?'):
                     print "Close Exisitng Match dialog box"
-                    win32gui.SetForegroundWindow(window)
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
             
