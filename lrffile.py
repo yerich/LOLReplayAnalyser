@@ -23,6 +23,7 @@ from win32event import *
 import sys
 import capturer
 import webbrowser
+import win32com.client
 
 # Captions (titles) of popup windows to confirm
 PopupNames = (
@@ -62,8 +63,13 @@ def FindControl( Window, CName = 'OK', CType = 'Button' ):
 
 def getLRFMetadata(fileh):
     head=list(islice(fileh,1))
-    jsonstr = re.search("(\{.*\})", str(head)).group(1)
+    jsonstr = re.search("(\{.*\})", str(head))
+    if(not jsonstr):
+        return False
+    else:
+        jsonstr = jsonstr.group(1)
     data = json.loads(jsonstr)
+    
     return data
 
 def flushPrint(str):
@@ -89,12 +95,16 @@ def analyseLRFFile(filename = None, savefile = None):
                 return
         
         lrfmeta = getLRFMetadata(open(filename))
+        if(not lrfmeta):
+            print "Could not read LRF file"
+            return False
         if(lrfmeta['clientVersion'] not in config.LOL_VALID_CLIENT_VERSIONS):
             print "Invalid client version of replay. Replay client version is "+lrfmeta['clientVersion']+". Acceptable versions: "+", ".join(config.LOL_VALID_CLIENT_VERSIONS)
-            return 
+            return False
         
         subprocess.Popen([config.LOLREPLAY_PATH, filename])
-            
+        
+        alert_box_count = 0
         while(1):
             for name in PopupNames:
                 try: window = FindWindow(None, name)
@@ -102,23 +112,33 @@ def analyseLRFFile(filename = None, savefile = None):
                 
                 # Extract text information from Popup (for logging).
                 message = GetWindowText(window)  # Get message text before window disappears
-                window.SetFocus()
+                for i in range(0, 5):
+                    window.SetFocus()
+                    time.sleep(0.1)
+                    shell = win32com.client.Dispatch("WScript.Shell")
+                    shell.AppActivate(name)
                 
                 if(name == "Newer Version"):
                     print "Newer version dialog box. Clicking 'No'. "
                     capturer.sendkey(39, 0.5)
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
+                    alert_box_count += 1
                 elif(name == "Fix Exe?"):
                     print "Fix exe dialog box detected. Clicking 'No'."
                     capturer.sendkey(39, 0.5)
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
+                    alert_box_count += 1
                 elif(name == 'Close Exisitng Match?'):
                     print "Close Exisitng Match dialog box"
                     time.sleep(1)
                     capturer.sendkey(13, 0.5)
+                    alert_box_count += 1
             
+                if(alert_box_count > 10):
+                    print "Error: Could not focus message box window."
+                    return False
             if(len(find_windows_with_name(window_title)) == 0):
                 time.sleep(1)
                 continue
@@ -184,7 +204,7 @@ def analyseLRFFile(filename = None, savefile = None):
     if(_called_directly == True):
         webbrowser.open(os.path.dirname(os.path.realpath(__file__)) + "/analysis/"+basename+".html",new=2)
     
-    return output
+    return True
 
 def promptOpenFile():
     root = Tkinter.Tk()

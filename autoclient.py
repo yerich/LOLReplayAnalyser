@@ -13,6 +13,9 @@ import urlparse
 import requests
 import keys
 import shutil
+import win32com.shell.shell as shell
+import traceback
+ASADMIN = 'asadmin'
 
 
 def monitorAnalysis(filename, savefile):
@@ -89,23 +92,36 @@ def runLocalAutoAnalysis():
         filename = "lrf/"+f
         savefilename = str(int(time.time()))
         print "Beginning analysis on "+os.path.abspath(filename)+" (saving to output/"+savefilename+".lra)..."
-        analysis_status = monitorAnalysis(os.path.abspath(filename), "output/"+savefilename+".lra")
-        
-        print analysis_status
+        #analysis_status = monitorAnalysis(os.path.abspath(filename), "output/"+savefilename+".lra")
+        #
+        #print analysis_status
+        try:
+            status = lrffile.analyseLRFFile(os.path.abspath(filename), "output/"+savefilename+".lra")
+        except Exception, e:
+            print "Exception!"
+            print "Couldn't do it: %s" % e
+            traceback.print_exc()
+            status = False 
+            
         print "=============================================="
-        if(analysis_status == "Done."):
+        if(status):
             print "Analysis complete."
             print "Saved to output/"+savefilename+".lra"
+            shutil.move(filename, "lrf/done/"+f)
         else:
             print "Analysis Failed."
+            try:
+                shutil.move(filename, "lrf/failed/"+f)
+            except Exception, e:
+                print "Could not move LRF file: %s" % e
+                shutil.copy(filename, "lrf/failed/"+f)
         print "=============================================="
-
-
-
         
-        shutil.move(filename, "lrf/done/"+f)
+        os.system('taskkill /f /im \"League of Legends.exe\"')
+        os.system('taskkill /f /im LOLReplay.exe')
+        os.system('taskkill /f /im BsSndRpt.exe')
             
-        time.sleep(10)
+        time.sleep(2)
         print "Moving on to next replay..."
 
 if __name__ == "__main__":

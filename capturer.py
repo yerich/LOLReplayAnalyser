@@ -94,6 +94,7 @@ def client_capture(metadata = None):
     winner = -1
     exception_count = 0
     failure_count = 0
+    invalid_champion_count = 0
     
     logfile.write("============================================================\n")
     currchamp = -1  # Active champion
@@ -121,6 +122,10 @@ def client_capture(metadata = None):
         
         if(failure_count > 15):
             print "Fatal Error: Too many failures."
+            return False
+        
+        if(invalid_champion_count > 15):
+            print "Fatal Error: Too many invalid champions"
             return False
         
         if(data == -1):
@@ -174,7 +179,7 @@ def client_capture(metadata = None):
         
         # Control game speed with numpad + and - keys
         # Virtual key codes from here: http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-        if(data['speed'] != 8 and len(data['events']) == 4):
+        if(data['speed'] != 8 and len(data['events']) < 4):
             if(turns_too_many_events <= 0):
                 sendkey(0x6B)
             else:
@@ -186,9 +191,9 @@ def client_capture(metadata = None):
                     for team in [0, 1]:
                         for player in range(0, 5):
                             if("champion-" + data['players'][team][player]['champion'] == event['victim']):
-                                print "Found!"
                                 if(currchamp_death_switcher[team][player] == 0):
                                     currchamp_death_switcher[team][player] = 10
+                                    sendkey('0')
                                 break
         
         # Slow game down if too many events on screen
@@ -202,7 +207,9 @@ def client_capture(metadata = None):
             if(data['active_champion']['champion'] != data['players'][currchamp // 5][currchamp % 5]['champion']):
                 print "Error: active champion not expected value. Disregarding. Was " + data['active_champion']['champion'] + \
                     ", expected " + data['players'][currchamp // 5][currchamp % 5]['champion']
+                invalid_champion_count += 1
             else:
+                invalid_champion_count = 0
                 data['active_champion']['champion_id'] = currchamp
                     
                 # Write active champ info back into results, if available
@@ -218,7 +225,8 @@ def client_capture(metadata = None):
                         if(currchamp_death_switcher[team][player] == 10):
                             currchamp = team * 5 + player
                             sendkey('0')
-                        currchamp_death_switcher[team][player] -= 1
+                        if(currchamp_death_switcher[team][player] > 0):
+                            currchamp_death_switcher[team][player] -= 1
         
         if(currchamp < 0):
             currchamp = 0

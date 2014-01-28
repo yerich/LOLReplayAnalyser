@@ -86,7 +86,12 @@ def getGameWinner(im):
 def convertMetaDataChampionString(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
     s1 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
-    return re.sub("[^a-z\-]", "", s1)
+    name = re.sub("[^a-z\-]", "", s1)
+    if(name == "fiddle-sticks"):
+        return "fiddlesticks"
+    if(name == "monkey-king"):
+        return "wukong"
+    return name
 
 # Returns a dict of data retrieved from a screenshot
 def getScreenshotData(im, metadata = None):
