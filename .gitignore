@@ -49,3 +49,4 @@ lrf/*
 keys.py
 
 server/config.phplrffile.py
+analysis/*
