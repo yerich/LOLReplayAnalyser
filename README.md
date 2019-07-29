@@ -1,3 +1,5 @@
+Old, unmaintained, broken, do not use.
+
 LOLReplayAnalyser
 =================
 
